@@ -1,0 +1,22 @@
+{
+  "name": "TP",
+  "authors": [
+    "German Moltoni <german.moltoni@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrapvalidator": "^0.5.3",
+    "eonasdan-bootstrap-datetimepicker": "^4.17.47",
+    "moment": "^2.18.1"
+  }
+}
