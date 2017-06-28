@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=1,initial-scale=1,user-scalable=1" />
+	<title>Estacionamiento</title>
+		   <link rel="stylesheet" href="./bower_components/bootstrap/dist/css/bootstrap.css">
+
+    <link rel="stylesheet" href="./bower_components/bootstrapvalidator/dist/css/bootstrapValidator.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.11/css/jquery.dataTables.min.css">
+    <script src="./bower_components/jquery/dist/jquery.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.js"></script>
+    <script src="./bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="./bower_components/bootstrapvalidator/dist/js/bootstrapValidator.min.js"></script>
+	<link href="http://fonts.googleapis.com/css?family=Lato:100italic,100,300italic,300,400italic,400,700italic,700,900italic,900" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+	<link rel="stylesheet" type="text/css" href="css/styles.css" />
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+	<script src="scriptIndex.js"></script>
+
+    
+</head>
+<!-- href="./bower_components/bootstrap/dist/css/bootstrap.css">
+href="http://bootswatch.com/cerulean/bootstrap.min.css">
+href="https://bootswatch.com/darkly/bootstrap.min.css">
+
+
+-->
+<body>
+  <div class="row">
+    <div  class="col-md-12">
+    <nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>                      
+      </button>
+      <a class="navbar-brand" href="#"><span class="fa fa-car"></span>Estacionamiento</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <div id="admin" hidden>
+        <ul class="nav navbar-nav"><li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="material-icons">group</i>&nbspUsuarios<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#" onclick="altaUser()"><i class="material-icons">person_add</i>&nbsp Alta</a></li>
+            <li><a href="#" onclick="listUser()"><i class="material-icons">format_list_bulleted</i>&nbspListado</a></li>
+            
+            <li><a href="#" onclick="listarLogs()"><i class="material-icons">query_builder</i>&nbspHorarios</a></li>
+          </ul></li></ul>
+          <ul class="nav navbar-nav">
+        <li><a onclick="cocheras()"><i class="material-icons">view_module</i>&nbspCocheras</a></li>  
+      </ul>
+       <ul class="nav navbar-nav">
+        <li><a onclick="operaciones()"><i class="material-icons">event_note</i>&nbspOperaciones</a></li>  
+      </ul>
+      </div>
+      <div id="user" hidden>
+        <ul class="nav navbar-nav">
+          <li><a onclick="cargarAuto()"><i class="material-icons">local_parking</i>&nbspIngresar Auto</a></li>  
+          <li><a onclick="cobrar()"><i class="material-icons">attach_money</i>&nbsp Cobrar</a></li>  
+        </ul>
+      </div>
+ 
+      <div id='menuLogin'>
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="#" id="btnLogin"><span class="glyphicon glyphicon-log-in"></span> Login</a>
+            </li>
+        </ul>
+      </div>
+       <div id="menuUser" hidden>
+             <ul class="nav navbar-nav navbar-right">
+               <li class="dropdown" id='loginMenu' >
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <img src="http://placehold.it/40x40" class=" avatar-img img-circle img-user">&nbsp<span class="user" id='userName'></span>&nbsp<i class="fa fa-angle-down"></i>
+                </a>
+                <ul id="menuUser" class="dropdown-menu user-list" role="menu">
+                    <li><a href="#">Modificar</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#" onclick="logout()"><span class='glyphicon glyphicon-log-out'></span> Logout</a></li>
+                </ul>
+              </li>
+            </ul>
+      </div>
+
+    </div>
+     
+  </div>
+</nav>
+    </div></div>
+
+<div class="row">
+  <div class="col-md-10">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="col-md-4" id='select'></div>
+        <div class="col-md-2" id='radio'><br></div>
+        <div class="col-md-4" id='inputDate'></div>
+        <div class="col-md-2" id="btn"> 
+
+
+
+
+
+        </div>
+
+      </div>
+    </div>
+    <div class="row">
+      <br>
+    </div>
+    <div class="row">
+      <div class="col-md-12 table-responsive" id="general">
+        <table id="table" class="table table-condensed table-striped bg-info"></table>
+      </div>
+     </div>
+  </div>
+
+  <div class="col-md-2">
+    <div class="row">
+      <div id="precios" class="conteiner col-md-12">
+
+      </div>
+    </div>
+    <div class="row">
+      <div id="pisos" class="conteiner col-md-12">
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+ 
+	 
+  
+
+  
+</body>
+</html>
+
