@@ -4,7 +4,8 @@ use \Psr\Http\Message\ResponseInterface as Response;
 require "./EntidadesApi/UserApi.php";
 require "./EntidadesApi/ParkingApi.php";
 require "./EntidadesApi/OperationApi.php";
-require "./Entidades/Auth.php";
+require "./EntidadesApi/Auth.php";
+require "./EntidadesApi/Imagen.php";
 $config['displayErrorDetails'] = true;
  
 require './vendor/autoload.php';
@@ -31,10 +32,10 @@ $app->group('/users', function () {
 
     $this->put('/habilitarusuario/{id}', \UserApi::class .':HabilitarUserApi')->add(\AuthUser::class.':verificarUsuario');
 
-    $this->post('/signup', \UserApi::class .':SignUpUserApi')->add(\AuthUser::class.':verificarUsuarioDup');
+    $this->post('/alta', \UserApi::class .':AltaUsuarioApi')->add(\AuthUser::class.':VerificarCamposFormUser')->add(\AuthUser::class.':VerificarUsuarioDup');//->add(\Imagen::class.':SubirImagenUsuario')->add(\AuthUser::class.':VerificarArchivo');
     $this->get('/cantidadOperaciones',\OperationApi::class . ':QOperationUserApi');
 
-})->add(\AuthUser::class.':admin');
+});//->add(\AuthUser::class.':admin');
 
 
 

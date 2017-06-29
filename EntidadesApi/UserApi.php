@@ -56,17 +56,9 @@ class UserApi extends Usuario{
                 return $response->withJson(false);
     }
 
-    public static function SignUpUserApi($request, $response, $args) {
-        $data = $request->getParsedBody();
-        $user_data=array();
-        $user_data['id'] = filter_var($data['id'], FILTER_SANITIZE_STRING);
-        $user_data['nombre'] = filter_var($data['name'], FILTER_SANITIZE_STRING);
-        $user_data['apellido'] = filter_var($data['surname'], FILTER_SANITIZE_STRING);
-        $user_data['turno'] = filter_var($data['turno'], FILTER_SANITIZE_STRING);
-        $user_data['admin'] = filter_var($data['admin'], FILTER_SANITIZE_STRING);
-        $user_data['estado'] = filter_var($data['state'], FILTER_SANITIZE_STRING);
-        $user_data['password'] = filter_var($data['password'], FILTER_SANITIZE_STRING);    
-        $user = new Usuario($user_data['id'],$user_data['nombre'],$user_data['apellido'],$user_data['password'],$user_data['estado'],$user_data['turno'],$user_data['admin']);
+    public static function AltaUsuarioApi($request, $response, $args) {
+        $user_data = $request->getAttribute('user');
+        $user = new Usuario($user_data['mail'],$user_data['nombre'],$user_data['apellido'],$user_data['password'],$user_data['estado'],$user_data['turno'],$user_data['admin']);
         if($user->CrearUsuario())
             return $response->getBody()->write('registrado');
         else

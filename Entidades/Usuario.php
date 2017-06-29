@@ -3,6 +3,7 @@
     class Usuario
     {
         public $id;
+        public $mail;
         public $nombre;
         public $apellido;
         public $password;
@@ -11,12 +12,13 @@
         public $admin;
         public $entrada;
         public $salida;
-        public function __construct($id=NULL,$nombre=NULL,$apellido=NULL,$password=NULL,$estado=NULL,$turno=NULL,$admin=NULL,$entrada=NULL,$salida=NULL){
-            if($id !== NULL && $nombre !==NULL && $apellido !==NULL && $password !==NULL && $admin !==NULL && $estado !==NULL){
+        public function __construct($mail=NULL,$nombre=NULL,$apellido=NULL,$password=NULL,$estado=NULL,$turno=NULL,$admin=NULL,$id=NULL,$entrada=NULL,$salida=NULL){
+            if($mail !== NULL && $nombre !==NULL && $apellido !==NULL && $password !==NULL && $admin !==NULL && $estado !==NULL){
                 $this->nombre = $nombre;
                 $this->apellido = $apellido;
                 $this->password = $password;
                 $this->id = $id;
+                $this->mail = $mail;
                 $this->estado = $estado;
                 $this->turno = $turno;
                 $this->admin = $admin;
@@ -30,21 +32,17 @@
         *
         */
         function CrearUsuario(){
-            if(!Usuario::BuscarUsuario($this->id))
-            {
+            
                 $objDB = AccesoDatos::DameUnObjetoAcceso();
-		        $consulta = $objDB->RetornarConsulta("INSERT INTO `usuarios`(`id`,`nombre`, `apellido`,`password`, `estado`, `turno`,`admin`) VALUES (:Id, :Nombre, :Apellido, :Password, :Estado, :Turno, :Admin)");
+		        $consulta = $objDB->RetornarConsulta("INSERT INTO `usuarios`(`mail`,`nombre`, `apellido`,`password`, `estado`, `turno`,`admin`) VALUES (:Mail, :Nombre, :Apellido, :Password, :Estado, :Turno, :Admin)");
 		        $consulta->bindValue(':Nombre',$this->nombre, PDO::PARAM_STR);
                 $consulta->bindValue(':Apellido',$this->apellido, PDO::PARAM_STR);
                 $consulta->bindValue(':Password',$this->password, PDO::PARAM_STR);
-                $consulta->bindValue(':Id',$this->id, PDO::PARAM_INT);
+                $consulta->bindValue(':Mail',$this->mail, PDO::PARAM_STR);
                 $consulta->bindValue(':Turno',$this->turno, PDO::PARAM_STR);
                 $consulta->bindValue(':Estado',$this->estado, PDO::PARAM_STR);
                 $consulta->bindValue(':Admin',$this->admin, PDO::PARAM_STR);
-                $consulta->execute();
-                return true;
-            }
-            return false;
+                return $consulta->execute();       
         }
         /*
         *   modifica el estado del usuario, habilitado o suspendido.
@@ -131,11 +129,18 @@
         *   return usuario si lo encuentra, false si no lo hace.
         *
         */
-        static function BuscarUsuario($id)
+        static function BuscarUsuarioPorId($id)
         {
             $objDB = AccesoDatos::DameUnObjetoAcceso();
 		    $consulta = $objDB->RetornarConsulta("SELECT id,nombre,apellido,password,estado,turno,admin FROM usuarios WHERE id = :Id");
 		    $consulta->bindValue(':Id',$id, PDO::PARAM_INT);
+            $consulta->execute();
+            return $consulta->fetchAll(PDO::FETCH_CLASS,"usuario");
+        }
+        static function BuscarUsuarioPorMail($mail){
+            $objDB = AccesoDatos::DameUnObjetoAcceso();
+		    $consulta = $objDB->RetornarConsulta("SELECT id,nombre,apellido,password,estado,turno,admin FROM usuarios WHERE mail=:Mail");
+		    $consulta->bindValue(':Mail',$mail, PDO::PARAM_STR);
             $consulta->execute();
             return $consulta->fetchAll(PDO::FETCH_CLASS,"usuario");
         }
@@ -144,9 +149,9 @@
         *   return usuario si inicio correctamente, false si no lo hizo.
         *
         */
-        static function LoginUsuario($id,$password)
+        static function LoginUsuario($mail,$password)
         {
-            $user = Usuario::BuscarUsuario($id);
+            $user = Usuario::BuscarUsuarioPorMail($mail);
             if($user == false)
                 return false;
             else
@@ -168,7 +173,7 @@
         */
         static function LogOutUsuario($id)
         {
-            $user = Usuario::BuscarUsuario($id)[0];
+            $user = Usuario::BuscarUsuarioPorId($id)[0];
             if($user != false){
                 $objDB = AccesoDatos::DameUnObjetoAcceso();
                 $consulta = $objDB->RetornarConsulta("UPDATE `logusuarios` SET `salida`= NOW() WHERE  salida is NULL AND idUsuario = :Id");
