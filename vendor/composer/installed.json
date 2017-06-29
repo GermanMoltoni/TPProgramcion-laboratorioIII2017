@@ -345,5 +345,49 @@
         ],
         "description": "A simple library to encode and decode JSON Web Tokens (JWT) in PHP. Should conform to the current spec.",
         "homepage": "https://github.com/firebase/php-jwt"
+    },
+    {
+        "name": "imagecow/imagecow",
+        "version": "v2.1.6",
+        "version_normalized": "2.1.6.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/oscarotero/imagecow.git",
+            "reference": "b168cfe786cf7feb2218dec16f1660d81d7e2bd5"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/oscarotero/imagecow/zipball/b168cfe786cf7feb2218dec16f1660d81d7e2bd5",
+            "reference": "b168cfe786cf7feb2218dec16f1660d81d7e2bd5",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.5"
+        },
+        "time": "2016-12-11T15:27:37+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Imagecow\\": "src"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Oscar Otero",
+                "email": "oom@oscarotero.com",
+                "homepage": "http://oscarotero.com",
+                "role": "Developer"
+            }
+        ],
+        "description": "PHP library to manipulate and generate responsive images",
+        "homepage": "https://github.com/oscarotero/imagecow/",
+        "keywords": [
+            "image"
+        ]
     }
 ]

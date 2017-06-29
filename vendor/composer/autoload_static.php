@@ -23,6 +23,7 @@ class ComposerStaticInite8666b1b0218aa221fa989c8714fb25b
         'I' => 
         array (
             'Interop\\Container\\' => 18,
+            'Imagecow\\' => 9,
         ),
         'F' => 
         array (
@@ -47,6 +48,10 @@ class ComposerStaticInite8666b1b0218aa221fa989c8714fb25b
         'Interop\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/container-interop/container-interop/src/Interop/Container',
+        ),
+        'Imagecow\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/imagecow/imagecow/src',
         ),
         'Firebase\\JWT\\' => 
         array (
