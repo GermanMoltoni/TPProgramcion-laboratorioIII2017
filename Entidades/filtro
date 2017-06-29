@@ -1,0 +1,88 @@
+
+
+
+
+
+
+- Estacionamiento
+    - pisos
+        - lugares
+    - autos
+    - usuarios
+
+
+
+
+-auto
+    -patente
+    -color
+    -marca
+    -especial
+
+
+
+- piso
+    -cantidad de lugares
+    - cantidad de lugares reservados
+    - numero de piso
+-operaciones
+
+    public $idUser;
+    public $patente;
+    public $idCochera;
+    public $entrada;
+    public $salida;
+    public $pago;
+    public $tiempo;
+
+- usuarios
+    - id
+    - nombre
+    - apellido
+    - password
+    
+
+
+- empleado deriva de usuario
+    - entrada
+    - salida
+    - turno
+
+
+metodos
+-auto
+    -crear auto
+    -buscar auto
+
+-operaciones
+    -iniciar operaciones
+    -finalizar operacion
+    -listar operaciones por idUser
+    -listar operaciones activas(lista  autos estacionados)
+    - busca operacion por patente
+    - lista todas las operaciones
+
+- piso
+    - Crear piso
+    - obtener lugar 
+    - obtener lugar especial
+    - lugares ocupados
+    - buscar piso
+    - lugares reservados ocupados
+ 
+
+- usuario
+    - crear usuario
+    - buscar usuario
+    - listar usuarios
+    - borrar usuario
+    - modificar estado usuario
+    - login
+    - logout
+
+- Estacionamiento
+    - estacionar
+    - retirar
+    - verifica auto estacionado
+
+
