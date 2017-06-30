@@ -11,8 +11,9 @@
         public $turno;
         public $admin;
         public $entrada;
+        public $pathFoto;
         public $salida;
-        public function __construct($mail=NULL,$nombre=NULL,$apellido=NULL,$password=NULL,$estado=NULL,$turno=NULL,$admin=NULL,$id=NULL,$entrada=NULL,$salida=NULL){
+        public function __construct($mail=NULL,$nombre=NULL,$apellido=NULL,$password=NULL,$estado=NULL,$turno=NULL,$admin=NULL,$pathFoto=NULL,$id=NULL,$entrada=NULL,$salida=NULL){
             if($mail !== NULL && $nombre !==NULL && $apellido !==NULL && $password !==NULL && $admin !==NULL && $estado !==NULL){
                 $this->nombre = $nombre;
                 $this->apellido = $apellido;
@@ -24,6 +25,7 @@
                 $this->admin = $admin;
                 $this->entrada = $entrada;
                 $this->salida = $salida;
+                $this->pathFoto = $pathFoto;
              }
         }
         /*
@@ -32,9 +34,9 @@
         *
         */
         function CrearUsuario(){
-            
+            //if(self::BuscarUsuarioPorMail($mail))
                 $objDB = AccesoDatos::DameUnObjetoAcceso();
-		        $consulta = $objDB->RetornarConsulta("INSERT INTO `usuarios`(`mail`,`nombre`, `apellido`,`password`, `estado`, `turno`,`admin`) VALUES (:Mail, :Nombre, :Apellido, :Password, :Estado, :Turno, :Admin)");
+		        $consulta = $objDB->RetornarConsulta("INSERT INTO `usuarios`(`mail`,`nombre`, `apellido`,`password`, `estado`, `turno`,`admin`,`pathFoto`) VALUES (:Mail, :Nombre, :Apellido, :Password, :Estado, :Turno, :Admin,:pathFoto)");
 		        $consulta->bindValue(':Nombre',$this->nombre, PDO::PARAM_STR);
                 $consulta->bindValue(':Apellido',$this->apellido, PDO::PARAM_STR);
                 $consulta->bindValue(':Password',$this->password, PDO::PARAM_STR);
@@ -42,6 +44,7 @@
                 $consulta->bindValue(':Turno',$this->turno, PDO::PARAM_STR);
                 $consulta->bindValue(':Estado',$this->estado, PDO::PARAM_STR);
                 $consulta->bindValue(':Admin',$this->admin, PDO::PARAM_STR);
+                 $consulta->bindValue(':pathFoto',$this->pathFoto, PDO::PARAM_STR);
                 return $consulta->execute();       
         }
         /*
@@ -51,7 +54,7 @@
         */
         static function ModificarEstadoUsuario($id,$estado)
         {
-            if (Usuario::BuscarUsuario($id) != false)
+            if (self::BuscarUsuarioPorId($id) != false)
             {
                 $objDB = AccesoDatos::DameUnObjetoAcceso(); 
                 $consulta = $objDB->RetornarConsulta("UPDATE `usuarios` SET `estado` = :estado WHERE `id` = :Id");
@@ -120,7 +123,7 @@
         */
         static function ListarUsuarios(){
             $objDB = AccesoDatos::DameUnObjetoAcceso();
-		    $consulta = $objDB->RetornarConsulta("SELECT id,nombre,apellido,' ' as password,estado,turno,admin FROM usuarios");
+		    $consulta = $objDB->RetornarConsulta("SELECT mail,nombre,apellido,' ' as password,estado,turno,admin,id,pathFoto FROM usuarios");
             $consulta->execute();
             return $consulta->fetchAll(PDO::FETCH_CLASS,"usuario");
         }
@@ -132,14 +135,14 @@
         static function BuscarUsuarioPorId($id)
         {
             $objDB = AccesoDatos::DameUnObjetoAcceso();
-		    $consulta = $objDB->RetornarConsulta("SELECT id,nombre,apellido,password,estado,turno,admin FROM usuarios WHERE id = :Id");
+		    $consulta = $objDB->RetornarConsulta("SELECT mail,nombre,apellido,password,estado,turno,admin,id,pathFoto FROM usuarios WHERE id = :Id");
 		    $consulta->bindValue(':Id',$id, PDO::PARAM_INT);
             $consulta->execute();
             return $consulta->fetchAll(PDO::FETCH_CLASS,"usuario");
         }
         static function BuscarUsuarioPorMail($mail){
             $objDB = AccesoDatos::DameUnObjetoAcceso();
-		    $consulta = $objDB->RetornarConsulta("SELECT id,nombre,apellido,password,estado,turno,admin FROM usuarios WHERE mail=:Mail");
+		    $consulta = $objDB->RetornarConsulta("SELECT mail,nombre,apellido,password,estado,turno,admin,id,pathFoto FROM usuarios WHERE mail=:Mail");
 		    $consulta->bindValue(':Mail',$mail, PDO::PARAM_STR);
             $consulta->execute();
             return $consulta->fetchAll(PDO::FETCH_CLASS,"usuario");
@@ -151,7 +154,7 @@
         */
         static function LoginUsuario($mail,$password)
         {
-            $user = Usuario::BuscarUsuarioPorMail($mail);
+            $user = self::BuscarUsuarioPorMail($mail);
             if($user == false)
                 return false;
             else
@@ -164,7 +167,7 @@
             $consulta = $objDB->RetornarConsulta("INSERT INTO `logusuarios` (`idUsuario`,`entrada`) VALUES (:Id,NOW())");
             $consulta->bindValue(':Id',$user->id, PDO::PARAM_INT);
             $consulta->execute();
-            return array('nombre'=>$user->nombre,'apellido'=>$user->apellido,'id'=>$user->id,'admin'=>$user->admin,'estado'=>$user->estado);
+            return array('mail'=>$user->mail,'nombre'=>$user->nombre,'apellido'=>$user->apellido,'id'=>$user->id,'admin'=>$user->admin,'estado'=>$user->estado,'pathFoto'=>$user->pathFoto);
         }
         /*
         *   Realiza logout de usuario a partir de su id y registra movimiento en base de datos.
@@ -173,7 +176,7 @@
         */
         static function LogOutUsuario($id)
         {
-            $user = Usuario::BuscarUsuarioPorId($id)[0];
+            $user = self::BuscarUsuarioPorId($id)[0];
             if($user != false){
                 $objDB = AccesoDatos::DameUnObjetoAcceso();
                 $consulta = $objDB->RetornarConsulta("UPDATE `logusuarios` SET `salida`= NOW() WHERE  salida is NULL AND idUsuario = :Id");
