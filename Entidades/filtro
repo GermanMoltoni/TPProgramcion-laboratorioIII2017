@@ -1,7 +1,8 @@
 
 
-
-
+ use Imagecow\Image;
+        if($user['pathFoto'] != null)
+            $image = Image::fromFile('./Fotos/'.$user['pathFoto'])->resizeCrop(80, 50, 'center', 'middle')->base64();
 
 
 - Estacionamiento
