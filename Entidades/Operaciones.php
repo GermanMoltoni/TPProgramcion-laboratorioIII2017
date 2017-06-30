@@ -33,7 +33,7 @@ class Operacion{
             $objDB = AccesoDatos::DameUnObjetoAcceso();
 		    $consulta = $objDB->RetornarConsulta("UPDATE `operaciones` SET `salida`=NOW(), `pago`=(
                 IF(ROUND(TIMESTAMPDIFF(MINUTE, operaciones.entrada, operaciones.salida)/60,1)< 12,
-                    ROUND(TIMESTAMPDIFF(MINUTE, operaciones.entrada, operaciones.salida)/60,1)*(SELECT valor FROM tarifas WHERE tiempo='hora'), 
+                    ROUND(TIMESTAMPDIFF(MINUTE, operaciones.entrada, operaciones.salida)/60,1)*(SELECT valor FROM tarifas WHERE tiempo='hora'),
                 IF (ROUND(TIMESTAMPDIFF(MINUTE, operaciones.entrada, operaciones.salida)/60,1) >= 12 && ROUND(TIMESTAMPDIFF(MINUTE, operaciones.entrada, operaciones.salida)/60,1) <= 24,
                     (SELECT valor FROM tarifas WHERE tiempo='mediaEstadia'),(SELECT valor FROM tarifas WHERE tiempo='estadiaCompleta'))
                  ))
@@ -45,7 +45,7 @@ class Operacion{
             $consulta->execute();
             return ($consulta->fetchAll());
         }
-    
+
 
 
 
@@ -64,7 +64,7 @@ class Operacion{
             $objDB = AccesoDatos::DameUnObjetoAcceso();
             $consulta = $objDB->RetornarConsulta("SELECT autos.patente,autos.color,autos.marca,idCochera,entrada FROM `operaciones`,autos WHERE salida is NULL AND operaciones.patente = autos.patente");
             $consulta->execute();
-            return $consulta->fetchAll(PDO::FETCH_CLASS) ; 
+            return $consulta->fetchAll(PDO::FETCH_CLASS) ;
     }
 
     function  BuscarOperacionActiva($patente){
@@ -72,7 +72,7 @@ class Operacion{
             $consulta = $objDB->RetornarConsulta("SELECT autos.patente,autos.color,autos.marca,idCochera,entrada FROM `operaciones`,autos WHERE salida is NULL AND operaciones.patente = :patente");
             		    $consulta->bindValue(':patente',$patente, PDO::PARAM_INT);
             $consulta->execute();
-            return $consulta->fetchAll(PDO::FETCH_CLASS); 
+            return $consulta->fetchAll(PDO::FETCH_CLASS);
     }
 
     static function ListarOperaciones($userId=0,$from=null,$to=null)
@@ -109,20 +109,25 @@ class Operacion{
             else
                 $consulta = $objDB->RetornarConsulta("SELECT idUser,patente,idCochera,entrada,salida,pago,TIMEDIFF(operaciones.salida, operaciones.entrada) as tiempo FROM `operaciones`");
             $consulta->execute();
-            return $consulta->fetchAll(PDO::FETCH_CLASS,"operacion");  
+            return $consulta->fetchAll(PDO::FETCH_CLASS,"operacion");
 
 
     }
-    static function CantidadOperacionesPorUsuario($userId,$from=null,$to=null){
+    static function CantidadOperacionesPorUsuario($userId=0,$from=null,$to=null){
         $objDB = AccesoDatos::DameUnObjetoAcceso();
-        $consulta = $objDB->RetornarConsulta("SELECT idUser,COUNT(*) as cantidad FROM `operaciones`WHERE idUser=:Id");
-        $consulta->bindValue(':Id',$userId, PDO::PARAM_INT);
+        if($userId == 0)
+            $consulta = $objDB->RetornarConsulta("SELECT idUser,COUNT(*) as cantidad FROM `operaciones`");
+        else
+        {
+            $consulta = $objDB->RetornarConsulta("SELECT idUser,COUNT(*) as cantidad FROM `operaciones`WHERE idUser=:Id");
+            $consulta->bindValue(':Id',$userId, PDO::PARAM_INT);
+        }
         $consulta->execute();
-        return   $consulta->fetchAll(PDO::FETCH_OBJ);  
+        return   $consulta->fetchAll(PDO::FETCH_OBJ);
     }
 
 
 
 }
- 
+
 ?>
