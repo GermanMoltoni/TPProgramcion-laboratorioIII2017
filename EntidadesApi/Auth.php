@@ -18,6 +18,19 @@ public static function VerificarCamposFormUser($request, $response, $next){
         $user_data['password'] = filter_var($data['password'], FILTER_SANITIZE_STRING);
         return $next($request->withAttribute('user',$user_data), $response);
 }
+public static function VerificarFormLogin($request, $response, $next){
+        $data = $request->getParsedBody();
+        if(!isset($data['mail'],$data['password']))
+            return $response->withJson(array('error'=>'Faltan Datos'));
+        $user_data=array();
+        $user_data['mail'] = filter_var($data['mail'], FILTER_SANITIZE_STRING);
+        $user_data['password'] = filter_var($data['password'], FILTER_SANITIZE_STRING);
+        return $next($request->withAttribute('user',$user_data), $response);
+}
+
+
+
+
 public function admin($request, $response, $next) {
         try{
                 if($request->getHeader('token') != null)
@@ -47,12 +60,13 @@ public function login($request, $response, $next) {
                         $data = AuthJWT::GetData($request->getHeader('token')[0]);
                         return $response->withJson(array('user'=>$data));
                 }
-                return $next($request,$response);
+                elseif($request->getHeader('token') == null)
+                    return $next($request,$response);
 
         }
         catch(Exception $e)
-        {
-             return $response->withJson(array('error'=>"Se requiere iniciar Sesion"));   
+        {   
+             return  $response->withJson(array('error'=>"Se requiere iniciar Sesion"));   
         }
         
         
@@ -82,7 +96,7 @@ public function users($request, $response, $next) {
         $mail = filter_var($data['mail'], FILTER_SANITIZE_STRING);
         $user = Usuario::BuscarUsuarioPorMail($mail);
         if(count($user) != 0)
-            return $response->withJson(array('error'=>'Usuario existente'));   
+            return $response->withJson(array('error'=>'Usuario existente'),201);   
         return $next($request,$response);
 
    }
@@ -91,7 +105,7 @@ public function users($request, $response, $next) {
         $id = filter_var($data['id'], FILTER_SANITIZE_STRING);
         $user = Usuario::BuscarUsuario($id);
         if(count($user) == 0)
-            return $response->withJson(array('error'=>'Usuario no existe'));   
+            return $response->withJson(array('error'=>'Usuario no existe'),201);   
         return $next($request,$response);
 
    }
