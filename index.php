@@ -22,9 +22,9 @@ $app->add(function ($req, $res, $next) {
 
 
 $app->group('/users', function () {
-    $this->get('/listUsers',\UserApi::class . ':ListUsersApi');
+    $this->get('/listar',\UserApi::class . ':ListUsersApi');
  
-    $this->get('/listUsersLog', \UserApi::class .':ListUsersLogApi');//[/{params:.*}]
+    $this->get('/listarLogs', \UserApi::class .':ListUsersLogApi');
 
     $this->delete('/bajausuario/{id}', \UserApi::class .':DownUserApi')->add(\AuthUser::class.':verificarUsuario');
 
@@ -32,14 +32,21 @@ $app->group('/users', function () {
 
     $this->put('/habilitarusuario/{id}', \UserApi::class .':HabilitarUserApi')->add(\AuthUser::class.':verificarUsuario');
 
-    $this->post('/alta', \UserApi::class .':AltaUsuarioApi')->add(\AuthUser::class.':VerificarCamposFormUser')->add(\AuthUser::class.':VerificarUsuarioDup');//->add(\Imagen::class.':SubirImagenUsuario')->add(\AuthUser::class.':VerificarArchivo');
+    $this->post('/alta', \UserApi::class .':AltaUsuarioApi')
+                ->add(\Imagen::class.':SubirImagenUsuario')
+                ->add(\AuthUser::class.':VerificarArchivo')
+                ->add(\AuthUser::class.':VerificarUsuarioDup')
+                ->add(\AuthUser::class.':VerificarCamposFormUser');
+
+
+
     $this->get('/cantidadOperaciones',\OperationApi::class . ':QOperationUserApi');
 
-});//->add(\AuthUser::class.':admin');
+})->add(\AuthUser::class.':admin');
 
 
 
-$app->post('/login',\UserApi::class . ':LoginUserApi')->add(\AuthUser::class.':login');
+$app->post('/login',\UserApi::class . ':LoginUserApi')->add(\AuthUser::class.':VerificarFormLogin')->add(\AuthUser::class.':login');
 $app->get('/logout',\UserApi::class  .':LogoutUserApi')->add(\AuthUser::class.':users');
 
 
