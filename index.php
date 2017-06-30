@@ -62,10 +62,11 @@ $this->get('/listaCocheras', function (Request $request, Response $response) {
 
 });
 $app->get('/a',\ParkingApi::class . ':LugarNuncaUtilizadoApi');
+$app->group('/operaciones', function () {
+    $this->get('/listaroperaciones',\OperationApi::class . ':ListOperationApi');
+    $this->get('/cantidadoperacionesUsuarios',\OperationApi::class . ':ListOperationUserApi');
 
-$app->get('/operaciones/listaroperaciones',\OperationApi::class . ':ListOperationApi')->add(\AuthUser::class.':admin');
-
-
+})->add(\AuthUser::class.':admin');
 
 
 
