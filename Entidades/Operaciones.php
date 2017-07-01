@@ -23,7 +23,10 @@ class Operacion{
     }
     function IniciarOperacion(){
             $objDB = AccesoDatos::DameUnObjetoAcceso();
-		    $consulta = $objDB->RetornarConsulta("INSERT INTO `operaciones` (`idUser`,`patente`, `idCochera`,`entrada`) VALUES (:IdUser, :Patente, :IdCochera,NOW())");
+                    date_default_timezone_set('America/Argentina/Buenos_Aires');
+
+            $date=date('Y-m-d H:i:s');
+		    $consulta = $objDB->RetornarConsulta("INSERT INTO `operaciones` (`idUser`,`patente`, `idCochera`,`entrada`) VALUES (:IdUser, :Patente, :IdCochera,STR_TO_DATE('".$date."',GET_FORMAT(DATETIME,'ISO')))");
 		    $consulta->bindValue(':IdUser',$this->idUser, PDO::PARAM_INT);
             $consulta->bindValue(':Patente',$this->patente, PDO::PARAM_STR);
             $consulta->bindValue(':IdCochera',$this->idCochera, PDO::PARAM_INT);
@@ -31,12 +34,8 @@ class Operacion{
         }
     static function FinalizarOperacion($patente){
             $objDB = AccesoDatos::DameUnObjetoAcceso();
-		    $consulta = $objDB->RetornarConsulta("UPDATE `operaciones` SET `salida`=NOW(), `pago`=(
-                IF(ROUND(TIMESTAMPDIFF(MINUTE, operaciones.entrada, operaciones.salida)/60,1)< 12,
-                    ROUND(TIMESTAMPDIFF(MINUTE, operaciones.entrada, operaciones.salida)/60,1)*(SELECT valor FROM tarifas WHERE tiempo='hora'),
-                IF (ROUND(TIMESTAMPDIFF(MINUTE, operaciones.entrada, operaciones.salida)/60,1) >= 12 && ROUND(TIMESTAMPDIFF(MINUTE, operaciones.entrada, operaciones.salida)/60,1) <= 24,
-                    (SELECT valor FROM tarifas WHERE tiempo='mediaEstadia'),(SELECT valor FROM tarifas WHERE tiempo='estadiaCompleta'))
-                 ))
+            $salida = self::CalcularCosto($patente);
+		    $consulta = $objDB->RetornarConsulta("UPDATE `operaciones` SET `salida`=STR_TO_DATE('".$salida['date']."',GET_FORMAT(DATETIME,'ISO')), `pago`=".$salida['pago']."
             WHERE salida is NULL AND patente = :Patente");
             $consulta->bindValue(':Patente',$patente, PDO::PARAM_STR);
             $consulta->execute();
@@ -46,6 +45,41 @@ class Operacion{
             return $consulta->fetchAll(PDO::FETCH_OBJ);
         }
 
+    public function CalcularCosto($patente){
+        date_default_timezone_set('America/Argentina/Buenos_Aires');
+        $date=date('Y-m-d H:i:s');
+        $operacion = self::BuscarOperacionActiva($patente)[0];
+        $entrada = new DateTime($operacion->entrada);
+        $salida = new DateTime($date);
+        $interval = $entrada->diff($salida);
+        $estadia=$media=$hora=$minutos=0;
+        if($interval->format('%a') > 0)
+            $estadia = $interval->format('%a')*110;
+        if($interval->format('%H')>=12)
+            $media = 70;
+        if($interval->format('%H')>=0 && $interval->format('%H')<12)
+        {
+            if($interval->format('%H')>=1)
+                $minutos = (int)($interval->format('%I')/60 *10);
+            if($interval->format('%H')==0)
+                $hora = 10;
+            else
+                $hora = $interval->format('%H')*10;
+        }
+        return array('pago'=>$estadia+$media+$hora+$minutos,'date'=>$date);
+
+
+    }
+/*
+(
+                IF(ROUND(TIMESTAMPDIFF(MINUTE, operaciones.entrada, operaciones.salida)/60,1)< 12,
+                    ROUND(TIMESTAMPDIFF(MINUTE, operaciones.entrada, operaciones.salida)/60,1)*(SELECT valor FROM tarifas WHERE tiempo='hora'),
+                IF (ROUND(TIMESTAMPDIFF(MINUTE, operaciones.entrada, operaciones.salida)/60,1) >= 12 && ROUND(TIMESTAMPDIFF(MINUTE, operaciones.entrada, operaciones.salida)/60,1) <= 24,
+                    (SELECT valor FROM tarifas WHERE tiempo='mediaEstadia'),(SELECT valor FROM tarifas WHERE tiempo='estadiaCompleta'))
+                 ))
+
+
+*/
 
 
 
