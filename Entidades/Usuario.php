@@ -45,7 +45,8 @@
                 $consulta->bindValue(':Estado',$this->estado, PDO::PARAM_STR);
                 $consulta->bindValue(':Admin',$this->admin, PDO::PARAM_STR);
                  $consulta->bindValue(':pathFoto',$this->pathFoto, PDO::PARAM_STR);
-                return $consulta->execute();       
+                return $consulta->execute();  
+
         }
         /*
         *   modifica el estado del usuario, habilitado o suspendido.
@@ -70,10 +71,10 @@
             if($from !=null && $to != null)
             {
                 if($userId == 0)
-                    $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,' ' as password,estado,admin,turno,log.entrada,log.salida FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id AND log.entrada BETWEEN  '".$from."'  AND '".$to."'");
+                    $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,estado,admin,turno,log.entrada,log.salida FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id AND log.entrada BETWEEN  '".$from."'  AND '".$to."'");
 		        else
                 {
-                    $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,' ' as password,estado,admin,turno,log.entrada,log.salida FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id AND usuarios.id=:Id AND log.entrada BETWEEN  '".$from."'  AND '".$to."'");
+                    $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,estado,admin,turno,log.entrada,log.salida FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id AND usuarios.id=:Id AND log.entrada BETWEEN  '".$from."'  AND '".$to."'");
                     $consulta->bindValue(':Id',$userId, PDO::PARAM_INT);
                 }
                 //$consulta->bindValue(':from',$from, PDO::PARAM_STR);
@@ -83,26 +84,26 @@
             {
                 if($userId == 0)
                 {
-                    $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,' ' as password,estado,admin,turno,log.entrada,log.salida FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id AND log.entrada LIKE '%".$from."%'");
+                    $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,estado,admin,turno,log.entrada,log.salida FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id AND log.entrada LIKE '%".$from."%'");
                     $consulta->bindValue(':dFrom',$from, PDO::PARAM_STR);
                 }
                 else
                 {
-                    $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,' ' as password,estado,admin,turno,log.entrada,log.salida FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id AND usuarios.id=:Id AND log.entrada LIKE '%".$from."%'");
+                    $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,estado,admin,turno,log.entrada,log.salida FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id AND usuarios.id=:Id AND log.entrada LIKE '%".$from."%'");
                     $consulta->bindValue(':Id',$userId, PDO::PARAM_INT);
                     $consulta->bindValue(':dFrom',$from, PDO::PARAM_STR);
                 }
             }
             elseif($userId!=0)
             {
-                $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,' ' as password,estado,admin,turno,log.entrada,log.salida FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id AND usuarios.id=:Id");
+                $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,estado,admin,turno,log.entrada,log.salida FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id AND usuarios.id=:Id");
                 $consulta->bindValue(':Id',$userId, PDO::PARAM_INT);
 
             }
             else
-                $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,' ' as password,estado,admin,turno,log.entrada,log.salida FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id  ORDER BY usuarios.id");
+                $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,estado,admin,turno,log.entrada,log.salida FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id  ORDER BY usuarios.id");
         $consulta->execute();
-        return $consulta->fetchAll(PDO::FETCH_CLASS,"usuario");
+        return $consulta->fetchAll(PDO::FETCH_OBJ);
         }
         /*
         *   Borra un usuario por su id.
@@ -147,6 +148,12 @@
             $consulta->execute();
             return $consulta->fetchAll(PDO::FETCH_CLASS,"usuario");
         }
+        static function UltimoUsuarioRegistrado(){//BORRar
+            $objDB = AccesoDatos::DameUnObjetoAcceso();
+		    $consulta = $objDB->RetornarConsulta("SELECT mail,nombre,apellido,' ' as password,estado,turno,admin,id,pathFoto FROM usuarios WHERE id=(SELECT MAX(id) FROM usuarios)");
+            $consulta->execute();
+            return $consulta->fetchAll(PDO::FETCH_CLASS,"usuario");
+        }
         /*
         *   Realiza login de usuario, registra movimiento en base de datos.
         *   return usuario si inicio correctamente, false si no lo hizo.
@@ -187,6 +194,7 @@
             return false;
             
         }
+
 
 
 
