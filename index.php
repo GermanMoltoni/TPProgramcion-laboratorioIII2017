@@ -71,11 +71,13 @@ $app->group('/operaciones', function () {
 
 })->add(\AuthUser::class.':admin');
 
-
-
-$app->get('/a',function (Request $request, Response $response) {
-    return $response->withJson(UserApi::UltimoUsuarioRegistrado());
+$app->get('/estacionamiento/listaEstadisticaCocheras', function (Request $request, Response $response) {
+    return $response->withJson(Piso::EstadisticaCocheras('nunca'));
 });
+
+
+$app->get('/a',\ParkingApi::class.':LugarNuncaUtilizadoApi');
+
 
 
 
@@ -100,9 +102,6 @@ $app->get('/', function (Request $request, Response $response) {
 
 
 
-$app->get('/estacionamiento/listaEstadisticaCocheras', function (Request $request, Response $response) {
-    return $response->withJson(Piso::EstadisticaCocheras('nunca'));
-});
 
 
 $app->run();
