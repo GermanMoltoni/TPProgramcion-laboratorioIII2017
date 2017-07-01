@@ -43,7 +43,7 @@ class Operacion{
             $consulta = $objDB->RetornarConsulta("SELECT autos.patente,autos.color,autos.marca,idCochera,entrada,salida,pago,ROUND(TIMESTAMPDIFF(MINUTE, operaciones.entrada, operaciones.salida)/60,1) as tiempo FROM `operaciones`,autos where autos.patente=operaciones.patente and operaciones.patente= :Patente ORDER BY id DESC LIMIT 1");
             $consulta->bindValue(':Patente',$patente, PDO::PARAM_STR);
             $consulta->execute();
-            return ($consulta->fetchAll());
+            return $consulta->fetchAll(PDO::FETCH_OBJ);
         }
 
 
