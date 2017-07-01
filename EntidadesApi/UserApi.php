@@ -46,20 +46,19 @@ class UserApi extends Usuario{
     }
     public static function DownUserApi($request, $response, $args){
         $id = $request->getAttribute('id'); 
-        $id = filter_var($id, FILTER_SANITIZE_STRING);
         if(Usuario::BorrarUsuario($id))
-            return $response->withJson(Usuario::ListarUsuarios());
+            return $response->withJson(array('msg'=>'Usuario Borrado Correctamente'),200);
         else
-            return $response->withJson(false);
+            return $response->withJson(array('error'=>'No se pudo borrar el usuario'),201);
     }
 
     public static function SuspenderUserApi($request, $response, $args) {
             $id = $request->getAttribute('id'); 
             $id = filter_var($id, FILTER_SANITIZE_STRING);
             if(Usuario::ModificarEstadoUsuario($id,0))
-                return $response->withJson(Usuario::ListarUsuarios());
+                return $response->withJson(array('msg'=>'Usuario Suspendido'),200);
             else
-                return $response->withJson(false);
+                return $response->withJson(array('error'=>'No se pudo Suspender el usuario'),201);
     }
 
     
@@ -68,17 +67,24 @@ class UserApi extends Usuario{
             $id = $request->getAttribute('id'); 
             $id = filter_var($id, FILTER_SANITIZE_STRING);
             if(Usuario::ModificarEstadoUsuario($id,1))
-                return $response->withJson(Usuario::ListarUsuarios());
+                return $response->withJson(array('msg'=>'Usuario Habilitado'),200);
             else
-                return $response->withJson(false);
+                return $response->withJson(array('error'=>'No se pudo Habilitar el usuario'),201);
     }
 
     public static function AltaUsuarioApi($request, $response, $args) {
         $user_data = $request->getAttribute('user');
         $path = $request->getAttribute('pathFoto');
         $user = new Usuario($user_data['mail'],$user_data['nombre'],$user_data['apellido'],$user_data['password'],$user_data['estado'],$user_data['turno'],$user_data['admin'],$path);
-        if(!$user->CrearUsuario())
-            return $response->withJson(array('error'=>'No se pudo crear el usuario'));
+        $user->CrearUsuario();
+        $user = Usuario::BuscarUsuarioPorMail($user_data['mail']);
+        if(count($user) != 0)
+        {
+            $user=$user[0];
+            return $response->withJson(array('mail'=>$user->mail,'nombre'=>$user->nombre,'apellido'=>$user->apellido,'id'=>$user->id,'admin'=>$user->admin,'estado'=>$user->estado,'turno'=>$user->turno,'pathFoto'=>$user->pathFoto));
+        }
+        return $response->withJson(array('error'=>'No se pudo crear el usuario'));
+        
     }
 
 
