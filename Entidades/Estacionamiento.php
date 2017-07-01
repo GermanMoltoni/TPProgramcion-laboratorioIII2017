@@ -52,6 +52,7 @@ class Estacionamiento{
     *
     */
     static function RetirarAuto($patente){
+        
         if(Operacion::BuscarOperacionActiva($patente) !=false)
             return Operacion::FinalizarOperacion($patente);
         else
