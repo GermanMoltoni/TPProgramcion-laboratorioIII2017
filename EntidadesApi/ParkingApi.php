@@ -6,13 +6,8 @@ require './vendor/autoload.php';
 
 class ParkingApi extends Estacionamiento{
     public static function ParkCarApi($request, $response, $args) {
-        $data = $request->getParsedBody();
-        $user_data=array();
-        $user_data['patente'] = filter_var($data['patente'], FILTER_SANITIZE_STRING);
-        $user_data['marca'] = filter_var($data['marca'], FILTER_SANITIZE_STRING);
-        $user_data['color'] = filter_var($data['color'], FILTER_SANITIZE_STRING); 
-        $user_data['especial'] = filter_var($data['especial'], FILTER_SANITIZE_STRING);
-        $auto = new Auto($user_data['patente'],$user_data['marca'],$user_data['color'],$user_data['especial']);
+        $vehiculo = $request->getAttribute('vehiculo');
+        $auto = new Auto($vehiculo['patente'],$vehiculo['marca'],$vehiculo['color'],$vehiculo['especial']);
         return $response->withJson(parent::Estacionar($auto,1));
     }
     public static function RemoveCarApi($request, $response, $args) {
