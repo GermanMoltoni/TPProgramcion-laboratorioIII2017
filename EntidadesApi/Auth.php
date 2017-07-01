@@ -6,7 +6,7 @@ class AuthUser{
 
 public static function VerificarCamposFormUser($request, $response, $next){
         $data = $request->getParsedBody();
-        if(!isset($data['mail'],$data['nombre'],$data['apellido'],$data['turno'],$data['admin'],$data['estado'],$data['password']))
+        if(!isset($data['mail'],$data['nombre'],$data['apellido'],$data['admin'],$data['turno'],$data['estado'],$data['password']))
             return $response->withJson(array('error'=>'Faltan Datos'));
         $user_data=array();
         $user_data['mail'] = filter_var($data['mail'], FILTER_SANITIZE_STRING);
@@ -26,6 +26,17 @@ public static function VerificarFormLogin($request, $response, $next){
         $user_data['mail'] = filter_var($data['mail'], FILTER_SANITIZE_STRING);
         $user_data['password'] = filter_var($data['password'], FILTER_SANITIZE_STRING);
         return $next($request->withAttribute('user',$user_data), $response);
+}
+public static function VerificarFormIngreso($request, $response, $next){
+        $data = $request->getParsedBody();
+        if(!isset($data['patente'],$data['marca'],$data['color'],$data['especial']))
+            return $response->withJson(array('error'=>'Faltan Datos'));
+        $vehiculo=array();
+        $vehiculo['patente'] = filter_var($data['patente'], FILTER_SANITIZE_STRING);
+        $vehiculo['marca'] = filter_var($data['marca'], FILTER_SANITIZE_STRING);
+        $vehiculo['color'] = filter_var($data['color'], FILTER_SANITIZE_STRING); 
+        $vehiculo['especial'] = filter_var($data['especial'], FILTER_SANITIZE_STRING);
+        return $next($request->withAttribute('vehiculo',$vehiculo), $response);
 }
 
 
@@ -102,11 +113,18 @@ public function users($request, $response, $next) {
    }
    public function verificarUsuario($request, $response, $next) {
         $data = $request->getParsedBody();
-        $id = filter_var($data['id'], FILTER_SANITIZE_STRING);
-        $user = Usuario::BuscarUsuario($id);
+        if(isset($data['id']))
+            $id = filter_var($data['id'], FILTER_SANITIZE_STRING);
+        elseif($request->getParam('id') != null){
+            $id = filter_var($request->getParam('id'), FILTER_SANITIZE_STRING);
+        }
+        else
+            return $response->withJson(array('error'=>'Dato incorrecto'),201);
+        $user = Usuario::BuscarUsuarioPorId($id);
         if(count($user) == 0)
-            return $response->withJson(array('error'=>'Usuario no existe'),201);   
-        return $next($request,$response);
+            return $response->withJson(array('error'=>'Usuario no existe'),201); 
+        $user=$user[0];  
+        return $next($request->withAttribute('id',$user->id),$response);
 
    }
    static function VerificarArchivo($request, $response, $next){
