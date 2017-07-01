@@ -136,7 +136,7 @@
         static function BuscarUsuarioPorId($id)
         {
             $objDB = AccesoDatos::DameUnObjetoAcceso();
-		    $consulta = $objDB->RetornarConsulta("SELECT mail,nombre,apellido,password,estado,turno,admin,id,pathFoto FROM usuarios WHERE id = :Id");
+		    $consulta = $objDB->RetornarConsulta("SELECT mail,nombre,apellido,password,estado,turno,admin,id,pathFoto FROM usuarios WHERE id = :Id ");
 		    $consulta->bindValue(':Id',$id, PDO::PARAM_INT);
             $consulta->execute();
             return $consulta->fetchAll(PDO::FETCH_CLASS,"usuario");
