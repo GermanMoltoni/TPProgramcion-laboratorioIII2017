@@ -33,9 +33,16 @@ FALTA:
     Agregar lugar mas utilizado
                   menos utilizado   
                   nunca utilizado
+
+                cantidad operaciones usuario
         todos con FROM TO
 
     Revisar from to :   listaroperaciones cantidadoperacionesUsuarios listarLogs 
-   revisar ingreso;  VER DISCAPACITADO
-   agreso :VER FORMA DE DEVOLVER DATOS
-   VER::::: Tiempos de BD porque hostinger tiene hora diferente y como cobrar
+
+
+
+
+
+   revisar ingreso;  VER DISCAPACITADO ARREGLADO
+   agreso :VER FORMA DE DEVOLVER DATOS ARREGLADO
+   VER::::: Tiempos de BD porque hostinger tiene hora diferente y como cobrar LISTO
