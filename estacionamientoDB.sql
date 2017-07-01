@@ -1,13 +1,15 @@
 -- phpMyAdmin SQL Dump
--- version 4.6.5.2
+-- version 4.7.0
 -- https://www.phpmyadmin.net/
 --
--- Servidor: localhost
--- Tiempo de generación: 08-06-2017 a las 18:01:31
--- Versión del servidor: 10.1.21-MariaDB
--- Versión de PHP: 7.1.1
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 01-07-2017 a las 06:51:58
+-- Versión del servidor: 10.1.24-MariaDB
+-- Versión de PHP: 7.1.6
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -17,7 +19,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `estacionamientoDB`
+-- Base de datos: `estacionamientodb`
 --
 
 -- --------------------------------------------------------
@@ -32,6 +34,19 @@ CREATE TABLE `autos` (
   `marca` varchar(20) COLLATE utf8_spanish2_ci NOT NULL,
   `especial` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
+
+--
+-- Volcado de datos para la tabla `autos`
+--
+
+INSERT INTO `autos` (`patente`, `color`, `marca`, `especial`) VALUES
+('ab ', 'azul', 'peugeot', 0),
+('abc1 ', 'azul', 'peugeot', 1),
+('abc11 ', 'azul', 'peugeot', 1),
+('abc123', 'azul', 'peugeot', 0),
+('abc1231', 'azul', 'peugeot', 1),
+('abc1232', 'azul', 'peugeot', 1),
+('abc1233', 'azul', 'peugeot', 1);
 
 -- --------------------------------------------------------
 
@@ -51,8 +66,8 @@ CREATE TABLE `logusuarios` (
 --
 
 INSERT INTO `logusuarios` (`id`, `idUsuario`, `entrada`, `salida`) VALUES
-(1, 1, '2017-06-08 12:59:44', NULL),
-(2, 1, '2017-06-08 13:00:54', NULL);
+(1, 1, '2017-07-01 00:43:26', '2017-07-01 00:44:49'),
+(2, 1, '2017-07-01 00:45:28', '2017-07-01 00:46:03');
 
 -- --------------------------------------------------------
 
@@ -69,6 +84,19 @@ CREATE TABLE `operaciones` (
   `salida` datetime DEFAULT NULL,
   `pago` float DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
+
+--
+-- Volcado de datos para la tabla `operaciones`
+--
+
+INSERT INTO `operaciones` (`id`, `idUser`, `patente`, `idCochera`, `entrada`, `salida`, `pago`) VALUES
+(1, 1, 'abc123', 105, '2017-07-01 01:31:30', NULL, NULL),
+(2, 1, 'abc1232', 103, '2017-07-01 01:31:53', NULL, NULL),
+(3, 1, 'abc1231', 100, '2017-07-01 01:32:07', '2017-07-01 01:34:29', 0),
+(4, 1, 'asd', 101, '2017-07-01 01:32:13', '2017-07-01 01:36:29', 1),
+(5, 1, 'abc1 ', 102, '2017-07-01 01:32:18', NULL, NULL),
+(6, 1, 'abc11 ', 200, '2017-07-01 01:32:21', NULL, NULL),
+(7, 1, 'ab ', 107, '2017-07-01 01:32:59', '2017-07-01 01:37:34', 1);
 
 -- --------------------------------------------------------
 
@@ -118,20 +146,27 @@ INSERT INTO `tarifas` (`tiempo`, `valor`) VALUES
 
 CREATE TABLE `usuarios` (
   `id` int(11) NOT NULL,
-  `nombre` varchar(20) COLLATE utf8_spanish2_ci NOT NULL,
-  `apellido` varchar(20) COLLATE utf8_spanish2_ci NOT NULL,
-  `password` varchar(20) COLLATE utf8_spanish2_ci NOT NULL,
+  `nombre` varchar(20) CHARACTER SET utf8 COLLATE utf8_spanish2_ci NOT NULL,
+  `apellido` varchar(20) CHARACTER SET utf8 COLLATE utf8_spanish2_ci NOT NULL,
+  `mail` varchar(30) CHARACTER SET utf8 COLLATE utf8_spanish2_ci NOT NULL,
+  `password` varchar(60) CHARACTER SET utf8 COLLATE utf8_spanish2_ci NOT NULL,
   `estado` tinyint(1) NOT NULL,
   `admin` tinyint(1) NOT NULL,
-  `turno` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
+  `turno` int(11) DEFAULT NULL,
+  `pathFoto` varchar(40) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `usuarios`
 --
 
-INSERT INTO `usuarios` (`id`, `nombre`, `apellido`, `password`, `estado`, `admin`, `turno`) VALUES
-(1, 'admin', 'admin', 'admin', 1, 1, 0);
+INSERT INTO `usuarios` (`id`, `nombre`, `apellido`, `mail`, `password`, `estado`, `admin`, `turno`, `pathFoto`) VALUES
+(1, 'German', 'Prueba', 'german@german', '123', 1, 1, NULL, NULL),
+(3, 'Diego', 'Lopez', 'diego@diego', '123', 1, 0, 1, NULL),
+(4, 'Ramiro', 'Lopez', 'ram@lopez', '123', 1, 0, 1, NULL),
+(5, 'Juan', 'Lopez', 'juan@juan', '123', 1, 0, 1, NULL),
+(6, 'facundo', 'Lopez', 'facundo@facundo', '123', 1, 0, 1, NULL),
+(7, 'sebastian', 'Lopez', 'sebastian@sm', '123', 1, 0, 1, 'sebastian@sm.png');
 
 --
 -- Índices para tablas volcadas
@@ -171,7 +206,8 @@ ALTER TABLE `tarifas`
 -- Indices de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `mail` (`mail`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -186,7 +222,13 @@ ALTER TABLE `logusuarios`
 -- AUTO_INCREMENT de la tabla `operaciones`
 --
 ALTER TABLE `operaciones`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+--
+-- AUTO_INCREMENT de la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;COMMIT;
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
