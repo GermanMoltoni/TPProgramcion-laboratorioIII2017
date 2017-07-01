@@ -60,9 +60,11 @@
             foreach($pisos as $piso)
             {
                 $lugaresOcupados = $piso->LugaresReservadosOcupados();
-                while($piso->cantidadReservados >= count($lugaresOcupados))
+                if($piso->cantidadReservados == 0)
+                    return false;
+                while($piso->cantidadReservados > count($lugaresOcupados))
                 {
-                    $cochera = rand(($piso->idPiso*100),($piso->idPiso*100)+$piso->cantidadReservados);
+                    $cochera = rand(($piso->idPiso*100),($piso->idPiso*100)+$piso->cantidadReservados-1);
                     if(!in_array($cochera,$lugaresOcupados))
                         return $cochera;
                 }
