@@ -1,0 +1,28 @@
+-Administrador
+
+
+GET /usuario/listar               Lista los datos de los usuarios           OK
+GET /usuario/listarLogs           Lista los logs, id,from,to(opcionales)    OK
+DELETE /usuario/baja/{id}     Baja de usurio por id OK
+PUT /usuario/suspender/{id}    Suspende un usuario por id   OK
+PUT /usuario/habilitar/{id}    Habilita un usuario por id   OK
+POST /usuario/alta                     Alta: nombre,apellido,mail,password,estado,admin,turno,foto(opcional)  OK
+
+
+GET /operaciones/listaroperaciones  Lista las operaciones de autos idUser,from,to(opcionales)   VER FROM TO en el mismo dia
+GET /operaciones/cantidadoperacionesUsuarios    Lista la cantidad de operaciones por usuarios     IMPLEMENTAR FROM,TO
+---------------------
+
+/login  OK
+/logout OK
+
+
+
+
+-Usuarios
+POST /estacionamiento/ingreso            Ingresa el auto: Color,marca,patente   VER DISCAPACITADO
+DELETE /estacionamiento/egreso/{patente}   Da costos al auto que sale   VER FORMA DE DEVOLVER DATOS
+GET /estacionamiento/listaCocheras  Lista Lugares libres y ocupados
+
+
+------------------------------
