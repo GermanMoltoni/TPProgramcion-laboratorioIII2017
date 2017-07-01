@@ -21,16 +21,16 @@ $app->add(function ($req, $res, $next) {
 });
 
 
-$app->group('/users', function () {
+$app->group('/usuario', function () {
     $this->get('/listar',\UserApi::class . ':ListUsersApi');
  
     $this->get('/listarLogs', \UserApi::class .':ListUsersLogApi');
 
-    $this->delete('/bajausuario/{id}', \UserApi::class .':DownUserApi')->add(\AuthUser::class.':verificarUsuario');
+    $this->delete('/baja', \UserApi::class .':DownUserApi')->add(\AuthUser::class.':verificarUsuario');
 
-    $this->put('/suspenderusuario/{id}', \UserApi::class .':SuspenderUserApi')->add(\AuthUser::class.':verificarUsuario');
+    $this->put('/suspender', \UserApi::class .':SuspenderUserApi')->add(\AuthUser::class.':verificarUsuario');
 
-    $this->put('/habilitarusuario/{id}', \UserApi::class .':HabilitarUserApi')->add(\AuthUser::class.':verificarUsuario');
+    $this->put('/habilitar', \UserApi::class .':HabilitarUserApi')->add(\AuthUser::class.':verificarUsuario');
 
     $this->post('/alta', \UserApi::class .':AltaUsuarioApi')
                 ->add(\Imagen::class.':SubirImagenUsuario')
@@ -40,7 +40,6 @@ $app->group('/users', function () {
 
 
 
-    $this->get('/cantidadOperaciones',\OperationApi::class . ':QOperationUserApi');
 
 })->add(\AuthUser::class.':admin');
 
@@ -51,27 +50,32 @@ $app->get('/logout',\UserApi::class  .':LogoutUserApi')->add(\AuthUser::class.':
 
 
 $app->group('/estacionamiento', function () {
-    $this->post('/ingreso',\ParkingApi::class . ': ParkCarApi');
-    $this->delete('/egreso/{patente}',\ParkingApi::class . ': RemoveCarApi');
+    $this->post('/ingreso',\ParkingApi::class . ':ParkCarApi')->add(\AuthUser::class.':VerificarFormIngreso');
+    $this->delete('/egreso/{patente}',\ParkingApi::class . ':RemoveCarApi');
 
-$this->get('/listaCocheras', function (Request $request, Response $response) {
-    return $response->withJson(array('pisos'=>Piso::BuscarPiso(),'ocupados'=>Operacion::ListarOperacionesActivas()));
-})->add(\AuthUser::class.':users');
+    $this->get('/listaCocheras', function (Request $request, Response $response) {
+        return $response->withJson(array('pisos'=>Piso::BuscarPiso(),'ocupados'=>Operacion::ListarOperacionesActivas()));
+
 
 
 
 });
-$app->get('/a',\ParkingApi::class . ':LugarNuncaUtilizadoApi');
+
+
+
+})->add(\AuthUser::class.':users');
+
 $app->group('/operaciones', function () {
-    $this->get('/listaroperaciones',\OperationApi::class . ':ListOperationApi');
+    $this->get('/listar',\OperationApi::class . ':ListOperationApi');
     $this->get('/cantidadoperacionesUsuarios',\OperationApi::class . ':ListOperationUserApi');
 
 })->add(\AuthUser::class.':admin');
 
 
 
-
-
+$app->get('/a',function (Request $request, Response $response) {
+    return $response->withJson(UserApi::UltimoUsuarioRegistrado());
+});
 
 
 
