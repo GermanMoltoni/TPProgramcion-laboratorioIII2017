@@ -25,29 +25,32 @@ class Operacion{
             $objDB = AccesoDatos::DameUnObjetoAcceso();
                     date_default_timezone_set('America/Argentina/Buenos_Aires');
 
-            $date=date('Y-m-d H:i:s');
+            $date=date('Y-m-d H:i');
 		    $consulta = $objDB->RetornarConsulta("INSERT INTO `operaciones` (`idUser`,`patente`, `idCochera`,`entrada`) VALUES (:IdUser, :Patente, :IdCochera,STR_TO_DATE('".$date."',GET_FORMAT(DATETIME,'ISO')))");
 		    $consulta->bindValue(':IdUser',$this->idUser, PDO::PARAM_INT);
             $consulta->bindValue(':Patente',$this->patente, PDO::PARAM_STR);
             $consulta->bindValue(':IdCochera',$this->idCochera, PDO::PARAM_INT);
             return $consulta->execute();
         }
+
     static function FinalizarOperacion($patente){
             $objDB = AccesoDatos::DameUnObjetoAcceso();
-            $salida = self::CalcularCosto($patente);
-		    $consulta = $objDB->RetornarConsulta("UPDATE `operaciones` SET `salida`=STR_TO_DATE('".$salida['date']."',GET_FORMAT(DATETIME,'ISO')), `pago`=".$salida['pago']."
+            $operacion = self::CalcularCosto($patente);
+		    $consulta = $objDB->RetornarConsulta("UPDATE `operaciones` SET `salida`=STR_TO_DATE('".$operacion->salida."',GET_FORMAT(DATETIME,'ISO')), `pago`=".$operacion->pago."
             WHERE salida is NULL AND patente = :Patente");
             $consulta->bindValue(':Patente',$patente, PDO::PARAM_STR);
             $consulta->execute();
-            $consulta = $objDB->RetornarConsulta("SELECT autos.patente,autos.color,autos.marca,idCochera,entrada,salida,pago,ROUND(TIMESTAMPDIFF(MINUTE, operaciones.entrada, operaciones.salida)/60,1) as tiempo FROM `operaciones`,autos where autos.patente=operaciones.patente and operaciones.patente= :Patente ORDER BY id DESC LIMIT 1");
-            $consulta->bindValue(':Patente',$patente, PDO::PARAM_STR);
-            $consulta->execute();
-            return $consulta->fetchAll(PDO::FETCH_OBJ);
+            return $operacion;
         }
-
+        /*
+    *   Calcula el costo del tiempo de estacionamiento del auto
+    *   patente: patente del auto estacionado
+    *   return operacion completa con datos
+    *
+    */
     public function CalcularCosto($patente){
         date_default_timezone_set('America/Argentina/Buenos_Aires');
-        $date=date('Y-m-d H:i:s');
+        $date=date('Y-m-d H:i');
         $operacion = self::BuscarOperacionActiva($patente)[0];
         $entrada = new DateTime($operacion->entrada);
         $salida = new DateTime($date);
@@ -59,27 +62,23 @@ class Operacion{
             $media = 70;
         if($interval->format('%H')>=0 && $interval->format('%H')<12)
         {
-            if($interval->format('%H')>=1)
-                $minutos = (int)($interval->format('%I')/60 *10);
+                
             if($interval->format('%H')==0)
                 $hora = 10;
-            else
+            elseif($interval->format('%H')>=1)
+            {
+                $minutos = (int)($interval->format('%I')/60 *10);
                 $hora = $interval->format('%H')*10;
+
+            }
+
         }
-        return array('pago'=>$estadia+$media+$hora+$minutos,'date'=>$date);
-
-
+        $operacion->salida = $date;
+        $operacion->pago = $estadia+$media+$hora+$minutos;
+        $operacion->tiempo = $interval->format('D: %a Hs: %H Min:%I ');
+        return $operacion;
     }
-/*
-(
-                IF(ROUND(TIMESTAMPDIFF(MINUTE, operaciones.entrada, operaciones.salida)/60,1)< 12,
-                    ROUND(TIMESTAMPDIFF(MINUTE, operaciones.entrada, operaciones.salida)/60,1)*(SELECT valor FROM tarifas WHERE tiempo='hora'),
-                IF (ROUND(TIMESTAMPDIFF(MINUTE, operaciones.entrada, operaciones.salida)/60,1) >= 12 && ROUND(TIMESTAMPDIFF(MINUTE, operaciones.entrada, operaciones.salida)/60,1) <= 24,
-                    (SELECT valor FROM tarifas WHERE tiempo='mediaEstadia'),(SELECT valor FROM tarifas WHERE tiempo='estadiaCompleta'))
-                 ))
 
-
-*/
 
 
 
@@ -96,14 +95,14 @@ class Operacion{
     static function ListarOperacionesActivas()
     {
             $objDB = AccesoDatos::DameUnObjetoAcceso();
-            $consulta = $objDB->RetornarConsulta("SELECT autos.patente,autos.color,autos.marca,idCochera,entrada FROM `operaciones`,autos WHERE salida is NULL AND operaciones.patente = autos.patente");
+            $consulta = $objDB->RetornarConsulta("SELECT autos.patente,autos.color,autos.marca,idCochera,entrada FROM `operaciones`,autos WHERE salida is NULL AND operaciones.patente = autos.patente ORDER BY idCochera");
             $consulta->execute();
             return $consulta->fetchAll(PDO::FETCH_CLASS) ;
     }
 
     function  BuscarOperacionActiva($patente){
         $objDB = AccesoDatos::DameUnObjetoAcceso();
-            $consulta = $objDB->RetornarConsulta("SELECT autos.patente,autos.color,autos.marca,idCochera,entrada FROM `operaciones`,autos WHERE salida is NULL AND operaciones.patente = :patente");
+            $consulta = $objDB->RetornarConsulta("SELECT autos.patente,autos.color,autos.marca,idCochera,entrada FROM `operaciones`,autos WHERE salida is NULL AND operaciones.patente = autos.patente AND autos.patente=:patente");
             		    $consulta->bindValue(':patente',$patente, PDO::PARAM_INT);
             $consulta->execute();
             return $consulta->fetchAll(PDO::FETCH_CLASS);
@@ -114,14 +113,27 @@ class Operacion{
         $objDB = AccesoDatos::DameUnObjetoAcceso();
             if($from !=null && $to != null)
             {
-                if($userId == 0)
-                    $consulta = $objDB->RetornarConsulta("SELECT idUser,patente,idCochera,entrada,salida,pago,TIMEDIFF(operaciones.salida, operaciones.entrada) as tiempo FROM `operaciones` WHERE entrada  BETWEEN  '".$from."'  AND '".$to."'");
+                if(self::checkDateOrDateTime($from) && self::checkDateOrDateTime($to))
+                {
+                    if($userId == 0)
+                       $consulta = $objDB->RetornarConsulta("SELECT idUser,patente,idCochera,entrada,salida,pago,TIMEDIFF(operaciones.salida, operaciones.entrada) as tiempo FROM `operaciones` WHERE cast(entrada as date)  BETWEEN  '".$from."' AND '".$to."'");
+                    else
+                    {
+                        $consulta = $objDB->RetornarConsulta("SELECT idUser,patente,idCochera,entrada,salida,pago,TIMEDIFF(operaciones.salida, operaciones.entrada) as tiempo FROM `operaciones` WHERE idUser=:Id AND cast(entrada as date)  BETWEEN  '".$from."'  AND '".$to."'");
+                        $consulta->bindValue(':Id',$userId, PDO::PARAM_INT);
+                    }
+                }
                 else
                 {
-                    $consulta = $objDB->RetornarConsulta("SELECT idUser,patente,idCochera,entrada,salida,pago,TIMEDIFF(operaciones.salida, operaciones.entrada) as tiempo FROM `operaciones` WHERE idUser=:Id AND entrada  BETWEEN  '".$from."'  AND '".$to."'");
-                    $consulta->bindValue(':Id',$userId, PDO::PARAM_INT);
-
+                    if($userId == 0)
+                       $consulta = $objDB->RetornarConsulta("SELECT idUser,patente,idCochera,entrada,salida,pago,TIMEDIFF(operaciones.salida, operaciones.entrada) as tiempo FROM `operaciones` WHERE cast(entrada as datetime)  BETWEEN  '".$from."' AND '".$to."'");
+                    else
+                    {
+                        $consulta = $objDB->RetornarConsulta("SELECT idUser,patente,idCochera,entrada,salida,pago,TIMEDIFF(operaciones.salida, operaciones.entrada) as tiempo FROM `operaciones` WHERE idUser=:Id AND cast(entrada as datetime)  BETWEEN  '".$from."'  AND '".$to."'");
+                        $consulta->bindValue(':Id',$userId, PDO::PARAM_INT);
+                    }
                 }
+                
             }
             elseif($from !=null)
             {
@@ -149,19 +161,54 @@ class Operacion{
     }
     static function CantidadOperacionesPorUsuario($userId=0,$from=null,$to=null){
         $objDB = AccesoDatos::DameUnObjetoAcceso();
-        if($userId == 0)
-            $consulta = $objDB->RetornarConsulta("SELECT idUser,COUNT(*) as cantidad FROM `operaciones`");
-        else
-        {
-            $consulta = $objDB->RetornarConsulta("SELECT idUser,COUNT(*) as cantidad FROM `operaciones`WHERE idUser=:Id");
-            $consulta->bindValue(':Id',$userId, PDO::PARAM_INT);
-        }
+        if($from !=null && $to != null)
+            {
+                if(self::checkDateOrDateTime($from) && self::checkDateOrDateTime($to))
+                {
+                    if($userId == 0)
+                        $consulta = $objDB->RetornarConsulta("SELECT idUser,COUNT(*) as cantidad FROM `operaciones` WHERE cast(entrada as date)  BETWEEN  '".$from."'  AND '".$to."' GROUP BY idUser");
+                    else{
+                        $consulta = $objDB->RetornarConsulta("SELECT idUser,COUNT(*) as cantidad FROM `operaciones` WHERE idUser=:Id AND cast(entrada as date)  BETWEEN  '".$from."'  AND '".$to."'");
+                        $consulta->bindValue(':Id',$userId, PDO::PARAM_INT);
+                    }
+                }
+                else
+                {
+                    if($userId == 0)
+                        $consulta = $objDB->RetornarConsulta("SELECT idUser,COUNT(*) as cantidad FROM `operaciones` WHERE cast(entrada as datetime)  BETWEEN  '".$from."'  AND '".$to."' GROUP BY idUser");
+                    else{
+                        $consulta = $objDB->RetornarConsulta("SELECT idUser,COUNT(*) as cantidad FROM `operaciones` WHERE idUser=:Id AND cast(entrada as datetime)  BETWEEN  '".$from."'  AND '".$to."'");
+                        $consulta->bindValue(':Id',$userId, PDO::PARAM_INT);
+                    }
+                }
+            }
+            elseif($from !=null)
+            {
+                if($userId == 0)
+                    $consulta = $objDB->RetornarConsulta("SELECT idUser,COUNT(*) as cantidad FROM `operaciones` WHERE  entrada   LIKE '%".$from."%' GROUP BY idUser");
+                else
+                {
+                    $consulta = $objDB->RetornarConsulta("SELECT idUser,COUNT(*) as cantidad FROM `operaciones` WHERE  idUser=:Id AND entrada LIKE '%".$from."%'");
+                    $consulta->bindValue(':Id',$userId, PDO::PARAM_INT);
+                }
+            }
+            elseif($userId!=0)
+            {
+                $consulta = $objDB->RetornarConsulta("SELECT idUser,COUNT(*) as cantidad FROM `operaciones` WHERE idUser=:Id ");
+                $consulta->bindValue(':Id',$userId, PDO::PARAM_INT);
+            }
+            else
+                $consulta = $objDB->RetornarConsulta("SELECT idUser,COUNT(*) as cantidad FROM `operaciones` GROUP BY idUser");
         $consulta->execute();
         return   $consulta->fetchAll(PDO::FETCH_OBJ);
     }
 
-
-
+private static function checkDateOrDateTime($var){
+    if(preg_match('/\d{4}-\d{2}-\d{2}$/',$var))
+        return 1;   
+    elseif(preg_match('/\d{4}-\d{2}-\d{2}\h\d{2}:\d{2}:\d{2}$/',$var))
+        return 0;   
+    
 }
 
-?>
+}
