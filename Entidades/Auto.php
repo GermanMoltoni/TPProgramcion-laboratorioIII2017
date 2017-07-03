@@ -23,18 +23,20 @@ class Auto{
     *
     */
      function CrearAuto(){
-            $objDB = AccesoDatos::DameUnObjetoAcceso();
-            $consulta = $objDB->RetornarConsulta("INSERT INTO `autos`(`patente`,`color`, `marca`,`especial`) VALUES (:Patente, :Color, :Marca,:Especial)");
-            $consulta->bindValue(':Patente',$this->patente, PDO::PARAM_STR);
-            $consulta->bindValue(':Color',$this->color, PDO::PARAM_STR);
-            $consulta->bindValue(':Especial',$this->especial, PDO::PARAM_STR);
-            $consulta->bindValue(':Marca',$this->marca, PDO::PARAM_STR);
-            return $consulta->execute();
+        if(count(self::BuscarAuto($this->patente)) !=0)
+            return false;
+        $objDB = AccesoDatos::DameUnObjetoAcceso();
+        $consulta = $objDB->RetornarConsulta("INSERT INTO `autos`(`patente`,`color`, `marca`,`especial`) VALUES (:Patente, :Color, :Marca,:Especial)");
+        $consulta->bindValue(':Patente',$this->patente, PDO::PARAM_STR);
+        $consulta->bindValue(':Color',$this->color, PDO::PARAM_STR);
+        $consulta->bindValue(':Especial',$this->especial, PDO::PARAM_STR);
+        $consulta->bindValue(':Marca',$this->marca, PDO::PARAM_STR);
+        return $consulta->execute();
         }
     /*
     *   Busca un auto en la base de datos a partir de la patente recibida
     *
-    *   return Auto en caso de encontrarlo, false si no se encuentra.
+    *   return Auto en caso de encontrarlo.
     */
     static function BuscarAuto($patente)
     {
