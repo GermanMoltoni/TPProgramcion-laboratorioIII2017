@@ -51,24 +51,25 @@ class Operacion{
     public function CalcularCosto($patente){
         date_default_timezone_set('America/Argentina/Buenos_Aires');
         $date=date('Y-m-d H:i');
+        $precios =self::getPrecios();
         $operacion = self::BuscarOperacionActiva($patente)[0];
         $entrada = new DateTime($operacion->entrada);
         $salida = new DateTime($date);
         $interval = $entrada->diff($salida);
         $estadia=$media=$hora=$minutos=0;
         if($interval->format('%a') > 0)
-            $estadia = $interval->format('%a')*110;
+            $estadia = $interval->format('%a')*$precios['completa'];
         if($interval->format('%H')>=12)
-            $media = 70;
+            $media = $precios['media'];
         if($interval->format('%H')>=0 && $interval->format('%H')<12)
         {
                 
             if($interval->format('%H')==0)
-                $hora = 10;
+                $hora = $precios['hora'];
             elseif($interval->format('%H')>=1)
             {
-                $minutos = (int)($interval->format('%I')/60 *10);
-                $hora = $interval->format('%H')*10;
+                $minutos = (int)($interval->format('%I')/60 *$precios['hora']);
+                $hora = $interval->format('%H')*$precios['hora'];
 
             }
 
@@ -79,7 +80,13 @@ class Operacion{
         return $operacion;
     }
 
-
+    private function getPrecios(){
+        $objDB = AccesoDatos::DameUnObjetoAcceso();
+    $consulta = $objDB->RetornarConsulta("SELECT valor FROM tarifas");
+    $consulta->execute();
+    $array = $consulta->fetchAll(PDO::FETCH_COLUMN,0);
+    return array('hora'=>$array[1],'media'=>$array[2],'completa'=>$array[0]);
+    }
 
 
 

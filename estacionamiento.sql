@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost
--- Tiempo de generación: 03-07-2017 a las 18:50:44
+-- Tiempo de generación: 03-07-2017 a las 20:41:33
 -- Versión del servidor: 10.1.24-MariaDB
 -- Versión de PHP: 7.1.6
 
@@ -35,6 +35,15 @@ CREATE TABLE `autos` (
   `especial` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
 
+--
+-- Volcado de datos para la tabla `autos`
+--
+
+INSERT INTO `autos` (`patente`, `color`, `marca`, `especial`) VALUES
+('abc123', 'Azul', 'Peugeot', 0),
+('abc1234', 'Azul', 'Peugeot', 0),
+('abc12345', 'Azul', 'Peugeot', 1);
+
 -- --------------------------------------------------------
 
 --
@@ -47,6 +56,15 @@ CREATE TABLE `logusuarios` (
   `entrada` datetime NOT NULL,
   `salida` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
+
+--
+-- Volcado de datos para la tabla `logusuarios`
+--
+
+INSERT INTO `logusuarios` (`id`, `idUsuario`, `entrada`, `salida`) VALUES
+(1, 1, '2017-07-01 13:55:00', '2017-07-02 14:06:00'),
+(2, 3, '2017-07-02 14:00:00', '2017-07-03 14:01:00'),
+(3, 1, '2017-07-03 14:01:00', '2017-07-03 14:06:00');
 
 -- --------------------------------------------------------
 
@@ -63,6 +81,15 @@ CREATE TABLE `operaciones` (
   `salida` datetime DEFAULT NULL,
   `pago` float DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish2_ci;
+
+--
+-- Volcado de datos para la tabla `operaciones`
+--
+
+INSERT INTO `operaciones` (`id`, `idUser`, `patente`, `idCochera`, `entrada`, `salida`, `pago`) VALUES
+(1, 2, 'abc123', 106, '2017-07-03 13:28:00', '2017-07-03 14:30:00', 10),
+(2, 1, 'abc1234', 106, '2017-07-03 14:32:00', '2017-07-03 15:36:00', 10),
+(3, 1, 'abc12345', 102, '2017-07-02 19:54:00', '2017-07-03 15:40:00', 90);
 
 -- --------------------------------------------------------
 
@@ -128,7 +155,8 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `nombre`, `apellido`, `mail`, `password`, `estado`, `admin`, `turno`, `pathFoto`) VALUES
-(1, 'German', 'Admin', 'admin@admin', 'password', 1, 1, NULL, NULL);
+(1, 'German', 'Admin', 'admin@admin', '123', 1, 1, NULL, NULL),
+(3, 'Juan', 'Lopez', 'juan@tarde', '123', 1, 0, 2, 'juan@tarde.png');
 
 --
 -- Índices para tablas volcadas
@@ -178,12 +206,12 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `logusuarios`
 --
 ALTER TABLE `logusuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT de la tabla `operaciones`
 --
 ALTER TABLE `operaciones`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT de la tabla `pisos`
 --
@@ -193,7 +221,7 @@ ALTER TABLE `pisos`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;COMMIT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
