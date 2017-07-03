@@ -4,7 +4,8 @@
 GET /usuario/listar               Lista los datos de los usuarios           OK
 GET /usuario/listarLogs           Lista los logs, id,from,to(opcionales)    OK  VER FROM TO en el mismo dia
 DELETE /usuario/baja/{id}     Baja de usurio por id OK
-PUT /usuario/suspender/{id}    Suspende un usuario por id   OK
+PUT /usuario/suspender/{id} Suspende un usuario por id   OK
+POST /usuario/modificar    
 PUT /usuario/habilitar/{id}    Habilita un usuario por id   OK
 POST /usuario/alta                     Alta: nombre,apellido,mail,password,estado,admin,turno,foto(opcional)  OK
 
@@ -23,26 +24,10 @@ GET /operaciones/cantidadoperacionesUsuarios    Lista la cantidad de operaciones
 POST /estacionamiento/ingreso            Ingresa el auto: Color,marca,patente   VER DISCAPACITADO
 DELETE /estacionamiento/egreso/{patente}   Da costos al auto que sale   VER FORMA DE DEVOLVER DATOS
 GET /estacionamiento/listaCocheras  Lista Lugares libres y ocupados
+GET /estacionamiento/lugares/menosUtilizado
+GET /estacionamiento/lugares/nuncaUtilizado
+GET /estacionamiento/lugares/masUtilizado
 
 
 ------------------------------
-
-
-
-FALTA:
-    Agregar lugar mas utilizado
-                  menos utilizado   
-                  nunca utilizado
-
-                cantidad operaciones usuario
-        todos con FROM TO
-
-    Revisar from to :   listaroperaciones cantidadoperacionesUsuarios listarLogs 
-
-
-
-
-
-   revisar ingreso;  VER DISCAPACITADO ARREGLADO
-   agreso :VER FORMA DE DEVOLVER DATOS ARREGLADO
-   VER::::: Tiempos de BD porque hostinger tiene hora diferente y como cobrar LISTO
+ 
