@@ -19,7 +19,6 @@
          function CrearPiso(){
             if(!Piso::BuscarPiso($this->numeroPiso))
             {
-                
                 $objDB = AccesoDatos::DameUnObjetoAcceso();
 		        $consulta = $objDB->RetornarConsulta("INSERT INTO `pisos` (`idPiso`,`cantidadCocheras`,`cantidadReservados`) VALUES (:idPiso, :cantCocheras, :reservados)");
 		        $consulta->bindValue(':cantCocheras',$this->cantidadCocherasEnPiso, PDO::PARAM_INT);
@@ -40,9 +39,11 @@
             foreach($pisos as $piso)
             {
                 $lugaresOcupados = $piso->LugaresOcupados();
-                while($piso->cantidadCocheras >= count($lugaresOcupados))
+
+                while($piso->cantidadCocheras > count($lugaresOcupados))
                 {
-                    $cochera = rand(($piso->idPiso*100)+$piso->cantidadReservados,($piso->idPiso*100)+$piso->cantidadCocheras);
+                     
+                    $cochera = rand(($piso->idPiso*100)+$piso->cantidadReservados,($piso->idPiso*100)+$piso->cantidadReservados+$piso->cantidadCocheras-1);
                     if(!in_array($cochera,$lugaresOcupados))
                         return $cochera;
                     
@@ -80,7 +81,7 @@
 
             $objDB = AccesoDatos::DameUnObjetoAcceso();
             $idPiso = '%'.$this->idPiso.'_%_%';
-            $consulta = $objDB->RetornarConsulta("SELECT `idCochera` FROM `operaciones` WHERE salida is NULL AND idCochera LIKE '$idPiso'");
+            $consulta = $objDB->RetornarConsulta("SELECT `idCochera` FROM `operaciones`,`autos`  WHERE salida is NULL AND idCochera LIKE '$idPiso' AND operaciones.patente = autos.patente AND autos.especial = false");
             $consulta->execute();
             return $consulta->fetchAll(PDO::FETCH_COLUMN,0);
         }
