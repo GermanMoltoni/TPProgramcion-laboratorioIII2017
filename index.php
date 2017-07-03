@@ -93,7 +93,6 @@ $app->group('/operaciones', function () {
 
 
 
-$app->get('/a', \UserApi::class . ':BuscarUsuarioPorMail');
 
 
 
