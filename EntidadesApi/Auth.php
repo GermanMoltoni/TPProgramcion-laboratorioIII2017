@@ -18,6 +18,22 @@ public static function VerificarCamposFormUser($request, $response, $next){
         $user_data['password'] = filter_var($data['password'], FILTER_SANITIZE_STRING);
         return $next($request->withAttribute('user',$user_data), $response);
 }
+public static function VerificarModifFormUser($request, $response, $next){
+        $data = $request->getParsedBody();
+        if(!isset($data['id'],$data['mail'],$data['nombre'],$data['apellido'],$data['admin'],$data['turno'],$data['estado'],$data['password']))
+            return $response->withJson(array('error'=>'Faltan Datos'));
+        $user_data=array();
+                $user_data['id'] = filter_var($data['id'], FILTER_SANITIZE_STRING);
+
+        $user_data['mail'] = filter_var($data['mail'], FILTER_SANITIZE_STRING);
+        $user_data['nombre'] = filter_var($data['nombre'], FILTER_SANITIZE_STRING);
+        $user_data['apellido'] = filter_var($data['apellido'], FILTER_SANITIZE_STRING);
+        $user_data['turno'] = filter_var($data['turno'], FILTER_SANITIZE_STRING);
+        $user_data['admin'] = filter_var($data['admin'], FILTER_SANITIZE_STRING);
+        $user_data['estado'] = filter_var($data['estado'], FILTER_SANITIZE_STRING);
+        $user_data['password'] = filter_var($data['password'], FILTER_SANITIZE_STRING);
+        return $next($request->withAttribute('user',$user_data), $response);
+}
 public static function VerificarFormLogin($request, $response, $next){
         $data = $request->getParsedBody();
         if(!isset($data['mail'],$data['password']))
@@ -49,7 +65,7 @@ public function admin($request, $response, $next) {
                         AuthJWT::CheckToken($request->getHeader('token')[0]);
                         $data = AuthJWT::GetData($request->getHeader('token')[0]);
                         if($data->admin)
-                                return $next($request, $response);
+                                return $next($request->withAttribute('idAdm',$data->id), $response);
                         else
                                 throw new Exception("El usuario no tiene permisos.");
                } 
@@ -87,7 +103,9 @@ public function users($request, $response, $next) {
                 if($request->getHeader('token') != null)
                 {
                         AuthJWT::CheckToken($request->getHeader('token')[0]);
-                        return $next($request, $response);
+                        $data = AuthJWT::GetData($request->getHeader('token')[0]);
+
+                        return $next($request->withAttribute('idUser',$data->id), $response);
                 }
                 else
                         throw new Exception("Acceso Denegado");
@@ -111,7 +129,18 @@ public function users($request, $response, $next) {
         return $next($request,$response);
 
    }
-   public function verificarUsuario($request, $response, $next) {
+   public static function verificarModificacionUsuario($request, $response, $next){
+        $user = Usuario::BuscarUsuarioPorMail($request->getAttribute('user')['mail']);
+        if(isset($user[0]))
+        {
+            $user=$user[0];
+            if($user->id != $request->getAttribute('id'))
+                return $response->withJson(array('error'=>'Otro usuario tiene el mismo mail'),201);
+        }
+        return $next($request,$response);
+
+    }
+   public function verificarUsuario($request, $response, $next){
         $data = $request->getParsedBody();
         if(isset($data['id']))
             $id = filter_var($data['id'], FILTER_SANITIZE_STRING);
@@ -134,6 +163,30 @@ public function users($request, $response, $next) {
         return $next($request->withAttribute('foto',$retorno),$response);  
     }
 
+    static function verificarFormTiempo($request, $response, $next){
+        $date = '/\d{4}-\d{2}-\d{2}$/';
+        $datetime =  '/\d{4}-\d{2}-\d{2}\h\d{2}:\d{2}:\d{2}$/';
+        $from=$to=$id=null;
+        $id = filter_var($request->getParam('id'), FILTER_SANITIZE_STRING);
+        $from = filter_var($request->getParam('from'), FILTER_SANITIZE_STRING);
+        $to = filter_var($request->getParam('to'), FILTER_SANITIZE_STRING);
+        if( $from ==null && $to == null)
+            return $next($request->withAttribute('datos',array('id'=>$id,'from'=>$from,'to'=>$to)),$response);
 
+
+        if( preg_match($date,$from) && preg_match($date,$to) ||preg_match($datetime,$from) && preg_match($datetime,$to))
+        {
+            $fromD = new DateTime($from);
+            $toD = new DateTime($to);
+            if($fromD > $toD)
+                return $response->withJson(array('error'=>'Rango de fecha incorrecto'),201); 
+            return $next($request->withAttribute('datos',array('id'=>$id,'from'=>$from,'to'=>$to)),$response);
+        }
+        elseif (preg_match($date,$from) || preg_match($datetime,$from)) 
+            return $next($request->withAttribute('datos',array('id'=>$id,'from'=>$from,'to'=>$to)),$response);
+
+        return $response->withJson(array('error'=>'Formato de fecha incorrecto'),201); 
+        
+    }
 }
 ?>
