@@ -1,14 +1,16 @@
 <?php
 
 class Archivo{
-    //private static $backUp='./Fotos/BackUpFotos/';
     private $nombreArchivo;
     private $pathFoto;
-function __construct($nombreArchivo=null,$pathFoto=null,$backUp=null){
+    private $pathAnterior;
+    private $backUp;
+function __construct($nombreArchivo=null,$pathFoto=null,$backUp=null,$pathAnterior=null){
     if($nombreArchivo!=null && $pathFoto!=null)
     {$this->nombreArchivo = $nombreArchivo;
     $this->pathFoto=$pathFoto;
     $this->backUp=$backUp;
+    $this->pathAnterior=$pathAnterior;
     }
 }
 
@@ -21,7 +23,13 @@ function __construct($nombreArchivo=null,$pathFoto=null,$backUp=null){
         $file->moveTo($this->pathFoto.'/'.$this->nombreArchivo);
         return $this->nombreArchivo;           
     }
-
+    public function ModificarArchivo(){
+        $ext =pathinfo($this->pathFoto.'/'.$this->pathAnterior,PATHINFO_EXTENSION);
+        $this->nombreArchivo=$this->nombreArchivo.'.'.$ext;
+        self::CopiarArchivo($this->pathFoto.'/'.$this->pathAnterior,$this->backUp.'/'.$this->nombreArchivo);
+        rename($this->pathFoto.'/'.$this->pathAnterior,$this->pathFoto.'/'.$this->nombreArchivo);
+        return $this->nombreArchivo;
+    }
     private  function VerificarDuplicado(){
         return in_array($this->nombreArchivo,scandir($this->pathFoto.'/'));
     }
