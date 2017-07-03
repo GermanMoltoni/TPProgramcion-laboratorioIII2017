@@ -13,39 +13,24 @@ class UserApi extends Usuario{
         return $response->withJson(array('user'=>$user,'token'=>AuthJWT::CrearToken($user)));
     }
 
-    public static function ListUsersApi($request, $response, $args){
+    public static function ListaUserApi($request, $response, $args){
         return $response->withJson(parent::ListarUsuarios());
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public static function LogoutUserApi($request, $response, $args){
-        $data = AuthJWT::GetData($request->getHeader('token')[0]);
-        $id = filter_var($data->id, FILTER_SANITIZE_STRING);
+
+        $id = filter_var($request->getAttribute('idUser'), FILTER_SANITIZE_STRING);
         return $response->withJson(parent::LogoutUsuario($id));
     }
-    public static function ListUsersLogApi($request, $response, $args){
-            $userId = filter_var($request->getParam('id'), FILTER_SANITIZE_STRING);
-            $from = filter_var($request->getParam('from'), FILTER_SANITIZE_STRING);
-            $to = filter_var($request->getParam('to'), FILTER_SANITIZE_STRING);
-            return $response->withJson(Usuario::ListarLogsUsuario($userId,$from,$to));
+    public static function ListaLogUserApi($request, $response, $args){
+            $datos = $request->getAttribute('datos');
+            return $response->withJson(Usuario::ListarLogsUsuario($datos['id'],$datos['from'],$datos['to']));
     }
-    public static function DownUserApi($request, $response, $args){
-        $id = $request->getAttribute('id'); 
+    public static function BajaUserApi($request, $response, $args){
+        $id = $request->getAttribute('id');
+        $idAdm = $request->getAttribute('idAdm');
+        if($id == $idAdm)
+            return $response->withJson(array('error'=>'No se puede eliminar usuario propio'),201);
         if(Usuario::BorrarUsuario($id))
             return $response->withJson(array('msg'=>'Usuario Borrado Correctamente'),200);
         else
@@ -83,9 +68,18 @@ class UserApi extends Usuario{
             $user=$user[0];
             return $response->withJson(array('mail'=>$user->mail,'nombre'=>$user->nombre,'apellido'=>$user->apellido,'id'=>$user->id,'admin'=>$user->admin,'estado'=>$user->estado,'turno'=>$user->turno,'pathFoto'=>$user->pathFoto));
         }
-        return $response->withJson(array('error'=>'No se pudo crear el usuario'));
+        return $response->withJson(array('error'=>'No se pudo crear el usuario'),201);
         
     }
+    public static function ModificarUsuarioApi($request, $response, $args){
+        $user_data = $request->getAttribute('user');
+        $id = $request->getAttribute('id');
+        $path = $request->getAttribute('pathFoto');
+        $user = new Usuario($user_data['mail'],$user_data['nombre'],$user_data['apellido'],$user_data['password'],$user_data['estado'],$user_data['turno'],$user_data['admin'],$path,$id);
+        $user->ModificarUsuario();
+        
+    }
+    
 
 
 }
