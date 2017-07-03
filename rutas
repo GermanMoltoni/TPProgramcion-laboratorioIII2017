@@ -1,17 +1,17 @@
 -Administrador
 
 
-GET /usuario/listar               Lista los datos de los usuarios           OK
-GET /usuario/listarLogs           Lista los logs, id,from,to(opcionales)    OK  VER FROM TO en el mismo dia
-DELETE /usuario/baja/{id}     Baja de usurio por id OK
-PUT /usuario/suspender/{id} Suspende un usuario por id   OK
+GET /usuario/listar               Lista los datos de los usuarios           
+GET /usuario/listarLogs           Lista los logs, id,from,to(opcionales)   
+DELETE /usuario/baja/{id}     Baja de usurio por id 
+PUT /usuario/suspender/{id} Suspende un usuario por id   
 POST /usuario/modificar    
-PUT /usuario/habilitar/{id}    Habilita un usuario por id   OK
-POST /usuario/alta                     Alta: nombre,apellido,mail,password,estado,admin,turno,foto(opcional)  OK
+PUT /usuario/habilitar/{id}    Habilita un usuario por id  
+POST /usuario/alta                     Alta: nombre,apellido,mail,password,estado,admin,turno,foto(opcional)  
 
 
-GET /operaciones/listaroperaciones  Lista las operaciones de autos idUser,from,to(opcionales)   VER FROM TO en el mismo dia
-GET /operaciones/cantidadoperacionesUsuarios    Lista la cantidad de operaciones por usuarios     IMPLEMENTAR id FROM,TO
+GET /operaciones/listaroperaciones  Lista las operaciones de autos idUser,from,to(opcionales)  
+GET /operaciones/cantidadoperacionesUsuarios    Lista la cantidad de operaciones por usuarios     
 ---------------------
 
 /login  OK
@@ -21,8 +21,8 @@ GET /operaciones/cantidadoperacionesUsuarios    Lista la cantidad de operaciones
 
 
 -Usuarios
-POST /estacionamiento/ingreso            Ingresa el auto: Color,marca,patente   VER DISCAPACITADO
-DELETE /estacionamiento/egreso/{patente}   Da costos al auto que sale   VER FORMA DE DEVOLVER DATOS
+POST /estacionamiento/ingreso            Ingresa el auto: Color,marca,patente  
+DELETE /estacionamiento/egreso/{patente}   Da costos al auto que sale   
 GET /estacionamiento/listaCocheras  Lista Lugares libres y ocupados
 GET /estacionamiento/lugares/menosUtilizado
 GET /estacionamiento/lugares/nuncaUtilizado
