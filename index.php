@@ -91,12 +91,6 @@ $app->group('/operaciones', function () {
 })->add(\AuthUser::class.':admin');
 
 
-
-
-
-
-
-
 $app->get('/', function (Request $request, Response $response) {
      return $response->withRedirect('./index.html'); 
   
