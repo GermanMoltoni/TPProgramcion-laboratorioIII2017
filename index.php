@@ -6,6 +6,7 @@ require "./EntidadesApi/ParkingApi.php";
 require "./EntidadesApi/OperationApi.php";
 require "./EntidadesApi/Auth.php";
 require "./EntidadesApi/Imagen.php";
+require "./EntidadesApi/Export.php";
 $config['displayErrorDetails'] = true;
  
 require './vendor/autoload.php';
@@ -96,19 +97,14 @@ $app->get('/', function (Request $request, Response $response) {
   
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+/*
+$app->get('/a', function (Request $request, Response $response) {
+    $usuarios = UserApi::ListarUsuarios();//OperationApi::ListarOperaciones();
+    $e = new Export($usuarios,"asdas");
+    $e->ToExcel();
+        return $response->withJson(range('a','zz'));
+  
+});*/
 
 
 $app->run();
