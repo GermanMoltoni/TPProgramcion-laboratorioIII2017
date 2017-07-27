@@ -1,5 +1,7 @@
 <?php
     require_once "./Entidades/AccesoDatos.php";
+    require_once './Entidades/AuthJWT.php';
+
     class Usuario
     {
         public $id;
@@ -183,11 +185,13 @@
             {
                 return false;
             }
+            $token = AuthJWT::CrearToken($user);
             $objDB = AccesoDatos::DameUnObjetoAcceso();
-            $consulta = $objDB->RetornarConsulta("INSERT INTO `logusuarios` (`idUsuario`,`entrada`) VALUES (:Id,STR_TO_DATE('".$date."',GET_FORMAT(DATETIME,'ISO')))");
+            $consulta = $objDB->RetornarConsulta("INSERT INTO `logusuarios` (`idUsuario`,`entrada`,`token`) VALUES (:Id,STR_TO_DATE('".$date."',GET_FORMAT(DATETIME,'ISO')),:Token)");
             $consulta->bindValue(':Id',$user->id, PDO::PARAM_INT);
+            $consulta->bindValue(':Token',$token, PDO::PARAM_STR);
             $consulta->execute();
-            return array('mail'=>$user->mail,'nombre'=>$user->nombre,'apellido'=>$user->apellido,'id'=>$user->id,'admin'=>$user->admin,'estado'=>$user->estado,'pathFoto'=>$user->pathFoto);
+            return array('user'=>array('mail'=>$user->mail,'nombre'=>$user->nombre,'apellido'=>$user->apellido,'id'=>$user->id,'admin'=>$user->admin,'estado'=>$user->estado),'token'=>$token);
         }
         /*
         *   Realiza logout de usuario a partir de su id y registra movimiento en base de datos.
@@ -196,15 +200,8 @@
         */
         static function LogOutUsuario($id)
         {
-            date_default_timezone_set('America/Argentina/Buenos_Aires');
-            $date=date('Y-m-d H:i');
             if(isset(self::BuscarUsuarioPorId($id)[0])){
-                $user = self::BuscarUsuarioPorId($id)[0];
-                $objDB = AccesoDatos::DameUnObjetoAcceso();
-                $consulta = $objDB->RetornarConsulta("UPDATE `logusuarios` SET `salida`= STR_TO_DATE('".$date."',GET_FORMAT(DATETIME,'ISO')) WHERE  salida is NULL AND idUsuario = :Id");
-                $consulta->bindValue(':Id',$user->id, PDO::PARAM_INT);
-                return $consulta->execute();
-
+                return true;
             }
             return false;
             

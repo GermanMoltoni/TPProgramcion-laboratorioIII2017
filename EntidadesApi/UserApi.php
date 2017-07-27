@@ -10,7 +10,7 @@ class UserApi extends Usuario{
         $user = parent::LoginUsuario($user_data['mail'],$user_data['password']);
         if($user == false)
             return $response->withJson(array('error'=>'Datos incorrectos'),201);
-        return $response->withJson(array('user'=>$user,'token'=>AuthJWT::CrearToken($user)));
+        return $response->withJson($user);
     }
 
     public static function ListaUserApi($request, $response, $args){
