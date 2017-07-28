@@ -12,6 +12,7 @@ class Imagen extends Archivo{
         $mail= filter_var($datos['mail'], FILTER_SANITIZE_STRING);
         $imagen = new Imagen($mail,'./Fotos','./Fotos/BackUp');
         $pathFoto = $imagen->CargarArchivo($request);
+        self::MarcaDeAgua('./Fotos/'.$pathFoto,'./utn_logo.jpg');
         return $next($request->withAttribute('pathFoto',$pathFoto),$response);
     }
     function ModificarImagenUsuario($request, $response, $next){
@@ -23,13 +24,23 @@ class Imagen extends Archivo{
         {
             $imagen = new Imagen($mail,'./Fotos','./Fotos/BackUp',$user->pathFoto);
             $pathFoto = $imagen->ModificarArchivo();
+            self::MarcaDeAgua('./Fotos/'.$pathFoto,'./utn_logo.jpg');
             return $next($request->withAttribute('pathFoto',$pathFoto),$response);
         }
         if(!$request->getAttribute('foto'))
             return $next($request,$response);
         $imagen = new Imagen($mail,'./Fotos','./Fotos/BackUp');
         $pathFoto = $imagen->CargarArchivo($request);
+        self::MarcaDeAgua('./Fotos/'.$pathFoto,'./utn_logo.jpg');
+
         return $next($request->withAttribute('pathFoto',$pathFoto),$response);
+    }
+
+    private static function MarcaDeAgua($pathImagen,$pathLogo){
+        $imagen = Image::fromFile($pathImagen);
+        $logo = Image::fromFile($pathLogo);
+        $logo->opacity(30);
+        $imagen->watermark($logo)->save();
     }
 
 

@@ -2,7 +2,7 @@
 require_once './Entidades/Usuario.php';
 require_once './Entidades/AuthJWT.php';
 require './vendor/autoload.php';
-require_once './EntidadesApi/Export.php';
+require_once './Entidades/Export.php';
 
 class UserApi extends Usuario{
    

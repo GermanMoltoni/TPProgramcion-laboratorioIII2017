@@ -1,7 +1,7 @@
 <?php
 require_once './Entidades/Operaciones.php';
 require './vendor/autoload.php';
-require_once './EntidadesApi/Export.php';
+require_once './Entidades/Export.php';
 
 class OperationApi extends Operacion{
     public static function ListOperationApi($request, $response, $args) {

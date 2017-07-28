@@ -96,14 +96,7 @@ $app->get('/', function (Request $request, Response $response) {
   
 });
 
-/*
-$app->get('/a', function (Request $request, Response $response) {
-    $usuarios = UserApi::ListarUsuarios();//OperationApi::ListarOperaciones();
-    $e = new Export($usuarios,"asdas");
-    $e->ToExcel();
-        return $response->withJson(range('a','zz'));
-  
-});*/
+ 
 
 
 $app->run();

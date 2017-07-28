@@ -34,7 +34,10 @@ function __construct($nombreArchivo=null,$pathFoto=null,$backUp=null,$pathAnteri
         return in_array($this->nombreArchivo,scandir($this->pathFoto.'/'));
     }
     private function CopiarDuplicado(){
-        return copy($this->pathFoto.'/'.$this->nombreArchivo,$this->backUp.'/'.$this->nombreArchivo);
+        date_default_timezone_set('America/Argentina/Buenos_Aires');
+
+            $date=date('Y-m-d_H:i');
+        return copy($this->pathFoto.'/'.$this->nombreArchivo,$this->backUp.'/'.$date.'_'.$this->nombreArchivo);
     }
     public static function CopiarArchivo($origen,$dest){
         return copy($origen,$dest);
