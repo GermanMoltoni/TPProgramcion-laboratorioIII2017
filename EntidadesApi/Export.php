@@ -12,7 +12,7 @@ class Export{
         $this->data = $d;
         $this->titulo = $t;
     }
-
+    
     private function ArmarExcel(){
         $objPHPExcel = new PHPExcel();
         $objPHPExcel->getProperties()->setCreator("Germán Moltoni");
@@ -34,7 +34,7 @@ class Export{
         $objWriter = new PHPExcel_Writer_Excel2007($this->excel,'Excel2007');
         ob_end_clean();
         //$objWriter->save('php://output');
-        $objWriter->save('./aa.xls');
+        $objWriter->save('./'.$this->titulo.'.xls');
     }
 
 
@@ -47,7 +47,7 @@ class Export{
         }
         $objWriter = PHPExcel_IOFactory::createWriter($this->excel, 'PDF');
         //$objWriter->save('php://output');
-        $objWriter->save('./test100.pdf');
+        $objWriter->save('./'.$this->titulo.'.pdf');
     }
 }
 ?>

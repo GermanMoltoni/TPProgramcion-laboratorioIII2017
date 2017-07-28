@@ -14,8 +14,8 @@
         public $admin;
         public $entrada;
         public $pathFoto;
-        public $salida;
-        public function __construct($mail=NULL,$nombre=NULL,$apellido=NULL,$password=NULL,$estado=NULL,$turno=NULL,$admin=NULL,$pathFoto=NULL,$id=NULL,$entrada=NULL,$salida=NULL){
+        public $token;
+        public function __construct($mail=NULL,$nombre=NULL,$apellido=NULL,$password=NULL,$estado=NULL,$turno=NULL,$admin=NULL,$pathFoto=NULL,$id=NULL,$entrada=NULL,$token=NULL){
             if($mail !== NULL && $nombre !==NULL && $apellido !==NULL && $password !==NULL && $admin !==NULL && $estado !==NULL){
                 $this->nombre = $nombre;
                 $this->apellido = $apellido;
@@ -26,7 +26,7 @@
                 $this->turno = $turno;
                 $this->admin = $admin;
                 $this->entrada = $entrada;
-                $this->salida = $salida;
+                $this->token = $token;
                 $this->pathFoto = $pathFoto;
              }
         }
@@ -77,20 +77,20 @@
                 if(preg_match('/\d{4}-\d{2}-\d{2}$/',$from) && preg_match('/\d{4}-\d{2}-\d{2}$/',$to))
                 {
                     if($userId == 0)
-                        $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,estado,admin,turno,log.entrada,log.salida FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id AND cast(log.entrada as date) BETWEEN   '".$from."'  AND  '".$to."'");
+                        $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,estado,admin,turno,log.entrada,log.token FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id AND cast(log.entrada as date) BETWEEN   '".$from."'  AND  '".$to."'");
                     else
                     {
-                        $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,estado,admin,turno,log.entrada,log.salida FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id AND usuarios.id=:Id AND cast(log.entrada as date) BETWEEN   '".$from."'  AND  '".$to."' ");
+                        $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,estado,admin,turno,log.entrada,log.token FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id AND usuarios.id=:Id AND cast(log.entrada as date) BETWEEN   '".$from."'  AND  '".$to."' ");
                         $consulta->bindValue(':Id',$userId, PDO::PARAM_INT);
                     }
                 }
                 else
                 {
                     if($userId == 0)
-                        $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,estado,admin,turno,log.entrada,log.salida FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id AND cast(log.entrada as datetime) BETWEEN   '".$from."'  AND  '".$to."'");
+                        $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,estado,admin,turno,log.entrada,log.token FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id AND cast(log.entrada as datetime) BETWEEN   '".$from."'  AND  '".$to."'");
                     else
                     {
-                        $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,estado,admin,turno,log.entrada,log.salida FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id AND usuarios.id=:Id AND cast(log.entrada as datetime) BETWEEN   '".$from."'  AND  '".$to."' ");
+                        $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,estado,admin,turno,log.entrada,log.token FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id AND usuarios.id=:Id AND cast(log.entrada as datetime) BETWEEN   '".$from."'  AND  '".$to."' ");
                         $consulta->bindValue(':Id',$userId, PDO::PARAM_INT);
                     }
                 }
@@ -101,24 +101,24 @@
             {
                 if($userId == 0)
                 {
-                    $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,estado,admin,turno,log.entrada,log.salida FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id AND log.entrada LIKE '%".$from."%'");
+                    $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,estado,admin,turno,log.entrada,log.token FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id AND log.entrada LIKE '%".$from."%'");
                     $consulta->bindValue(':dFrom',$from, PDO::PARAM_STR);
                 }
                 else
                 {
-                    $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,estado,admin,turno,log.entrada,log.salida FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id AND usuarios.id=:Id AND log.entrada LIKE '%".$from."%'");
+                    $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,estado,admin,turno,log.entrada,log.token FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id AND usuarios.id=:Id AND log.entrada LIKE '%".$from."%'");
                     $consulta->bindValue(':Id',$userId, PDO::PARAM_INT);
                     $consulta->bindValue(':dFrom',$from, PDO::PARAM_STR);
                 }
             }
             elseif($userId!=0)
             {
-                $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,estado,admin,turno,log.entrada,log.salida FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id AND usuarios.id=:Id");
+                $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,estado,admin,turno,log.entrada,log.token FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id AND usuarios.id=:Id");
                 $consulta->bindValue(':Id',$userId, PDO::PARAM_INT);
 
             }
             else
-                $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,estado,admin,turno,log.entrada,log.salida FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id  ORDER BY usuarios.id");
+                $consulta = $objDB->RetornarConsulta("SELECT usuarios.id,nombre,apellido,estado,admin,turno,log.entrada,log.token FROM usuarios, logusuarios AS log WHERE log.idUsuario=usuarios.id  ORDER BY usuarios.id");
         $consulta->execute();
         return $consulta->fetchAll(PDO::FETCH_OBJ);
         }

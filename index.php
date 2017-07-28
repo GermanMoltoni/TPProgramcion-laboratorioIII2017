@@ -6,7 +6,6 @@ require "./EntidadesApi/ParkingApi.php";
 require "./EntidadesApi/OperationApi.php";
 require "./EntidadesApi/Auth.php";
 require "./EntidadesApi/Imagen.php";
-require "./EntidadesApi/Export.php";
 $config['displayErrorDetails'] = true;
  
 require './vendor/autoload.php';

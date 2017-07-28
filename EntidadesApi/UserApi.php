@@ -2,6 +2,7 @@
 require_once './Entidades/Usuario.php';
 require_once './Entidades/AuthJWT.php';
 require './vendor/autoload.php';
+require_once './EntidadesApi/Export.php';
 
 class UserApi extends Usuario{
    
@@ -14,7 +15,17 @@ class UserApi extends Usuario{
     }
 
     public static function ListaUserApi($request, $response, $args){
-        return $response->withJson(parent::ListarUsuarios());
+        $export = filter_var($request->getParam('export'), FILTER_SANITIZE_STRING);
+        $lista = parent::ListarUsuarios();
+        if($export != null)
+        {
+            $file = new Export($lista,'Listado de Usuarios');
+            if($export == 'excel')
+                $file->ToExcel();
+            elseif($export == 'pdf')
+                $file->ToPDF();
+        }
+        return $response->withJson($lista);
     }
 
     public static function LogoutUserApi($request, $response, $args){
@@ -24,7 +35,17 @@ class UserApi extends Usuario{
     }
     public static function ListaLogUserApi($request, $response, $args){
             $datos = $request->getAttribute('datos');
-            return $response->withJson(Usuario::ListarLogsUsuario($datos['id'],$datos['from'],$datos['to']));
+            $export = filter_var($request->getParam('export'), FILTER_SANITIZE_STRING);
+            $lista = Usuario::ListarLogsUsuario($datos['id'],$datos['from'],$datos['to']);
+            if($export != null)
+            {
+                $file = new Export($lista,'Listado de logs');
+                if($export == 'excel')
+                    $file->ToExcel();
+                elseif($export == 'pdf')
+                    $file->ToPDF();
+            }
+            return $response->withJson($lista);
     }
     public static function BajaUserApi($request, $response, $args){
         $id = $request->getAttribute('id');
