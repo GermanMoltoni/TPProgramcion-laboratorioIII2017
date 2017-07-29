@@ -95,6 +95,8 @@ $app->group('/estadistica', function () {
         $this->get('/facturacion',\EstadisticaApi::class . ':FacturacionApi')
                 ->add(\AuthUser::class.':verificarFormTiempo');
         $this->get('/usococheras',\EstadisticaApi::class . ':UsoCocherasApi')
+                ->add(\AuthUser::class.':verificarFormTiempo');
+        $this->get('/vehiculos',\EstadisticaApi::class . ':ListadoVehiculosEstApi')
                 ->add(\AuthUser::class.':verificarFormTiempo');        
         $this->get('/promediofacturacionmensual',\EstadisticaApi::class . ':PromedioFacMensualApi');
         $this->get('/promedioautosmensual',\EstadisticaApi::class . ':PromedioAutosMensualApi');

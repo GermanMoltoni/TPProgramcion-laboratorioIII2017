@@ -30,18 +30,18 @@ class  Estadistica{
     public static function ListadoVehiculosEstacionados($from=null,$to=null){
         $objDB = AccesoDatos::DameUnObjetoAcceso();
         if($from != $to)
-            $consulta = $objDB->RetornarConsulta("SELECT COUNT(patente) as cantidad FROM operaciones WHERE salida is not null and patente IN (SELECT patente FROM `autos` WHERE especial=true) AND cast(entrada as date) BETWEEN  '".$from."' AND '".$to."' GROUP BY idCochera");
+            $consulta = $objDB->RetornarConsulta("SELECT DISTINCT patente FROM `operaciones` where  cast(entrada as date) BETWEEN  '".$from."' AND '".$to."'");
         elseif($from == $to)
-            $consulta = $objDB->RetornarConsulta("SELECT COUNT(patente) as cantidad FROM `operaciones` WHERE salida is not null and patente IN (SELECT patente FROM `autos` WHERE especial=true) AND entrada LIKE '%".$from."%' GROUP BY idCochera");
+            $consulta = $objDB->RetornarConsulta("SELECT DISTINCT patente FROM `operaciones` where entrada LIKE '%".$from."%' GROUP BY idCochera");
         $consulta->execute();
-        $vehiculosTotales = $consulta->fetchAll(PDO::FETCH_OBJ);
+        $vehiculosDistintos = count($consulta->fetchAll(PDO::FETCH_COLUMN));
         if($from != $to)
-            $consulta = $objDB->RetornarConsulta("SELECT idcochera as cochera,COUNT(idCochera) as cantidad FROM operaciones WHERE salida is not null and patente IN (SELECT patente FROM `autos` WHERE especial=false) AND cast(entrada as date) BETWEEN  '".$from."' AND '".$to."' GROUP BY idCochera");
+            $consulta = $objDB->RetornarConsulta("SELECT * FROM (SELECT count(patente) as cantidad,patente FROM `operaciones` where cast(`entrada` as date) BETWEEN  '".$from."' AND '".$to."' GROUP BY `patente`) as tabla WHERE tabla.cantidad > 1");
         elseif($from == $to)
-            $consulta = $objDB->RetornarConsulta("SELECT idcochera as cochera,COUNT(idCochera) as cantidad FROM `operaciones` WHERE salida is not null and patente IN (SELECT patente FROM `autos` WHERE especial=false) AND entrada LIKE '%".$from."%' GROUP BY idCochera");
+            $consulta = $objDB->RetornarConsulta("SELECT * FROM (SELECT count(patente) as cantidad,patente FROM `operaciones` where entrada like'%".$from."%'group by patente) as tabla WHERE tabla.cantidad > 1");
         $consulta->execute();
-        $comun = $consulta->fetchAll(PDO::FETCH_OBJ);
-        return array('especial'=>$especial,'comun'=>$comun);
+        $vehiculosRepetidos= $consulta->fetchAll(PDO::FETCH_OBJ);
+        return array('repetidos'=>$vehiculosRepetidos,'distintos'=>$vehiculosDistintos);
     }
 
     public static function PromedioFacturacionMensual($mes){
