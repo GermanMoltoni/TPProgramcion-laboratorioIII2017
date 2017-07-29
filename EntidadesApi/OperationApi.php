@@ -30,8 +30,8 @@ public static function ListOperationUserApi($request, $response, $args) {
     $from = filter_var($request->getParam('from'), FILTER_SANITIZE_STRING);
     $to = filter_var($request->getParam('to'), FILTER_SANITIZE_STRING);
     $operaciones = parent::CantidadOperacionesPorUsuario($userId,$from,$to);
-    if($operaciones[0]->idUser == null)
-        return $response->withJson(array('error'=>'No hay operaciones Cargadas'));
+    if(count($operaciones) == 0)
+        return $response->withJson(array('msg'=>'No hay operaciones Cargadas'));
     return $response->withJson($operaciones);
   
 }
