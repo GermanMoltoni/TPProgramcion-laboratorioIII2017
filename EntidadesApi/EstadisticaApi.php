@@ -18,8 +18,16 @@ public static function FacturacionApi($request, $response, $args) {
 public static function PromedioFacMensualApi($request, $response, $args) {
     $periodo = filter_var($request->getParam('periodo'), FILTER_SANITIZE_STRING);
     $op = parent::PromedioFacturacionMensual($periodo);
-    //if(count($op) == 0)
-      //  return $response->withJson(array('msg'=>'No hay operaciones Cargadas'));
+    if($op == 0)
+        return $response->withJson(array('msg'=>'No hay operaciones Cargadas'));
+    return $response->withJson(array('importe'=>$op));
+  
+}
+public static function PromedioAutosMensualApi($request, $response, $args) {
+    $periodo = filter_var($request->getParam('periodo'), FILTER_SANITIZE_STRING);
+    $op = parent::PromedioAutosMensual($periodo);
+    if($op == 0)
+        return $response->withJson(array('msg'=>'No hay operaciones Cargadas'));
     return $response->withJson(array('importe'=>$op));
   
 }

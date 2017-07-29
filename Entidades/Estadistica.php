@@ -19,4 +19,12 @@ class  Estadistica{
         $consulta->execute();
         return $consulta->fetch(PDO::FETCH_ASSOC)['importe']/$dias;
     }
+    public static function PromedioAutosMensual($mes){
+        $date = date_parse_from_format("Y-m",$mes);
+        $dias = cal_days_in_month (CAL_GREGORIAN,$date['month'],$date['year']);
+        $objDB = AccesoDatos::DameUnObjetoAcceso();
+        $consulta = $objDB->RetornarConsulta("SELECT COUNT(patente) AS autos   FROM `operaciones` WHERE  salida IS NOT NULL AND entrada LIKE '%".$mes."%'");
+        $consulta->execute();
+        return $consulta->fetch(PDO::FETCH_ASSOC)['autos']/$dias;
+    }
 }?>
