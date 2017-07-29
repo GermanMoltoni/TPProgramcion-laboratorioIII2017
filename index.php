@@ -6,6 +6,7 @@ require "./EntidadesApi/ParkingApi.php";
 require "./EntidadesApi/OperationApi.php";
 require "./EntidadesApi/Auth.php";
 require "./EntidadesApi/Imagen.php";
+require "./EntidadesApi/EstadisticaApi.php";
 $config['displayErrorDetails'] = true;
  
 require './vendor/autoload.php';
@@ -87,10 +88,19 @@ $app->group('/operaciones', function () {
                 ->add(\AuthUser::class.':verificarFormTiempo');
     $this->get('/operacionesUsuarios',\OperationApi::class . ':ListOperationUserApi')
                 ->add(\AuthUser::class.':verificarFormTiempo');
-
+    
 })->add(\AuthUser::class.':admin');
 
+$app->group('/estadistica', function () {
+        $this->get('/facturacion',\EstadisticaApi::class . ':FacturacionApi')
+                ->add(\AuthUser::class.':verificarFormTiempo');
+        $this->get('/promediofacturacionmensual',\EstadisticaApi::class . ':PromedioFacMensualApi')
+               ;
 
+
+
+                
+    })->add(\AuthUser::class.':admin');
 $app->get('/', function (Request $request, Response $response) {
      return $response->withRedirect('./index.html'); 
   

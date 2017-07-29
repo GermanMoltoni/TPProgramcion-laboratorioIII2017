@@ -18,17 +18,26 @@ class ParkingApi extends Estacionamiento{
     public static function LugarMasUtilizadoApi($request, $response, $args) {
         $from=$request->getParam('from');
         $to=$request->getParam('to');
-        return $response->withJson(parent::LugarMasUtilizado($from,$to));
+        $op = parent::LugarMasUtilizado($from,$to);
+        if(count($op) == 0 )
+            return $response->withJson(array('error'=>'No hay registro de datos en la fecha indicada'));
+        return $response->withJson($op);
     }
     public static function LugarMenosUtilizadoApi($request, $response, $args) {
-$from=$request->getParam('from');
+    $from=$request->getParam('from');
         $to=$request->getParam('to');
-        return $response->withJson(parent::LugarMenosUtilizado($from,$to));
+        $op = parent::LugarMenosUtilizado($from,$to);
+        if(count($op) == 0 )
+            return $response->withJson(array('error'=>'No hay registro de datos en la fecha indicada'));
+        return $response->withJson($op);
     }
     public static function LugarNuncaUtilizadoApi($request, $response, $args) {
 $from=$request->getParam('from');
         $to=$request->getParam('to');
-        return $response->withJson(parent::LugarNuncaUtilizado($from,$to));
+        $op = parent::LugarNuncaUtilizado($from,$to);
+        if(count($op) == 0 )
+            return $response->withJson(array('error'=>'No hay registro de datos en la fecha indicada'));
+        return $response->withJson($op);
     }
 }
 

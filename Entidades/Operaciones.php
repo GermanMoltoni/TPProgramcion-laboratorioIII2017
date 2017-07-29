@@ -115,6 +115,8 @@ class Operacion{
             return $consulta->fetchAll(PDO::FETCH_CLASS);
     }
 
+    
+    
     static function ListarOperaciones($userId=0,$from=null,$to=null)
     {
         $objDB = AccesoDatos::DameUnObjetoAcceso();

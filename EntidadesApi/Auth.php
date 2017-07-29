@@ -172,8 +172,6 @@ public function users($request, $response, $next) {
         $to = filter_var($request->getParam('to'), FILTER_SANITIZE_STRING);
         if( $from ==null && $to == null)
             return $next($request->withAttribute('datos',array('id'=>$id,'from'=>$from,'to'=>$to)),$response);
-
-
         if( preg_match($date,$from) && preg_match($date,$to) ||preg_match($datetime,$from) && preg_match($datetime,$to))
         {
             $fromD = new DateTime($from);
