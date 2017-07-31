@@ -218,6 +218,7 @@ class Gd extends AbstractLib implements LibInterface
      */
     public function resize($width, $height)
     {
+        
         $mode = ($this->getWidth() < $width) ? IMG_BILINEAR_FIXED : IMG_BICUBIC;
 
         if (($image = imagescale($this->image, $width, $height, $mode)) === false) {
