@@ -31,7 +31,7 @@ class Imagen extends Archivo{
             $imagen = new Imagen($mail,'./Fotos','./Fotos/BackUp',$user->pathFoto);
             $pathFoto = $imagen->ModificarArchivo();
             self::MarcaDeAgua('./Fotos/'.$pathFoto,'./utn_logo.jpg');
-            
+           
             return $next($request->withAttribute('pathFoto',$pathFoto),$response);
         }
         if(!$request->getAttribute('foto'))
