@@ -43,8 +43,11 @@ class Imagen extends Archivo{
             {
                 if($user[0]->pathFoto != null)
                     self::GetArchivo('./Fotos/'.$user[0]->pathFoto);
-
+                else
+                    return $response->withJson(array('msg'=>'No se encontro ninguna foto'));
             }
+            return $response->withJson(array('msg'=>'No se encontro usuario'));
+
         }    
             
         }

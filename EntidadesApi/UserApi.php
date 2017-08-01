@@ -98,7 +98,10 @@ class UserApi extends Usuario{
         $id = $request->getAttribute('id');
         $path = $request->getAttribute('pathFoto');
         $user = new Usuario($user_data['mail'],$user_data['nombre'],$user_data['apellido'],$user_data['password'],$user_data['estado'],$user_data['turno'],$user_data['admin'],$path,$id);
-        $user->ModificarUsuario();
+        if($user->ModificarUsuario())
+            return $response->withJson(array('error'=>'Modificado Correctamente'),200);
+        return $response->withJson(array('error'=>'No se pudo modificar el usuario'),201);
+
         
     }
     

@@ -174,8 +174,15 @@ public function users($request, $response, $next) {
             return $next($request->withAttribute('datos',array('id'=>$id,'from'=>$from,'to'=>$to)),$response);
         if( preg_match($date,$from) && preg_match($date,$to) ||preg_match($datetime,$from) && preg_match($datetime,$to))
         {
-            $fromD = new DateTime($from);
+
+             try{
+                $fromD = new DateTime($from);
             $toD = new DateTime($to);
+            }
+            catch(Exception $e){
+                return $response->withJson(array('error'=>'Fecha incorrecta'),201); 
+
+            }
             if($fromD > $toD)
                 return $response->withJson(array('error'=>'Rango de fecha incorrecto'),201); 
             return $next($request->withAttribute('datos',array('id'=>$id,'from'=>$from,'to'=>$to)),$response);
@@ -196,8 +203,15 @@ public function users($request, $response, $next) {
             return $response->withJson(array('error'=>'FaltanDatos'),201); 
         if( preg_match($date,$from) && preg_match($date,$to) ||preg_match($datetime,$from) && preg_match($datetime,$to))
         {
-            $fromD = new DateTime($from);
+            try{
+                $fromD = new DateTime($from);
             $toD = new DateTime($to);
+            }
+            catch(Exception $e){
+                return $response->withJson(array('error'=>'Fecha incorrecta'),201); 
+
+            }
+            
             if($fromD > $toD)
                 return $response->withJson(array('error'=>'Rango de fecha incorrecto'),201); 
             return $next($request->withAttribute('datos',array('from'=>$from,'to'=>$to)),$response);
