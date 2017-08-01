@@ -40,7 +40,11 @@ class Imagen extends Archivo{
         if($mail != null || $mail != ''){
             $user = UserApi::BuscarUsuarioPorMail($mail);
             if(count($user) != 0 )
-                self::GetArchivo('./Fotos'.$user->pathFoto);
+            {
+                if($user->pathFoto != null)
+                    self::GetArchivo('./Fotos'.$user->pathFoto);
+
+            }
         }    
             
         }
