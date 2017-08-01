@@ -98,7 +98,9 @@ function __construct($nombreArchivo=null,$pathFoto=null,$backUp=null,$pathAnteri
         return true;
         
     }
-
+    function GetArchivo($path){
+        $image = Image::fromFile($path)->show();
+    }
 
 
 

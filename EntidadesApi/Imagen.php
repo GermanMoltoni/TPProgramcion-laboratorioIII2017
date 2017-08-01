@@ -35,7 +35,15 @@ class Imagen extends Archivo{
         return $next($request->withAttribute('pathFoto',$pathFoto),$response);
     }
 
-    
+        function GetImagenMail($request, $response, $next){
+        $mail = filter_var($request->getParam('mail'), FILTER_SANITIZE_STRING);
+        if($mail != null || $mail != ''){
+            $user = UserApi::BuscarUsuarioPorMail($mail);
+            if(count($user) != 0 )
+                self::GetArchivo('./Fotos'.$user->pathFoto);
+        }    
+            
+        }
     
 
 
