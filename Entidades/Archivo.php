@@ -37,10 +37,10 @@ function __construct($nombreArchivo=null,$pathFoto=null,$backUp=null,$pathAnteri
     public function ModificarArchivo(){
         date_default_timezone_set('America/Argentina/Buenos_Aires');
 
-            $date=date('Y-m-d_H:i');
+            $d=date('Y-m-d_H:i');
         $ext =pathinfo($this->pathFoto.'/'.$this->pathAnterior,PATHINFO_EXTENSION);
-        $this->nombreArchivo=$this->nombreArchivo.'.'.$ext;
-        self::CopiarArchivo($this->pathFoto.'/'.$this->pathAnterior,$this->backUp.'/'.$date.'_'.$this->nombreArchivo);
+        $this->nombreArchivo=$this->nombreArchivo.'.'.strtolower($ext);
+        //self::CopiarArchivo($this->pathFoto.'/'.$this->pathAnterior,$this->backUp.'/'.$d.'_'.$this->nombreArchivo);
         rename($this->pathFoto.'/'.$this->pathAnterior,$this->pathFoto.'/'.$this->nombreArchivo);
         return $this->nombreArchivo;
     }
@@ -68,7 +68,7 @@ function __construct($nombreArchivo=null,$pathFoto=null,$backUp=null,$pathAnteri
                 if(round($files['file']->getSize()/pow(1024,2),0)>= 5)
                     return array('error'=>'Se excede peso de archivo');
                 $ext =pathinfo($files['file']->getClientFilename(),PATHINFO_EXTENSION);
-                if(!in_array($ext,array('jpg','jpeg','png')))
+                if(!in_array($ext,array('jpg','jpeg','png','JPG','JPEG','PNG')))
                     return array('error'=>'Formato No permitido');
                 else
                     return true;

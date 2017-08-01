@@ -25,7 +25,8 @@ class Imagen extends Archivo{
         {
             $imagen = new Imagen($mail,'./Fotos','./Fotos/BackUp',$user->pathFoto);
             $pathFoto = $imagen->ModificarArchivo(); 
-            return $next($request->withAttribute('pathFoto',$pathFoto),$response);
+            if(!$request->getAttribute('foto'))
+                return $next($request->withAttribute('pathFoto',$pathFoto),$response);
         }
         if(!$request->getAttribute('foto'))
             return $next($request,$response);
