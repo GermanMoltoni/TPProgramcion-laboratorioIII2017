@@ -122,10 +122,7 @@ $app->get('/', function (Request $request, Response $response) {
   
 });
 
- $app->get('/foto', function (Request $request, Response $response) {
-      
-  
-});
+ $app->get('/foto',\Imagen::class.':GetImagenPorMail');
 
 
 $app->run();

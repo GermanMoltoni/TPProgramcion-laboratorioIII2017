@@ -29,8 +29,7 @@ function __construct($nombreArchivo=null,$pathFoto=null,$backUp=null,$pathAnteri
         catch(Exception $e){
             return "Se excede el peso permitido";
         }
-        if($this->VerificarDuplicado())
-            $this->CopiarDuplicado();
+         
         
         return $this->nombreArchivo;           
     }
