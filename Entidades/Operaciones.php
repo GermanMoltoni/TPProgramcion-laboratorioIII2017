@@ -48,7 +48,7 @@ class Operacion{
     *   return operacion completa con datos
     *
     */
-    public function CalcularCosto($patente){
+    static function CalcularCosto($patente){
         date_default_timezone_set('America/Argentina/Buenos_Aires');
         $date=date('Y-m-d H:i');
         $precios =self::getPrecios();
@@ -80,7 +80,7 @@ class Operacion{
         return $operacion;
     }
 
-    private function getPrecios(){
+    private static function getPrecios(){
         $objDB = AccesoDatos::DameUnObjetoAcceso();
     $consulta = $objDB->RetornarConsulta("SELECT valor FROM tarifas");
     $consulta->execute();
