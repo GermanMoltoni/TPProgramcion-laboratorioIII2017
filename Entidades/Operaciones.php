@@ -107,7 +107,7 @@ class Operacion{
             return $consulta->fetchAll(PDO::FETCH_CLASS) ;
     }
 
-    function  BuscarOperacionActiva($patente){
+    static function  BuscarOperacionActiva($patente){
         $objDB = AccesoDatos::DameUnObjetoAcceso();
             $consulta = $objDB->RetornarConsulta("SELECT autos.patente,autos.color,autos.marca,idCochera,entrada FROM `operaciones`,autos WHERE salida is NULL AND operaciones.patente = autos.patente AND autos.patente=:patente");
             		    $consulta->bindValue(':patente',$patente, PDO::PARAM_INT);
