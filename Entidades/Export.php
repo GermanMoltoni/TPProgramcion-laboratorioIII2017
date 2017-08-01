@@ -27,14 +27,26 @@ class Export{
             $objPHPExcel->getActiveSheet()->fromArray((array)$value,null,'A'.$i);
             $i++;
         }   
+foreach (range('A', $objPHPExcel->getActiveSheet()->getHighestDataColumn()) as $col) {
+        $objPHPExcel->getActiveSheet()
+                ->getColumnDimension($col)
+                ->setAutoSize(true);
+    } 
+
         $this->excel= $objPHPExcel;
     }
     public function ToExcel(){
         $this->ArmarExcel();
         $objWriter = new PHPExcel_Writer_Excel2007($this->excel,'Excel2007');
+        $nombre = $this->titulo.".xlsx";
         ob_end_clean();
-        //$objWriter->save('php://output');
-        $objWriter->save('./'.$this->titulo.'.xls');
+        $objWriter->save('php://output');
+        return $response
+            ->withHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            ->withHeader('Content-Disposition', 'attachment;filename="'.$nombre.'"')
+            ->withHeader('Cache-Control', 'max-age=0')
+            ->withHeader('Pragma', 'public');
+        //$objWriter->save('./'.$this->titulo.'.xlsx');
     }
 
 
@@ -46,8 +58,15 @@ class Export{
             die('Please set the $rendererName and $rendererLibraryPath values' .PHP_EOL .' as appropriate for your directory structure');
         }
         $objWriter = PHPExcel_IOFactory::createWriter($this->excel, 'PDF');
-        //$objWriter->save('php://output');
-        $objWriter->save('./'.$this->titulo.'.pdf');
+        $objWriter->save('php://output');
+        $nombre = $this->titulo.".pdf";
+
+        return $response
+            ->withHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            ->withHeader('Content-Disposition', 'attachment;filename="'.$nombre.'"')
+            ->withHeader('Cache-Control', 'max-age=0')
+            ->withHeader('Pragma', 'public');
+        //$objWriter->save('./'.$this->titulo.'.pdf');
     }
 }
 ?>

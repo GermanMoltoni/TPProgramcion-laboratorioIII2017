@@ -21,7 +21,6 @@ public static function UsoCocherasApi($request, $response, $args) {
     if($from == null || $to == null)
             return $response->withJson(array('error'=>'Faltan datos'));
     $op = parent::UsoDeCocheras($from,$to);
-    
     if(count($op) == 0)
         return $response->withJson(array('msg'=>'No hay operaciones Cargadas'));
     return $response->withJson($op);
@@ -48,6 +47,8 @@ public static function PromedioFacMensualApi($request, $response, $args) {
     $op = parent::PromedioFacturacionMensual($periodo);
     if($op == 0)
         return $response->withJson(array('msg'=>'No hay operaciones Cargadas'));
+
+ 
     return $response->withJson($op);
   
 }

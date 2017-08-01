@@ -21,10 +21,11 @@ class UserApi extends Usuario{
         {
             $file = new Export($lista,'Listado de Usuarios');
             if($export == 'excel')
-                $file->ToExcel();
+                return $file->ToExcel();
             elseif($export == 'pdf')
-                $file->ToPDF();
+                return $file->ToPDF();
         }
+                    
         return $response->withJson($lista);
     }
 
@@ -41,9 +42,9 @@ class UserApi extends Usuario{
             {
                 $file = new Export($lista,'Listado de logs');
                 if($export == 'excel')
-                    $file->ToExcel();
+                    return $file->ToExcel();
                 elseif($export == 'pdf')
-                    $file->ToPDF();
+                    return $file->ToPDF();
             }
             return $response->withJson($lista);
     }
