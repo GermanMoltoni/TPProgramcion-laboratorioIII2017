@@ -16,25 +16,25 @@ class ParkingApi extends Estacionamiento{
         return $response->withJson(parent::RetirarAuto(filter_var($patente, FILTER_SANITIZE_STRING)));
     }
     public static function LugarMasUtilizadoApi($request, $response, $args) {
-        $from=$request->getParam('from');
-        $to=$request->getParam('to');
-        $op = parent::LugarMasUtilizado($from,$to);
+                        $datos = $request->getAttribute('datos');
+
+        $op = parent::LugarMasUtilizado($datos['from'],$datos['to']);
         if(count($op) == 0 )
             return $response->withJson(array('error'=>'No hay registro de datos en la fecha indicada'));
         return $response->withJson($op);
     }
     public static function LugarMenosUtilizadoApi($request, $response, $args) {
-    $from=$request->getParam('from');
-        $to=$request->getParam('to');
-        $op = parent::LugarMenosUtilizado($from,$to);
+                    $datos = $request->getAttribute('datos');
+
+        $op = parent::LugarMenosUtilizado($datos['from'],$datos['to']);
         if(count($op) == 0 )
             return $response->withJson(array('error'=>'No hay registro de datos en la fecha indicada'));
         return $response->withJson($op);
     }
     public static function LugarNuncaUtilizadoApi($request, $response, $args) {
-$from=$request->getParam('from');
-        $to=$request->getParam('to');
-        $op = parent::LugarNuncaUtilizado($from,$to);
+                $datos = $request->getAttribute('datos');
+
+        $op = parent::LugarNuncaUtilizado($datos['from'],$datos['to']);
         if(count($op) == 0 )
             return $response->withJson(array('error'=>'No hay registro de datos en la fecha indicada'));
         return $response->withJson($op);

@@ -18,20 +18,27 @@ class Export{
         $objPHPExcel->getProperties()->setCreator("Germán Moltoni");
         $objPHPExcel->getProperties()->setTitle($this->titulo);
         $objPHPExcel->getActiveSheet()->setTitle($this->titulo);
-        //$objPHPExcel->setActiveSheetIndex(0)
-          //  ->mergeCells('A1:D1') //titulo
-            //->setCellValue('A1',$this->titulo); 
-        $i=4;
-        $objPHPExcel->getActiveSheet()->fromArray(array_keys(get_object_vars($this->data[0])),null,'A3');
+        $objPHPExcel->setActiveSheetIndex(0)
+            ->setCellValue('A1',$this->titulo); 
+        $i=3;
+        $sheet = $objPHPExcel->getActiveSheet();
+        $sheet->getPageSetup()->setOrientation(PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE);
+        $arrayHeader= array_map('strtolower', array_keys(get_object_vars($this->data[0])));
+
+        $sheet->fromArray($arrayHeader,null,'A2');
+        $style = $sheet->getStyle("A2:".$objPHPExcel->getActiveSheet()->getHighestDataColumn()."2");
+        $style->getFont()->setBold(true);
+        $style->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+        $style->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setRGB('8BEAE7');
         foreach($this->data as $key=>$value){
-            $objPHPExcel->getActiveSheet()->fromArray((array)$value,null,'A'.$i);
+            $sheet->fromArray((array)$value,null,'A'.$i);
+            $style = $sheet->getStyle("A$i:".$objPHPExcel->getActiveSheet()->getHighestDataColumn().$i);
+            $style->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
             $i++;
         }   
-foreach (range('A', $objPHPExcel->getActiveSheet()->getHighestDataColumn()) as $col) {
-        $objPHPExcel->getActiveSheet()
-                ->getColumnDimension($col)
-                ->setAutoSize(true);
-    } 
+        foreach (range('A', $sheet->getHighestDataColumn()) as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        } 
 
         $this->excel= $objPHPExcel;
     }

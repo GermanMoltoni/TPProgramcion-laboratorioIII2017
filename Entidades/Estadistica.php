@@ -2,7 +2,7 @@
   require_once "./Entidades/AccesoDatos.php";
 class  Estadistica{
 
-    public static function Facturacion($from=null,$to=null){
+    public static function Facturacion($from,$to){
         $objDB = AccesoDatos::DameUnObjetoAcceso();
         if($from != $to)
             $consulta = $objDB->RetornarConsulta("SELECT SUM(pago) AS facturacion,COUNT(patente) AS cantidad_autos FROM `operaciones` WHERE  salida IS NOT NULL AND cast(entrada as date) BETWEEN  '".$from."' AND '".$to."'");
@@ -11,7 +11,7 @@ class  Estadistica{
         $consulta->execute();
         return $consulta->fetchAll(PDO::FETCH_OBJ);
     }
-    public static function UsoDeCocheras($from=null,$to=null){
+    public static function UsoDeCocheras($from,$to){
         $objDB = AccesoDatos::DameUnObjetoAcceso();
         if($from != $to)
             $consulta = $objDB->RetornarConsulta("SELECT idcochera as cochera,COUNT(idCochera) as cantidad FROM operaciones WHERE salida is not null and patente IN (SELECT patente FROM `autos` WHERE especial=true) AND cast(entrada as date) BETWEEN  '".$from."' AND '".$to."' GROUP BY idCochera");
@@ -27,7 +27,7 @@ class  Estadistica{
         $comun = $consulta->fetchAll(PDO::FETCH_OBJ);
         return array('especial'=>$especial,'comun'=>$comun);
     }
-    public static function ListadoVehiculosEstacionados($from=null,$to=null){
+    public static function ListadoVehiculosEstacionados($from,$to){
         $objDB = AccesoDatos::DameUnObjetoAcceso();
         if($from != $to)
             $consulta = $objDB->RetornarConsulta("SELECT DISTINCT patente FROM `operaciones` where  cast(entrada as date) BETWEEN  '".$from."' AND '".$to."'");
@@ -44,27 +44,24 @@ class  Estadistica{
         return array('repetidos'=>$vehiculosRepetidos,'distintos'=>$vehiculosDistintos);
     }
 
-    public static function PromedioFacturacionMensual($mes){
-        $date = date_parse_from_format("Y-m",$mes);
-        $dias = cal_days_in_month (CAL_GREGORIAN,$date['month'],$date['year']);
+    public static function PromedioFacturacionMensual($mes,$anio){
+        $dias = cal_days_in_month (CAL_GREGORIAN,$mes,$anio);
         $objDB = AccesoDatos::DameUnObjetoAcceso();
-        $consulta = $objDB->RetornarConsulta("SELECT SUM(pago)/$dias AS importe   FROM `operaciones` WHERE  salida IS NOT NULL AND entrada LIKE '%".$mes."%'");
+        $consulta = $objDB->RetornarConsulta("SELECT SUM(pago)/$dias  FROM `operaciones` WHERE  salida IS NOT NULL AND entrada LIKE '%".$anio.'-'.$mes."%'");
         $consulta->execute();
-        return $consulta->fetchAll(PDO::FETCH_ASSOC);
+        return $consulta->fetchAll(PDO::FETCH_COLUMN)[0];
     }
-    public static function PromedioAutosMensual($mes){
-        $date = date_parse_from_format("Y-m",$mes);
-        $dias = cal_days_in_month (CAL_GREGORIAN,$date['month'],$date['year']);
+    public static function PromedioAutosMensual($mes,$anio){
+        $dias = cal_days_in_month (CAL_GREGORIAN,$mes,$anio);
         $objDB = AccesoDatos::DameUnObjetoAcceso();
-        $consulta = $objDB->RetornarConsulta("SELECT COUNT(patente)/$dias AS autos   FROM `operaciones` WHERE  salida IS NOT NULL AND entrada LIKE '%".$mes."%'");
+        $consulta = $objDB->RetornarConsulta("SELECT COUNT(patente)/$dias  FROM `operaciones` WHERE  salida IS NOT NULL AND entrada LIKE '%".$anio.'-'.$mes."%'");
         $consulta->execute();
-        return $consulta->fetchAll(PDO::FETCH_ASSOC);
+        return $consulta->fetchAll(PDO::FETCH_COLUMN)[0];
     }
-    public static function PromedioUsuarioMensual($mes){
-        $date = date_parse_from_format("Y-m",$mes);
-        $dias = cal_days_in_month (CAL_GREGORIAN,$date['month'],$date['year']);
+    public static function PromedioUsuarioMensual($mes,$anio){
+        $dias = cal_days_in_month (CAL_GREGORIAN,$mes,$anio);
         $objDB = AccesoDatos::DameUnObjetoAcceso();
-        $consulta = $objDB->RetornarConsulta("SELECT idUser,count(idUser)/$dias as promedio   FROM `operaciones` WHERE  salida IS NOT NULL AND entrada LIKE '%".$mes."%' group by idUser ");
+        $consulta = $objDB->RetornarConsulta("SELECT idUser,count(idUser)/$dias as promedio   FROM `operaciones` WHERE  salida IS NOT NULL AND entrada LIKE '%".$anio.'-'.$mes."%' group by idUser ");
         $consulta->execute();
         return $consulta->fetchAll(PDO::FETCH_ASSOC);
     }

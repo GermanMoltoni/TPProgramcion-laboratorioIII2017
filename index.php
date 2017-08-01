@@ -67,6 +67,10 @@ $app->group('/estacionamiento', function () {
     $this->get('/listaCocheras', function (Request $request, Response $response) {
         return $response->withJson(array('pisos'=>Piso::BuscarPiso(),'ocupados'=>Operacion::ListarOperacionesActivas()));
 });
+
+
+
+
         $this->group('/lugares', function () {
             $this->get('/menosUtilizado',\ParkingApi::class.':LugarMenosUtilizadoApi');
 
@@ -93,20 +97,26 @@ $app->group('/operaciones', function () {
 
 $app->group('/estadistica', function () {
         $this->get('/facturacion',\EstadisticaApi::class . ':FacturacionApi')
-                ->add(\AuthUser::class.':verificarFormTiempo');
+                ->add(\AuthUser::class.':verificarFechas');
         $this->get('/usococheras',\EstadisticaApi::class . ':UsoCocherasApi')
-                ->add(\AuthUser::class.':verificarFormTiempo');
+                ->add(\AuthUser::class.':verificarFechas');
         $this->get('/vehiculos',\EstadisticaApi::class . ':ListadoVehiculosEstApi')
-                ->add(\AuthUser::class.':verificarFormTiempo');        
-        $this->get('/promediofacturacionmensual',\EstadisticaApi::class . ':PromedioFacMensualApi');
-        $this->get('/promedioautosmensual',\EstadisticaApi::class . ':PromedioAutosMensualApi');
-        $this->get('/promediousuariomensual',\EstadisticaApi::class . ':PromedioUsuarioMensualApi');
+                ->add(\AuthUser::class.':verificarFechas');   
+
+
+
+        $this->get('/promediofacturacionmensual',\EstadisticaApi::class . ':PromedioFacMensualApi')
+                ->add(\AuthUser::class.':verificarPromedioTiempo');
+        $this->get('/promedioautosmensual',\EstadisticaApi::class . ':PromedioAutosMensualApi')
+                ->add(\AuthUser::class.':verificarPromedioTiempo');
+        $this->get('/promediousuariomensual',\EstadisticaApi::class . ':PromedioUsuarioMensualApi')
+                ->add(\AuthUser::class.':verificarPromedioTiempo');
 
 
 
 
                 
-    });//->add(\AuthUser::class.':admin');
+    })->add(\AuthUser::class.':admin');
 $app->get('/', function (Request $request, Response $response) {
      return $response->withRedirect('./index.html'); 
   

@@ -186,5 +186,44 @@ public function users($request, $response, $next) {
         return $response->withJson(array('error'=>'Formato de fecha incorrecto'),201); 
         
     }
+      static function verificarFechas($request, $response, $next){
+        $date = '/\d{4}-\d{2}-\d{2}$/';
+        $datetime =  '/\d{4}-\d{2}-\d{2}\h\d{2}:\d{2}:\d{2}$/';
+        $from=$to=null;
+        $from = filter_var($request->getParam('from'), FILTER_SANITIZE_STRING);
+        $to = filter_var($request->getParam('to'), FILTER_SANITIZE_STRING);
+        if($from ==null || $to == null)
+            return $response->withJson(array('error'=>'FaltanDatos'),201); 
+        if( preg_match($date,$from) && preg_match($date,$to) ||preg_match($datetime,$from) && preg_match($datetime,$to))
+        {
+            $fromD = new DateTime($from);
+            $toD = new DateTime($to);
+            if($fromD > $toD)
+                return $response->withJson(array('error'=>'Rango de fecha incorrecto'),201); 
+            return $next($request->withAttribute('datos',array('from'=>$from,'to'=>$to)),$response);
+        }
+        return $response->withJson(array('error'=>'Formato de fecha incorrecto'),201); 
+        
+    }
+        static function verificarPromedioTiempo($request, $response, $next){
+        $date = '/\d{4}-\d{2}$/';
+        $periodo=null;
+        $periodo = filter_var($request->getParam('periodo'), FILTER_SANITIZE_STRING);
+        if( $periodo == null)
+            return $response->withJson(array('error'=>'Faltan datos'),201); 
+        if( preg_match($date,$periodo))
+        {
+            $date = DateTime::createFromFormat("Y-m", $periodo);
+            $mes=$date->format('m');
+            $anio = $date->format('Y');
+            if($anio > '0000' || $mes >'00')
+                return $next($request->withAttribute('periodo',array('mes'=>$mes,'anio'=>$anio)),$response);
+            else
+                return $response->withJson(array('error'=>'Fecha no valida'),201); 
+
+        }
+        return $response->withJson(array('error'=>'Formato de fecha incorrecto'),201); 
+        
+    }
 }
 ?>
