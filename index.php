@@ -122,7 +122,7 @@ $app->get('/', function (Request $request, Response $response) {
   
 });
 
- $app->get('/foto',\Imagen::class.':GetImagenPorMail')->add(\AuthUser::class.':users');
+ $app->get('/foto',\Imagen::class.':GetImagenPorMail');
 
 
 $app->run();

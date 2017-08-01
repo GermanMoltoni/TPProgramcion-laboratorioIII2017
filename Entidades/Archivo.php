@@ -35,9 +35,12 @@ function __construct($nombreArchivo=null,$pathFoto=null,$backUp=null,$pathAnteri
     }
 
     public function ModificarArchivo(){
+        date_default_timezone_set('America/Argentina/Buenos_Aires');
+
+            $date=date('Y-m-d_H:i');
         $ext =pathinfo($this->pathFoto.'/'.$this->pathAnterior,PATHINFO_EXTENSION);
         $this->nombreArchivo=$this->nombreArchivo.'.'.$ext;
-        self::CopiarArchivo($this->pathFoto.'/'.$this->pathAnterior,$this->backUp.'/'.$this->nombreArchivo);
+        self::CopiarArchivo($this->pathFoto.'/'.$this->pathAnterior,$this->backUp.'/'.$date.'_'.$this->nombreArchivo);
         rename($this->pathFoto.'/'.$this->pathAnterior,$this->pathFoto.'/'.$this->nombreArchivo);
         return $this->nombreArchivo;
     }
