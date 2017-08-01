@@ -11,7 +11,7 @@ public static function FacturacionApi($request, $response, $args) {
             return $response->withJson(array('error'=>'Faltan datos'));
     $op = parent::Facturacion($from,$to);
     
-    if(count($op) == 0)
+    if(count($op) == 0 || $op[0]->facturacion == null)
         return $response->withJson(array('msg'=>'No hay operaciones Cargadas'));
     return $response->withJson($op);
   
@@ -23,7 +23,7 @@ $from=$datos['from'];
     if($from == null || $to == null)
             return $response->withJson(array('error'=>'Faltan datos'));
     $op = parent::UsoDeCocheras($from,$to);
-    if(count($op) == 0)
+    if(count($op) == 0 || count($op['especial']) == 0)
         return $response->withJson(array('msg'=>'No hay operaciones Cargadas'));
     return $response->withJson($op);
   
@@ -37,7 +37,7 @@ $from=$datos['from'];
             return $response->withJson(array('error'=>'Faltan datos'));
     $op = parent::ListadoVehiculosEstacionados($from,$to);
     
-    if(count($op) == 0)
+    if(count($op) == 0 || (count($op['repetidos']) == 0 && $op['distintos']==0))
         return $response->withJson(array('msg'=>'No hay operaciones Cargadas'));
     return $response->withJson($op);
   
