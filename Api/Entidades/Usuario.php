@@ -141,7 +141,7 @@
         */
         static function ListarUsuarios(){
             $objDB = AccesoDatos::DameUnObjetoAcceso();
-		    $consulta = $objDB->RetornarConsulta("SELECT id,mail,nombre,apellido,estado,turno,admin,pathFoto FROM usuarios");
+		    $consulta = $objDB->RetornarConsulta("SELECT nombre,apellido,estado,turno,admin,pathFoto,id FROM usuarios");
             $consulta->execute();
             return $consulta->fetchAll(PDO::FETCH_OBJ);
         }
