@@ -7,19 +7,15 @@ require "./EntidadesApi/OperationApi.php";
 require "./EntidadesApi/Auth.php";
 require "./EntidadesApi/Imagen.php";
 require "./EntidadesApi/EstadisticaApi.php";
+require "./MDWCors.php";
+
 $config['displayErrorDetails'] = true;
  
 require './vendor/autoload.php';
 
     
 $app = new \Slim\App(["settings" => $config]);
-$app->add(function ($req, $res, $next) {
-    $response = $next($req, $res);
-    return $response
-            ->withHeader('Access-Control-Allow-Origin', 'http://germanmoltoni.esy.es')
-            ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
-            ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-});
+$app->add(\MDWCORS::class . ':HabilitarCORS');
 
 
 $app->group('/usuario', function () {
