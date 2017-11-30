@@ -1,12 +1,14 @@
-import * as $ from "jquery";
-export class Ajax{
+/// <reference path="./types/jquery.d.ts" />
+class Ajax{
     private static url:string = 'http://germanmoltoni.esy.es/';
     public static get(path:string,done:any, fail:any, data?:any) {
         $.ajax({
             url: Ajax.url+path,
             type: 'GET',
             dataType: 'json',
-            data: data
+            data: data,
+            async:true,
+            headers:{'token':Ajax.getToken()}
         }).done(done).fail(fail);
     }
     public static post(path:string,data:any, done:any, fail:any) {
@@ -14,7 +16,19 @@ export class Ajax{
             url: Ajax.url+path,
             type: 'POST',
             dataType: 'json',
-            data: data
+            data: data,
+            async:true,
+            headers:{'token':Ajax.getToken()}
         }).done(done).fail(fail);
+    }
+    private static getToken(){
+        let token = localStorage.getItem('token');
+        if(token !== null)
+            return token;
+        return false;
+    }
+    private static setToken(data:any){
+        localStorage.setItem('token',data);
+
     }
 }

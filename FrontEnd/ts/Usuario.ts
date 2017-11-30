@@ -1,18 +1,18 @@
-import * as $ from "jquery";
-import {Ajax} from './Ajax';
-export class Usuario{
-    private id:number| undefined;
+/// <reference path="./types/jquery.d.ts" />
+/// <reference path="./Ajax.ts" />
+class Usuario{
+    private id:string| undefined;
     private mail:string;
     private nombre:string;
     private apellido:string;
     private password:string;
-    private turno:number | undefined;
+    private turno:string | undefined;
     private admin:string;
     private entrada:string | undefined;
     private pathFoto:string | undefined;
     private estado:string;
     private token:string | undefined;
-    constructor(mail:string,nombre:string,apellido:string,password:string,estado:string,admin:string,turno?:number,pathFoto?:string,id?:number,entrada?:string,token?:string){
+    constructor(mail:string,nombre:string,apellido:string,password:string,estado:string,admin:string,turno?:string,pathFoto?:string,id?:string,entrada?:string,token?:string){
         this.id=id;
         this.mail=mail;
         this.nombre=nombre;
@@ -26,10 +26,9 @@ export class Usuario{
         this.token=token;
     }
     public static crear(){
-        //let usuario = new Usuario();
+        Ajax.get('listar',(e:any)=>{console.log(e)},()=>{}); 
     }
     public static listar(){
-        Ajax.post('login',{usuario:'germanAdmin',password:'123'},(e:any)=>{console.log(e)},()=>{});
     }
     private static getForm(){
         let nombre = $("#nombre").val();
@@ -52,6 +51,9 @@ export class Usuario{
         $("#admin").val(this.admin != undefined?this.admin:'');
         $("#estado").val(this.estado != undefined?this.estado:'');
         $("#pathFoto").val('');
+    }
+    public static login(datos:{usuario:string,password:string}){
+        Ajax.post('login',datos,(e:any)=>{console.log(e)},()=>{}); 
     }
 }
 

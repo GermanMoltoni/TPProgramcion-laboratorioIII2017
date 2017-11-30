@@ -1,0 +1,17 @@
+{
+  "name": "estacionamiento",
+  "homepage": "https://github.com/GermanMoltoni/TPProgramcion-laboratorioIII2017",
+  "authors": [
+    "GermanMoltoni <german.moltoni@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
