@@ -1,6 +1,6 @@
 /// <reference path="./types/jquery.d.ts" />
 class Ajax{
-    private static url:string = 'http://germanmoltoni.esy.es/';
+    private static url:string = 'http://germanmoltoni.byethost12.com/';
     public static get(path:string,done:any, fail:any, data?:any) {
         $.ajax({
             url: Ajax.url+path,
