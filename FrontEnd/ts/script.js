@@ -1,4 +1,3 @@
-"use strict";
 /// <reference path="./types/jquery.d.ts" />
 var Ajax = /** @class */ (function () {
     function Ajax() {
@@ -32,7 +31,7 @@ var Ajax = /** @class */ (function () {
     Ajax.setToken = function (data) {
         localStorage.setItem('token', data);
     };
-    Ajax.url = 'http://germanmoltoni.esy.es/';
+    Ajax.url = 'http://germanmoltoni.byethost12.com/';
     return Ajax;
 }());
 /// <reference path="./types/jquery.d.ts" />
@@ -84,5 +83,5 @@ var Usuario = /** @class */ (function () {
     return Usuario;
 }());
 $(document).ready(function () {
-    Usuario.listar();
+    Usuario.login({ usuario: 'germanAdmin', password: '123' });
 });

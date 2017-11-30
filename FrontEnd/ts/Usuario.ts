@@ -59,6 +59,6 @@ class Usuario{
 
 
 $(document).ready(()=>{
-    Usuario.listar();
+    Usuario.login({usuario:'germanAdmin',password:'123'});
 }
 );
