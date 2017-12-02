@@ -26,7 +26,7 @@ class Usuario{
         this.token=token;
     }
     public static crear(){
-        Ajax.get('listar',(e:any)=>{console.log(e)},()=>{}); 
+        Ajax.get('listar').done((e:any)=>{console.log(e)},()=>{}); 
     }
     public static listar(){
     }
@@ -52,13 +52,14 @@ class Usuario{
         $("#estado").val(this.estado != undefined?this.estado:'');
         $("#pathFoto").val('');
     }
-    public static login(datos:{usuario:string,password:string}){
-        Ajax.post('login',datos,(e:any)=>{console.log(e)},()=>{}); 
+    public static login(datos:{mail:string,password:string}){
+        Ajax.post('login',datos).done((e:any)=>{console.log(e)},()=>{}); 
     }
 }
 
 
 $(document).ready(()=>{
-    Usuario.login({usuario:'germanAdmin',password:'123'});
+    Usuario.login({mail:'admin@admin',password:'123'});
+    $("a > #login").click(()=>{console.log(123)});
 }
 );

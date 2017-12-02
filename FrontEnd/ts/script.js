@@ -2,36 +2,36 @@
 var Ajax = /** @class */ (function () {
     function Ajax() {
     }
-    Ajax.get = function (path, done, fail, data) {
-        $.ajax({
+    Ajax.get = function (path, data) {
+        return $.ajax({
             url: Ajax.url + path,
             type: 'GET',
             dataType: 'json',
             data: data,
             async: true,
             headers: { 'token': Ajax.getToken() }
-        }).done(done).fail(fail);
+        });
     };
-    Ajax.post = function (path, data, done, fail) {
-        $.ajax({
+    Ajax.post = function (path, data) {
+        return $.ajax({
             url: Ajax.url + path,
             type: 'POST',
             dataType: 'json',
             data: data,
             async: true,
             headers: { 'token': Ajax.getToken() }
-        }).done(done).fail(fail);
+        });
     };
     Ajax.getToken = function () {
         var token = localStorage.getItem('token');
         if (token !== null)
             return token;
-        return false;
+        //return null;
     };
     Ajax.setToken = function (data) {
         localStorage.setItem('token', data);
     };
-    Ajax.url = 'http://germanmoltoni.byethost12.com/';
+    Ajax.url = 'http://localhost/TPProgramcion-laboratorioIII2017/Api/';
     return Ajax;
 }());
 /// <reference path="./types/jquery.d.ts" />
@@ -51,7 +51,7 @@ var Usuario = /** @class */ (function () {
         this.token = token;
     }
     Usuario.crear = function () {
-        Ajax.get('listar', function (e) { console.log(e); }, function () { });
+        Ajax.get('listar').done(function (e) { console.log(e); }, function () { });
     };
     Usuario.listar = function () {
     };
@@ -78,10 +78,11 @@ var Usuario = /** @class */ (function () {
         $("#pathFoto").val('');
     };
     Usuario.login = function (datos) {
-        Ajax.post('login', datos, function (e) { console.log(e); }, function () { });
+        Ajax.post('login', datos).done(function (e) { console.log(e); }, function () { });
     };
     return Usuario;
 }());
 $(document).ready(function () {
-    Usuario.login({ usuario: 'germanAdmin', password: '123' });
+    Usuario.login({ mail: 'admin@admin', password: '123' });
+    $("a > #login").click(function () { console.log(123); });
 });
