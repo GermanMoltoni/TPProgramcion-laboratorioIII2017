@@ -30,6 +30,18 @@ class Usuario{
     }
     public static listar(){
     }
+    public static setUsuario(usuario:any){
+        if(usuario != undefined)
+            localStorage.setItem('usuario',JSON.stringify(usuario));
+    }
+    public static getUsuario(){
+        let datos = localStorage.getItem('usuario');
+        let usuario = JSON.parse(datos !== null?datos:'');
+        if(usuario !== null){
+            return new Usuario(usuario.mail,usuario.nombre,usuario.apellido,usuario.password,usuario.estado,usuario.admin,usuario.turno,usuario.pathFoto,usuario.id)
+        }
+       
+    }
     private static getForm(){
         let nombre = $("#nombre").val();
         let apellido = $("#apellido").val();
@@ -52,14 +64,58 @@ class Usuario{
         $("#estado").val(this.estado != undefined?this.estado:'');
         $("#pathFoto").val('');
     }
-    public static login(datos:{mail:string,password:string}){
-        Ajax.post('login',datos).done((e:any)=>{console.log(e)},()=>{}); 
+    public static getTipo(){
+        let usuario = Usuario.getUsuario();
+        return usuario != undefined && usuario.admin;
     }
 }
 
 
 $(document).ready(()=>{
-    Usuario.login({mail:'admin@admin',password:'123'});
-    $("a > #login").click(()=>{console.log(123)});
+    $("#login").click((e)=>{
+        $("#form-login").removeAttr("hidden");
+        e.preventDefault();
+        e.stopImmediatePropagation();
+    });
+    $("#btn-login").click((e)=>{
+        let login = new Auth($("#mail").val(),$("#password").val());
+        login.login().done((e:any)=>{
+            login.setToken(e.token);
+            Usuario.setUsuario(e.user);
+            if(e.error != undefined){
+                $("#msg-info").text(e.error);
+                $("#modal-info").modal("show");
+            }
+            else{
+                if(Usuario.getTipo()){
+                    $("#form-login").prop("hidden",true);
+                    $("#ul-admin").removeClass("hide_me");
+                }
+                else{
+                    $("#form-login").prop("hidden",true);
+                    $("#ul-user").removeClass("hide_me");
+                }
+                $("#ul-login").prop("hidden",true);
+                $("#ul-logout").prop("hidden",false);
+                
+            }
+        },()=>{}); 
+        e.preventDefault();
+        e.stopImmediatePropagation();
+    });
+    $("#logout").click((e)=>{
+        Auth.logout();
+        $("#ul-login").prop("hidden",false);
+        $("#ul-logout").prop("hidden",true);
+        $("#ul-admin").addClass("hide_me");
+        $("#ul-user").addClass("hide_me");
+        e.preventDefault();
+        e.stopImmediatePropagation();
+    });
+    $("#btn-carga-login").click((e)=>{
+        Auth.setForm();
+        e.preventDefault();
+        e.stopImmediatePropagation();
+    });
 }
 );

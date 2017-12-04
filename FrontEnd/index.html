@@ -11,49 +11,126 @@
     <script type="application/javascript" src="./ts/script.js"></script>
      <link  rel="stylesheet" type="text/css"  href="./css/style.css">
     <link  rel="stylesheet" type="text/css"  href="./css/bootstrap.min.css">
-    
+    <style>
+    .hide_me{
+        display: none;
+    }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-default">
-        <div class="container-fluid">
-          <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">Brand</a>
-          </div>
-
-          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav">
-              <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
-              <li><a href="#">Link</a></li>
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
-                <ul class="dropdown-menu" role="menu">
-                  <li><a href="#">Action</a></li>
-                  <li><a href="#">Another action</a></li>
-                  <li><a href="#">Something else here</a></li>
-                  <li class="divider"></li>
-                  <li><a href="#">Separated link</a></li>
-                  <li class="divider"></li>
-                  <li><a href="#">One more separated link</a></li>
-                </ul>
-              </li>
-            </ul>
-            <form class="navbar-form navbar-left" role="search">
-              <div class="form-group">
-                <input type="text" class="form-control" placeholder="Search">
-              </div>
-              <button type="submit" class="btn btn-default">Submit</button>
-            </form>
-            <ul class="nav navbar-nav navbar-right">
-                <li><a id="login"><span><img src="./css/login.png">Login</span></a></li>
-            </ul>
-          </div>
+    <div> 
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">Brand</a>
+                </div>
+                <div class="collapse navbar-collapse" >
+                    <ul class="nav navbar-nav hide_me" id="ul-admin">
+                        <li class="active "><a href="#">Ingreso<span class="sr-only">(current)</span></a></li>
+                        <li class="hide_me"><a href="#" >Egreso</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
+                            <ul hidden class="dropdown-menu" role="menu">
+                                <li ><a href="#">Action</a></li>
+                                <li><a href="#">Another action</a></li>
+                                <li><a href="#">Something else here</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#">Separated link</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#">One more separated link</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <ul class="nav navbar-nav hide_me" id="ul-user">
+                            <li class="active "><a href="#">Link <span class="sr-only">(current)</span></a></li>
+                            <li class="hide_me"><a href="#" >Linasdasdk</a></li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
+                                <ul hidden class="dropdown-menu" role="menu">
+                                    <li ><a href="#">Action</a></li>
+                                    <li><a href="#">Another action</a></li>
+                                    <li><a href="#">Something else here</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="#">Separated link</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="#">One more separated link</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    <ul id="ul-login" class="nav navbar-nav navbar-right">
+                        <li ><a id="login"><span><img src="./css/login.png">Login</span></a></li>
+                    </ul>
+                    <ul id="ul-logout" class="nav navbar-nav navbar-right" hidden>
+                        <li><a id="logout"><span><img src="./css/logout.png">Logout</span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="container-fluid">
+        <div class="row" id="form-login" hidden>
+            <div class="section section-signin">
+                <div class="panel panel-default">
+                    <div class="panel-body" role="tabpanel">
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane active" id="do-signin">
+                                <h3 class="text-center">Login</h3>
+                                <p class="text-center">
+                                    <br>
+                                    <br>
+                                </p>
+                                <div class="form-signin" id="form-login">
+                                    <div class="form-group">
+                                        <label class="sr-only" >Mail</label>
+                                        <input type="text" id="mail" class="form-control" placeholder="Mail" required autofocus>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="sr-only">Password</label>
+                                        <input type="password" id="password" class="form-control" placeholder="Password" required >
+                                    </div>
+                                    <div class="form-group">
+                                        <label>
+                                            <input type="checkbox" value="remember-me"> Recordarme  
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-block btn-round" type="button" id="btn-login" >Ingresar</button>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-block btn-round"   type="button" id="btn-carga-login">Carga Login</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="toggler text-center small list-unstyled">
+                            <p><a routerLink="/recover">¿Olvidaste tu Clave?</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </nav>
+        <div class="modal fade" id="modal-info" tabindex="-1" role="dialog" aria-labelledby="modal-info" aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="title-mod-info"></h4>
+                    </div>
+                    <div class="modal-body">
+                        <h3 id="msg-info"></h3>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
