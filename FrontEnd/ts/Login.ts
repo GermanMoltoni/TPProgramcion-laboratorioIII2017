@@ -1,30 +1,46 @@
-/// <reference path="./types/jquery.d.ts" />
-/// <reference path="./Ajax.ts" />
-class Auth{
-    private mail:string;
-    private password:string;
-    private token:string | undefined;
-    constructor(mail:string,password:string){
-        this.mail=mail;
-        this.password=password;
-    }
-    public static setForm(){
-        $("#mail").val('admin@admin');
-        $("#password").val('123');
-    }
-    public login(){
-       return Ajax.post('login',{mail:this.mail,password:this.password});
-    }
-    public static logout(){
-        localStorage.clear();
-        sessionStorage.clear(); 
-    }
-    public setToken(token:any){
-        if(token !== undefined)
-            localStorage.setItem('token',token);
-    }
-    public getToken(token:string){
-        return localStorage.getItem('token');
-    }
+$(document).ready(()=>{
+    $("#login").click((e)=>{
+        $("#form-login").removeAttr("hidden");
+        e.preventDefault();
+        e.stopImmediatePropagation();
+    });
+    $("#btn-login").click((e)=>{
+        let login = new Auth($("#mail").val(),$("#password").val());
+        login.login().done((e:any)=>{
+            Usuario.setUsuario(e.user);
+            if(e.error != undefined){
+                $("#msg-info").text(e.error);
+                $("#modal-info").modal("show");
+            }
+            else{
+                if(Usuario.getTipo()){
+                    $("#form-login").prop("hidden",true);
+                    $("#ul-admin").removeClass("hide_me");
+                }
+                else{
+                    $("#form-login").prop("hidden",true);
+                    $("#ul-user").removeClass("hide_me");
+                }
+                $("#ul-login").prop("hidden",true);
+                $("#ul-logout").prop("hidden",false); 
+            }
+        },()=>{}); 
+        e.preventDefault();
+        e.stopImmediatePropagation();
+    });
+    $("#logout").click((e)=>{
+        Auth.logout();
+        $("#ul-login").prop("hidden",false);
+        $("#ul-logout").prop("hidden",true);
+        $("#ul-admin").addClass("hide_me");
+        $("#ul-user").addClass("hide_me");
+        e.preventDefault();
+        e.stopImmediatePropagation();
+    });
+    $("#btn-carga-login").click((e)=>{
+        Auth.setForm();
+        e.preventDefault();
+        e.stopImmediatePropagation();
+    });
 }
-
+);

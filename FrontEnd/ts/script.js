@@ -103,7 +103,6 @@ $(document).ready(function () {
     $("#btn-login").click(function (e) {
         var login = new Auth($("#mail").val(), $("#password").val());
         login.login().done(function (e) {
-            login.setToken(e.token);
             Usuario.setUsuario(e.user);
             if (e.error != undefined) {
                 $("#msg-info").text(e.error);
@@ -157,13 +156,6 @@ var Auth = /** @class */ (function () {
     Auth.logout = function () {
         localStorage.clear();
         sessionStorage.clear();
-    };
-    Auth.prototype.setToken = function (token) {
-        if (token !== undefined)
-            localStorage.setItem('token', token);
-    };
-    Auth.prototype.getToken = function (token) {
-        return localStorage.getItem('token');
     };
     return Auth;
 }());
