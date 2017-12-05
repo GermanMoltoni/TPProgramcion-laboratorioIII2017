@@ -1,5 +1,5 @@
 $(document).ready(()=>{
-    $("#login").click((e)=>{
+    $("#a-login").click((e)=>{
         $("#form-login").removeAttr("hidden");
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -28,7 +28,7 @@ $(document).ready(()=>{
         e.preventDefault();
         e.stopImmediatePropagation();
     });
-    $("#logout").click((e)=>{
+    $("#a-logout").click((e)=>{
         Auth.logout();
         $("#ul-login").prop("hidden",false);
         $("#ul-logout").prop("hidden",true);
@@ -39,6 +39,11 @@ $(document).ready(()=>{
     });
     $("#btn-carga-login").click((e)=>{
         Auth.setForm();
+        e.preventDefault();
+        e.stopImmediatePropagation();
+    });
+    $("#btn-nuevo-usuario").click((e)=>{
+        $("#modal-nuevo-usuario").modal("show");
         e.preventDefault();
         e.stopImmediatePropagation();
     });

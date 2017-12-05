@@ -45,7 +45,7 @@ $app->group('/usuario', function () {
                 ->add(\AuthUser::class.':VerificarUsuario')
                 ->add(\AuthUser::class.':VerificarModifFormUser');
 
-})->add(\AuthUser::class.':admin');
+});//->add(\AuthUser::class.':admin');
 
 
 

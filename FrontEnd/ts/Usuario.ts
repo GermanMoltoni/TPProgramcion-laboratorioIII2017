@@ -26,9 +26,12 @@ class Usuario{
         this.token=token;
     }
     public static crear(){
-        Ajax.get('listar').done((e:any)=>{console.log(e)},()=>{}); 
+        Ajax.post('alta',Usuario.getForm()).done((e:any)=>{console.log(e)},()=>{}); 
+        
     }
     public static listar(){
+        Ajax.get('listar').done((e:any)=>{console.log(e)},()=>{}); 
+        
     }
     public static setUsuario(usuario:any){
         if(usuario != undefined)

@@ -51,9 +51,10 @@ var Usuario = /** @class */ (function () {
         this.token = token;
     }
     Usuario.crear = function () {
-        Ajax.get('listar').done(function (e) { console.log(e); }, function () { });
+        Ajax.post('alta', Usuario.getForm()).done(function (e) { console.log(e); }, function () { });
     };
     Usuario.listar = function () {
+        Ajax.get('listar').done(function (e) { console.log(e); }, function () { });
     };
     Usuario.setUsuario = function (usuario) {
         if (usuario != undefined)
@@ -95,7 +96,7 @@ var Usuario = /** @class */ (function () {
     return Usuario;
 }());
 $(document).ready(function () {
-    $("#login").click(function (e) {
+    $("#a-login").click(function (e) {
         $("#form-login").removeAttr("hidden");
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -124,7 +125,7 @@ $(document).ready(function () {
         e.preventDefault();
         e.stopImmediatePropagation();
     });
-    $("#logout").click(function (e) {
+    $("#a-logout").click(function (e) {
         Auth.logout();
         $("#ul-login").prop("hidden", false);
         $("#ul-logout").prop("hidden", true);
@@ -135,6 +136,11 @@ $(document).ready(function () {
     });
     $("#btn-carga-login").click(function (e) {
         Auth.setForm();
+        e.preventDefault();
+        e.stopImmediatePropagation();
+    });
+    $("#btn-nuevo-usuario").click(function (e) {
+        $("#modal-nuevo-usuario").modal("show");
         e.preventDefault();
         e.stopImmediatePropagation();
     });
