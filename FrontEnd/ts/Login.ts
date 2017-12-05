@@ -47,5 +47,9 @@ $(document).ready(()=>{
         e.preventDefault();
         e.stopImmediatePropagation();
     });
+    $('#admin-usr').bootstrapToggle({
+        on: 'Si',
+        off: 'No'
+      });
 }
 );

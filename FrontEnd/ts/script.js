@@ -144,6 +144,10 @@ $(document).ready(function () {
         e.preventDefault();
         e.stopImmediatePropagation();
     });
+    $('#admin-usr').bootstrapToggle({
+        on: 'Si',
+        off: 'No'
+    });
 });
 /// <reference path="./types/jquery.d.ts" />
 /// <reference path="./Ajax.ts" />

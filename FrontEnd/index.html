@@ -8,9 +8,13 @@
     <script type="application/javascript" src="./bower_components/jquery/dist/jquery.min.js"></script>
     
     <script type="application/javascript" src="./bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="application/javascript" src="./bower_components/bootstrap-toggle/js/bootstrap-toggle.min.js"></script>
+    
     <script type="application/javascript" src="./ts/script.js"></script>
      <link  rel="stylesheet" type="text/css"  href="./css/style.css">
     <link  rel="stylesheet" type="text/css"  href="./css/bootstrap.min.css">
+    <link  rel="stylesheet" type="text/css"  href="./bower_components/bootstrap-toggle/css/bootstrap-toggle.min.css">
+    
     <link   rel="shortcut icon" type="image/png" href="./css/favicon.ico"/>
     <style>
     .hide_me{
@@ -173,16 +177,39 @@
             </div>
         </div>
         <div class="modal fade" id="modal-nuevo-usuario" tabindex="-1" role="dialog" aria-labelledby="modal-info" aria-hidden="true">
-                <div class="modal-dialog modal-sm">
+                <div class="modal-dialog modal-md">
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                             <h4 class="modal-title" id="title-mod-info"></h4>
                         </div>
                         <div class="modal-body">
-                            <div class="form-group">
-
+                            <div class="row">
+                            <div class="form-group col-md-6">
+                                <label>Nombre</label>
+                                <input type="text" class="form-control input-sm">
                             </div>
+                            <div class="form-group col-md-6">
+                                <label>Apellido</label>
+                                <input type="text" class="form-control input-sm">
+                            </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                                <div class="form-group col-md-1"></div>
+                            <div class="form-group col-md-3">
+                                <label>Administrador</label>
+                                <input type="checkbox" id="admin-usr"   data-toggle="toggle" >
+                            </div>
+                            <div class="form-group col-md-3">
+                                    <label>Turno</label>
+                                <select class="form-control input-sm">
+                                    <option>Mañana</option>
+                                    <option>Tarde</option>
+                                    <option>Noche</option>
+                                    
+                                </select>
+                                </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Cerrar</button>
