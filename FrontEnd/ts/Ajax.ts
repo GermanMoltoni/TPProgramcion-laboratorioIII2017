@@ -21,6 +21,27 @@ class Ajax{
             headers:{'token':Ajax.getToken()}
         });
     }
+    public static postArchivo(path:string,data:any) {
+        let form_data = new FormData();
+        for(let ind in data){
+            if(ind === 'file'){
+                form_data.append('file', data[ind].files[0]);
+            } else{
+                form_data.append(ind, data[ind]);
+            }
+        }
+        return $.ajax({
+            url: Ajax.url+path,
+          //  enctype: 'multipart/form-data',
+            type: 'POST',
+            cache: false,
+            contentType: false,
+            processData: false,
+            data: form_data,
+            async:true,
+            headers:{'token':Ajax.getToken()}
+        });
+    }
     private static getToken(){
         let token = localStorage.getItem('token');
         if(token !== null)
