@@ -185,31 +185,39 @@
                         </div>
                         <div class="modal-body">
                             <div class="row">
-                            <div class="form-group col-md-6">
-                                <label>Nombre</label>
-                                <input type="text" class="form-control input-sm">
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label>Apellido</label>
-                                <input type="text" class="form-control input-sm">
-                            </div>
+                                <div class="form-group col-md-1"></div>    
+                                <div class="form-group col-md-5">
+                                    <label>Nombre</label>
+                                    <input type="text" class="form-control input-sm" id="in-nombre">
+                                </div>
+                                <div class="form-group col-md-5">
+                                    <label>Apellido</label>
+                                    <input type="text" class="form-control input-sm" id="in-apellido">
+                                </div>
                             </div>
                         </div>
                         <div class="row">
-                                <div class="form-group col-md-1"></div>
-                            <div class="form-group col-md-3">
-                                <label>Administrador</label>
-                                <input type="checkbox" id="admin-usr"   data-toggle="toggle" >
+                            <div class="form-group col-md-1"></div>    
+                            <div class="form-group col-md-5">
+                                <label>Mail</label>
+                                <input type="text" class="form-control input-sm" id="in-mail">
                             </div>
                             <div class="form-group col-md-3">
-                                    <label>Turno</label>
-                                <select class="form-control input-sm">
-                                    <option>Mañana</option>
-                                    <option>Tarde</option>
-                                    <option>Noche</option>
-                                    
+                                <label>Turno</label>
+                                <select class="form-control input-sm" id="sel-turno">
+                                    <option value="1">Mañana</option>
+                                    <option value="2">Tarde</option>
+                                    <option value="3">Noche</option>
                                 </select>
-                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-1"></div>    
+                            <div class="form-group col-md-3">
+                                <label>Administrador</label>
+                                <input type="checkbox" id="admin-usr"  data-toggle="toggle">
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Cerrar</button>
