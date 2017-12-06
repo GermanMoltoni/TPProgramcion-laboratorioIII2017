@@ -22,6 +22,28 @@ var Ajax = /** @class */ (function () {
             headers: { 'token': Ajax.getToken() }
         });
     };
+    Ajax.postArchivo = function (path, data) {
+        var form_data = new FormData();
+        for (var ind in data) {
+            if (ind === 'file') {
+                form_data.append('file', data[ind].files[0]);
+            }
+            else {
+                form_data.append(ind, data[ind]);
+            }
+        }
+        return $.ajax({
+            url: Ajax.url + path,
+            //  enctype: 'multipart/form-data',
+            type: 'POST',
+            cache: false,
+            contentType: false,
+            processData: false,
+            data: form_data,
+            async: true,
+            headers: { 'token': Ajax.getToken() }
+        });
+    };
     Ajax.getToken = function () {
         var token = localStorage.getItem('token');
         if (token !== null)
@@ -140,15 +162,114 @@ $(document).ready(function () {
         e.stopImmediatePropagation();
     });
     $("#btn-nuevo-usuario").click(function (e) {
+        $('#admin_usr').bootstrapToggle('off');
+        ValidadorForm(validator_usuario);
         $("#modal-nuevo-usuario").modal("show");
         e.preventDefault();
         e.stopImmediatePropagation();
     });
-    $('#admin-usr').bootstrapToggle({
+    $("#a-usuarios-lis").click(function (e) {
+        $("#form-login").prop("hidden", true);
+        $("#usuarios").prop("hidden", false);
+        var tabla_usuarios = new DataTable("tabla_usuarios");
+        tabla_usuarios.ajax([
+            { render: function (data, type, row) { return row.nombre + ',' + row.apellido; } },
+            { render: function (data, type, row) { return row.turno === null ? 'Sin Turno' : row.turno; } },
+            { render: function (data, type, row) {
+                    return row.admin == 1 ? 'Administrador' : 'Empleado';
+                } },
+            { render: function (data, type, row) {
+                    return row.pathFoto == null ? 'Sin Foto' : '<img src=' + row.pathFoto + '>';
+                } },
+        ], 'http://localhost/TPProgramcion-laboratorioIII2017/Api/usuario/listar');
+        e.preventDefault();
+        e.stopImmediatePropagation();
+    });
+    $('#admin_usr').bootstrapToggle({
         on: 'Si',
         off: 'No'
     });
+    $("#admin_usr").change(function () {
+        if ($("#admin_usr").is(":checked"))
+            $("#sel_turno").prop("disabled", true);
+        else
+            $("#sel_turno").prop("disabled", false);
+        $("#form_usuario").bootstrapValidator('validateField', 'sel_turno');
+    });
 });
+function ValidadorForm(obj_param) {
+    var id_form = obj_param.id_form || null;
+    var opciones = obj_param.opciones || null;
+    var callback = obj_param.callback || null;
+    if (opciones != null && id_form != null) {
+        $("#" + id_form).bootstrapValidator('destroy');
+        return $("#" + id_form).bootstrapValidator(opciones).
+            on('success.form.bv', function (e) {
+            if (typeof callback === 'function') {
+                callback();
+            }
+            e.preventDefault();
+        });
+    }
+}
+var validator_usuario = {
+    id_form: "form_usuario",
+    callback: function () { console.log(123); },
+    opciones: {
+        message: 'Este valor no es valido',
+        fields: {
+            in_nombre: {
+                validators: {
+                    notEmpty: { message: 'Ingrese Nombre' }
+                }
+            },
+            in_apellido: {
+                validators: {
+                    notEmpty: { message: 'Ingrese Apellido' }
+                }
+            },
+            sel_turno: {
+                validators: {
+                    callback: {
+                        message: 'Ingresar Documento',
+                        callback: function (value) {
+                            if (!$("#admin_usr").is(":checked"))
+                                return true;
+                            else
+                                return value > 0;
+                        }
+                    }
+                }
+            },
+            in_mail: {
+                validators: {
+                    notEmpty: { message: 'Ingrese Mail' },
+                    emailAddress: {
+                        message: 'No es un mail válido'
+                    }
+                }
+            },
+            in_passwd1: {
+                validators: {
+                    notEmpty: { message: 'Ingrese Password' },
+                    identical: {
+                        field: 'in_passwd2',
+                        message: 'No coincide el password'
+                    }
+                }
+            },
+            in_passwd2: {
+                validators: {
+                    notEmpty: { message: 'Verificar Password' },
+                    identical: {
+                        field: 'in_passwd1',
+                        message: 'no coincide el password'
+                    }
+                }
+            }
+        }
+    }
+};
 /// <reference path="./types/jquery.d.ts" />
 /// <reference path="./Ajax.ts" />
 var Auth = /** @class */ (function () {
@@ -168,4 +289,60 @@ var Auth = /** @class */ (function () {
         sessionStorage.clear();
     };
     return Auth;
+}());
+var DataTable = /** @class */ (function () {
+    function DataTable(id_tabla) {
+        this.id_tabla = id_tabla;
+    }
+    DataTable.prototype.ajax = function (columns, path) {
+        $('#' + this.id_tabla).DataTable().destroy();
+        this.dt = $('#' + this.id_tabla).DataTable({
+            autoWidth: false,
+            destroy: true,
+            ajax: { url: path,
+                dataSrc: function (data) {
+                    if (data == "{}")
+                        return {};
+                    return data;
+                } },
+            info: false,
+            select: true,
+            searching: true,
+            scroller: {
+                loadingIndicator: true
+            },
+            paging: false,
+            scrollY: 400,
+            scrollX: true,
+            scrollCollapse: true,
+            columns: columns,
+            dom: '<"top"i>rt<"bottom"flp><"clear"><"toolbar">'
+        });
+    };
+    DataTable.prototype.reloadTable = function () {
+        this.dt.ajax.reload();
+    };
+    DataTable.prototype.selectFila = function (fn_sel, fn_nosel) {
+        var _this = this;
+        if (fn_sel === void 0) { fn_sel = null; }
+        if (fn_nosel === void 0) { fn_nosel = null; }
+        var nombre_item = 'tr-' + this.id_tabla;
+        sessionStorage.removeItem(nombre_item);
+        $('#' + this.id_tabla + ' tbody').off('click', 'tr').on('click', 'tr', function () {
+            if ($(_this).hasClass('selected')) {
+                $(_this).removeClass('selected'); //cambiar
+                sessionStorage.removeItem(nombre_item);
+                if (fn_nosel !== null)
+                    fn_nosel();
+            }
+            else {
+                var datos = _this.dt.row(_this).data(); //cambiar
+                sessionStorage.setItem(nombre_item, JSON.stringify(datos));
+                $(_this).addClass('selected'); //cambiar
+                if (fn_sel !== null)
+                    fn_sel();
+            }
+        });
+    };
+    return DataTable;
 }());

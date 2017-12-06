@@ -43,28 +43,112 @@ $(document).ready(()=>{
         e.stopImmediatePropagation();
     });
     $("#btn-nuevo-usuario").click((e)=>{
+        $('#admin_usr').bootstrapToggle('off');
+        ValidadorForm(validator_usuario);
         $("#modal-nuevo-usuario").modal("show");
         e.preventDefault();
         e.stopImmediatePropagation();
     });
-    $('#admin-usr').bootstrapToggle({
+    $("#a-usuarios-lis").click((e)=>{
+        $("#form-login").prop("hidden",true);
+        $("#usuarios").prop("hidden",false);
+        let tabla_usuarios = new DataTable("tabla_usuarios");
+        tabla_usuarios.ajax(
+            [                
+                {render:function(data:any,type:any,row:any){return row.nombre+','+row.apellido;}},
+                {render:function(data:any,type:any,row:any){return row.turno === null?'Sin Turno':row.turno;}},
+                {render:function(data:any,type:any,row:any){
+                    return row.admin == 1?'Administrador':'Empleado';}},
+                    {render:function(data:any,type:any,row:any){
+                        return row.pathFoto == null?'Sin Foto':'<img src='+row.pathFoto+'>';}},
+            ]
+        ,'http://localhost/TPProgramcion-laboratorioIII2017/Api/usuario/listar');
+        e.preventDefault();
+        e.stopImmediatePropagation();
+    });
+    $('#admin_usr').bootstrapToggle({
         on: 'Si',
         off: 'No'
-      });
-}
-);
-function ValidadorForm(obj_param){
+    });
+    $("#admin_usr").change(()=>{
+        if($("#admin_usr").is(":checked"))
+            $("#sel_turno").prop("disabled",true);
+        else
+            $("#sel_turno").prop("disabled",false);
+        $("#form_usuario").bootstrapValidator('validateField', 'sel_turno');    
+    });
+});
+function ValidadorForm(obj_param:any){
     var id_form = obj_param.id_form || null;
     var opciones = obj_param.opciones || null;
     let callback = obj_param.callback || null;
     if(opciones != null && id_form != null){
         $("#"+id_form).bootstrapValidator('destroy');  
         return $("#"+id_form).bootstrapValidator(opciones).
-        on('success.form.bv',(e)=>{
-            e.preventDefault();
+        on('success.form.bv',(e:Event)=>{
             if(typeof callback === 'function'){
                 callback();
             }
+            e.preventDefault();
         });
     }
-}
+} 
+
+var validator_usuario = {
+    id_form:"form_usuario",
+    callback:()=>{console.log(123)},
+    opciones:{
+        message: 'Este valor no es valido',
+        fields: {
+            in_nombre:{
+                validators:{
+                    notEmpty:{message:'Ingrese Nombre'},
+                }
+            },
+            in_apellido:{
+                validators:{
+                    notEmpty:{message:'Ingrese Apellido'}
+                }
+            },
+            sel_turno:{
+                validators:{
+                    callback:{
+                        message:'Ingresar Documento',
+                        callback:(value:any)=>{
+                            if(!$("#admin_usr").is(":checked"))
+                                return true;
+                            else
+                                return value > 0;
+                        }
+                    }
+                }
+            },
+            in_mail:{
+                validators:{
+                    notEmpty:{message:'Ingrese Mail'},
+                    emailAddress: {
+                        message: 'No es un mail válido'
+                    }
+                }
+            },
+            in_passwd1:{
+                validators:{
+                    notEmpty:{message:'Ingrese Password'},
+                    identical:{
+                        field:'in_passwd2',
+                        message:'No coincide el password'
+                    }
+                }
+            },
+            in_passwd2:{
+                validators:{
+                    notEmpty:{message:'Verificar Password'},
+                    identical:{
+                        field:'in_passwd1',
+                        message:'no coincide el password'
+                    }
+                }
+            }
+        }
+    }
+};

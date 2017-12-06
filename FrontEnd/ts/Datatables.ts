@@ -1,22 +1,23 @@
 class DataTable{
-    private dom_table:any;
     private dt:any;
     private id_tabla:string;
     constructor(id_tabla:string){
         this.id_tabla = id_tabla;
-        this.dom_table = $('#' + id_tabla);
     }
     public  ajax(columns:any,path:string){
-        this.dom_table.DataTable().destroy();
-        this.dt = this.dom_table.DataTable({
+        $('#' + this.id_tabla).DataTable().destroy();
+        this.dt = $('#' + this.id_tabla).DataTable({
             autoWidth: false,
             destroy: true,
-            ajax: path,
+            ajax:{ url:path,
+            dataSrc:(data:any)=>{
+                if(data =="{}" )
+                    return {};
+                return data;
+            }},
             info: false,
             select: true,
             searching: true,
-            processing: true,
-            deferRender: true,
             scroller: {
                 loadingIndicator: true
             },
@@ -24,14 +25,14 @@ class DataTable{
             scrollY: 400,
             scrollX: true,
             scrollCollapse: true,
-            columns: columns,
+            columns:columns,
             dom: '<"top"i>rt<"bottom"flp><"clear"><"toolbar">',
         });
     }
     public reloadTable(){
         this.dt.ajax.reload();
     }
-    public selectFila(fn_sel:Function,fn_nosel:Function){
+    public selectFila(fn_sel:any=null,fn_nosel:any=null){
         let nombre_item = 'tr-' + this.id_tabla;
         sessionStorage.removeItem(nombre_item);
         $('#' + this.id_tabla + ' tbody').off('click', 'tr').on('click', 'tr',()=>{
