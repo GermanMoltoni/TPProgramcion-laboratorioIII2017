@@ -9,11 +9,15 @@
     
     <script type="application/javascript" src="./bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script type="application/javascript" src="./bower_components/bootstrap-toggle/js/bootstrap-toggle.min.js"></script>
-    
+     <script type="application/javascript" src="./bower_components/datatables/media/js/jquery.dataTables.js"></script>
+     <script type="application/javascript" src="./bower_components/bootstrapvalidator/dist/js/bootstrapValidator.min.js"></script>
+     
     <script type="application/javascript" src="./ts/script.js"></script>
      <link  rel="stylesheet" type="text/css"  href="./css/style.css">
     <link  rel="stylesheet" type="text/css"  href="./css/bootstrap.min.css">
     <link  rel="stylesheet" type="text/css"  href="./bower_components/bootstrap-toggle/css/bootstrap-toggle.min.css">
+    <link  rel="stylesheet" type="text/css"  href="./bower_components/datatables/media/css/jquery.dataTables.css">
+    <link  rel="stylesheet" type="text/css"  href="./bower_components/datatables/media/css/dataTables.bootstrap.css">
     
     <link   rel="shortcut icon" type="image/png" href="./css/favicon.ico"/>
     <style>
@@ -37,15 +41,14 @@
                 </div>
                 <div class="collapse navbar-collapse" >
                     <ul class="nav navbar-nav hide_me" id="ul-admin">
-                        <li class="active "><a href="#">Ingreso<span class="sr-only">(current)</span></a></li>
-                        <li class="hide_me"><a href="#" >Egreso</a></li>
+                        <li class="active "><a href="#">Estacionamiento<span class="sr-only">(current)</span></a></li>
                         <li class="hide_me"><a href="#" >Estadisticas</a></li>
                         <li class="hide_me"><a href="#" >Operaciones</a></li>
                         
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Usuarios<span class="caret"></span></a>
                             <ul hidden class="dropdown-menu" role="menu">
-                                <li ><a href="#">Listado</a></li>
+                                <li ><a id="a-usuarios-lis">Listado</a></li>
                                 <li><a href="#">Logs</a></li>
                             </ul>
                         </li>
@@ -119,9 +122,9 @@
             </div>
         </div>
         
-        <div class="row" id="usuarios">
+        <div class="row" id="usuarios" hidden>
             <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
-                <table class="table table-condensed table-striped">
+                <table class="table table-condensed table-striped" id="tabla_usuarios">
                     <thead>
                         <tr>
                             <th>Nombre y Apellido</th>
@@ -130,6 +133,7 @@
                             <th>Foto</th>
                         </tr>
                     </thead>
+                    <tbody></tbody>
                 </table>
             </div>
             <div class=" col-sm-2 col-md-2 col-lg-2">
@@ -183,28 +187,29 @@
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                             <h4 class="modal-title" id="title-mod-info"></h4>
                         </div>
-                        <form method="POST">
+                        <form method="POST" id="form_usuario" action="submit" onsubmit="return false;">
                             <div class="modal-body">
                                 <div class="row">
                                     <div class="form-group col-md-1"></div>    
                                     <div class="form-group col-md-5">
                                         <label>Nombre</label>
-                                        <input type="text" class="form-control input-sm" id="in-nombre">
+                                        <input type="text" class="form-control input-sm" id="in_nombre" name="in_nombre">
                                     </div>
                                     <div class="form-group col-md-5">
                                         <label>Apellido</label>
-                                        <input type="text" class="form-control input-sm" id="in-apellido">
+                                        <input type="text" class="form-control input-sm" id="in_apellido" name="in_apellido">
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="form-group col-md-1"></div>    
                                     <div class="form-group col-md-5">
                                         <label>Mail</label>
-                                        <input type="text" class="form-control input-sm" id="in-mail">
+                                        <input type="text" class="form-control input-sm" id="in_mail" name="in_mail">
                                     </div>
-                                    <div class="form-group col-md-3">
+                                    <div class="form-group col-md-4">
                                         <label>Turno</label>
-                                        <select class="form-control input-sm" id="sel-turno">
+                                        <select class="form-control input-sm" id="sel_turno" name="sel_turno">
+                                            <option value="0">Elegir Turno</option>
                                             <option value="1">Mañana</option>
                                             <option value="2">Tarde</option>
                                             <option value="3">Noche</option>
@@ -212,16 +217,31 @@
                                     </div>   
                                 </div>
                                 <div class="row">
+                                        <div class="form-group col-md-1"></div>    
+                                        <div class="form-group col-md-5">
+                                            <label>Password</label>
+                                            <input type="text" class="form-control input-sm" id="in_passwd1" name="in_passwd1">
+                                        </div>
+                                        <div class="form-group col-md-5">
+                                                <label>Reingresar Password</label>
+                                                <input type="text" class="form-control input-sm" id="in_passwd2" name="in_passwd2">
+                                            </div>  
+                                    </div>
+                                <div class="row">
                                     <div class="form-group col-md-1"></div>    
                                     <div class="form-group col-md-3">
                                         <label>Administrador</label>
-                                        <input type="checkbox" id="admin-usr"  data-toggle="toggle">
+                                        <input type="checkbox" id="admin_usr"  name="admin_usr"  data-toggle="toggle">
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>Foto de Perfil</label>
+                                        <input type="file" id="file">
                                     </div>
                                 </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Cerrar</button>
-                                <button type="button" class="btn btn-primary btn-sm" type="submit">Guardar</button>
+                                <button   class="btn btn-primary btn-sm" type="submit">Guardar</button>
                             </div>
                         </form>
                     </div>

@@ -117,6 +117,7 @@ var Usuario = /** @class */ (function () {
     };
     return Usuario;
 }());
+var tabla_usuarios;
 $(document).ready(function () {
     $("#a-login").click(function (e) {
         $("#form-login").removeAttr("hidden");
@@ -171,7 +172,7 @@ $(document).ready(function () {
     $("#a-usuarios-lis").click(function (e) {
         $("#form-login").prop("hidden", true);
         $("#usuarios").prop("hidden", false);
-        var tabla_usuarios = new DataTable("tabla_usuarios");
+        tabla_usuarios = new DataTable("tabla_usuarios");
         tabla_usuarios.ajax([
             { render: function (data, type, row) { return row.nombre + ',' + row.apellido; } },
             { render: function (data, type, row) { return row.turno === null ? 'Sin Turno' : row.turno; } },
@@ -214,7 +215,10 @@ function ValidadorForm(obj_param) {
 }
 var validator_usuario = {
     id_form: "form_usuario",
-    callback: function () { console.log(123); },
+    callback: function () {
+        tabla_usuarios.reloadTable();
+        $("#modal-nuevo-usuario").modal("hide");
+    },
     opciones: {
         message: 'Este valor no es valido',
         fields: {

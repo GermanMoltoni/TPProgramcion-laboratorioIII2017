@@ -1,4 +1,6 @@
+var tabla_usuarios:DataTable;
 $(document).ready(()=>{
+    
     $("#a-login").click((e)=>{
         $("#form-login").removeAttr("hidden");
         e.preventDefault();
@@ -52,7 +54,7 @@ $(document).ready(()=>{
     $("#a-usuarios-lis").click((e)=>{
         $("#form-login").prop("hidden",true);
         $("#usuarios").prop("hidden",false);
-        let tabla_usuarios = new DataTable("tabla_usuarios");
+        tabla_usuarios = new DataTable("tabla_usuarios");
         tabla_usuarios.ajax(
             [                
                 {render:function(data:any,type:any,row:any){return row.nombre+','+row.apellido;}},
@@ -96,7 +98,10 @@ function ValidadorForm(obj_param:any){
 
 var validator_usuario = {
     id_form:"form_usuario",
-    callback:()=>{console.log(123)},
+    callback:()=>{
+        tabla_usuarios.reloadTable();
+        $("#modal-nuevo-usuario").modal("hide");
+    },
     opciones:{
         message: 'Este valor no es valido',
         fields: {
