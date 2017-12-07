@@ -73,10 +73,10 @@ var Usuario = /** @class */ (function () {
         this.token = token;
     }
     Usuario.crear = function () {
-        Ajax.post('alta', Usuario.getForm()).done(function (e) { console.log(e); }, function () { });
+        return Ajax.post('usuario/alta', Usuario.getForm());
     };
     Usuario.listar = function () {
-        Ajax.get('listar').done(function (e) { console.log(e); }, function () { });
+        Ajax.get('usuario/listar').done(function (e) { console.log(e); }, function () { });
     };
     Usuario.setUsuario = function (usuario) {
         if (usuario != undefined)
@@ -90,15 +90,16 @@ var Usuario = /** @class */ (function () {
         }
     };
     Usuario.getForm = function () {
-        var nombre = $("#nombre").val();
-        var apellido = $("#apellido").val();
-        var password = $("#password").val();
-        var mail = $("#mail").val();
-        var id = $("#id").val();
-        var turno = $("#turno").val();
-        var admin = $("#admin").val();
-        var estado = $("#estado").val();
-        var pathFoto = $("#pathFoto").val();
+        return {
+            "nombre": $("#in_nombre").val(),
+            "apellido": $("#in_apellido").val(),
+            "password": $("#in_passwd1").val(),
+            "mail": $("#in_mail").val(),
+            "id": $("#in_id").val(),
+            "turno": $("#sel_turno :selected").val(),
+            "admin": $("#admin_usr").is(":checked") ? '1' : '0',
+            "estado": "1"
+        };
     };
     Usuario.prototype.setForm = function () {
         $("#nombre").val(this.nombre);
@@ -164,6 +165,7 @@ $(document).ready(function () {
     });
     $("#btn-nuevo-usuario").click(function (e) {
         $('#admin_usr').bootstrapToggle('off');
+        $('#form_usuario').bootstrapValidator('resetForm', true);
         ValidadorForm(validator_usuario);
         $("#modal-nuevo-usuario").modal("show");
         e.preventDefault();
@@ -175,7 +177,24 @@ $(document).ready(function () {
         tabla_usuarios = new DataTable("tabla_usuarios");
         tabla_usuarios.ajax([
             { render: function (data, type, row) { return row.nombre + ',' + row.apellido; } },
-            { render: function (data, type, row) { return row.turno === null ? 'Sin Turno' : row.turno; } },
+            { render: function (data, type, row) {
+                    var turno;
+                    switch (row.turno) {
+                        case 1:
+                            turno = 'Mañana';
+                            break;
+                        case 2:
+                            turno = 'Tarde';
+                            break;
+                        case 3:
+                            turno = 'Noche';
+                            break;
+                        default:
+                            turno = 'Sin Turno';
+                            break;
+                    }
+                    return turno;
+                } },
             { render: function (data, type, row) {
                     return row.admin == 1 ? 'Administrador' : 'Empleado';
                 } },
@@ -216,7 +235,9 @@ function ValidadorForm(obj_param) {
 var validator_usuario = {
     id_form: "form_usuario",
     callback: function () {
-        tabla_usuarios.reloadTable();
+        Usuario.crear().done(function (e) {
+            tabla_usuarios.reloadTable();
+        }, function () { });
         $("#modal-nuevo-usuario").modal("hide");
     },
     opciones: {

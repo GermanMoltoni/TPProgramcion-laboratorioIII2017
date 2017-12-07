@@ -26,11 +26,11 @@ class Usuario{
         this.token=token;
     }
     public static crear(){
-        Ajax.post('alta',Usuario.getForm()).done((e:any)=>{console.log(e)},()=>{}); 
+         return Ajax.post('usuario/alta',Usuario.getForm());
         
     }
     public static listar(){
-        Ajax.get('listar').done((e:any)=>{console.log(e)},()=>{}); 
+        Ajax.get('usuario/listar').done((e:any)=>{console.log(e)},()=>{}); 
         
     }
     public static setUsuario(usuario:any){
@@ -46,15 +46,15 @@ class Usuario{
        
     }
     private static getForm(){
-        let nombre = $("#nombre").val();
-        let apellido = $("#apellido").val();
-        let password = $("#password").val();
-        let mail = $("#mail").val();
-        let id = $("#id").val();
-        let turno = $("#turno").val();
-        let admin = $("#admin").val();
-        let estado = $("#estado").val();
-        let pathFoto = $("#pathFoto").val();
+        return{
+        "nombre":$("#in_nombre").val(),
+        "apellido":$("#in_apellido").val(),
+        "password":$("#in_passwd1").val(),
+        "mail":$("#in_mail").val(),
+        "id":$("#in_id").val(),
+        "turno":$("#sel_turno :selected").val(),
+        "admin":$("#admin_usr").is(":checked")?'1':'0',
+        "estado":"1"};
     }
     public setForm(){
         $("#nombre").val(this.nombre);

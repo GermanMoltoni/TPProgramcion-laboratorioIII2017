@@ -46,6 +46,7 @@ $(document).ready(()=>{
     });
     $("#btn-nuevo-usuario").click((e)=>{
         $('#admin_usr').bootstrapToggle('off');
+        $('#form_usuario').bootstrapValidator('resetForm', true);
         ValidadorForm(validator_usuario);
         $("#modal-nuevo-usuario").modal("show");
         e.preventDefault();
@@ -58,7 +59,24 @@ $(document).ready(()=>{
         tabla_usuarios.ajax(
             [                
                 {render:function(data:any,type:any,row:any){return row.nombre+','+row.apellido;}},
-                {render:function(data:any,type:any,row:any){return row.turno === null?'Sin Turno':row.turno;}},
+                {render:function(data:any,type:any,row:any){
+                    let turno;
+                    switch (row.turno){
+                        case 1:
+                            turno = 'Mañana';
+                            break;
+                        case 2:
+                            turno = 'Tarde';
+                            break;
+                        case 3:
+                            turno = 'Noche';
+                            break;
+                        default:
+                            turno = 'Sin Turno';
+                            break;
+                    }
+                      return turno;  
+                     }},
                 {render:function(data:any,type:any,row:any){
                     return row.admin == 1?'Administrador':'Empleado';}},
                     {render:function(data:any,type:any,row:any){
@@ -99,7 +117,9 @@ function ValidadorForm(obj_param:any){
 var validator_usuario = {
     id_form:"form_usuario",
     callback:()=>{
-        tabla_usuarios.reloadTable();
+        Usuario.crear().done((e:any)=>{
+            tabla_usuarios.reloadTable();
+        },()=>{}); 
         $("#modal-nuevo-usuario").modal("hide");
     },
     opciones:{

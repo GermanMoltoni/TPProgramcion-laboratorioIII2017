@@ -7,7 +7,7 @@ class AuthUser{
 public static function VerificarCamposFormUser($request, $response, $next){
         $data = $request->getParsedBody();
         if(!isset($data['mail'],$data['nombre'],$data['apellido'],$data['admin'],$data['turno'],$data['estado'],$data['password']))
-            return $response->withJson(array('error'=>'Faltan Datos'));
+            return $response->withJson(array('error'=>$data));
         $user_data=array();
         $user_data['mail'] = filter_var($data['mail'], FILTER_SANITIZE_STRING);
         $user_data['nombre'] = filter_var($data['nombre'], FILTER_SANITIZE_STRING);
