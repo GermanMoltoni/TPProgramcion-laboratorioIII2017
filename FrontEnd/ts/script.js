@@ -58,6 +58,26 @@ var Ajax = /** @class */ (function () {
 }());
 /// <reference path="./types/jquery.d.ts" />
 /// <reference path="./Ajax.ts" />
+var Auth = /** @class */ (function () {
+    function Auth(mail, password) {
+        this.mail = mail;
+        this.password = password;
+    }
+    Auth.setForm = function () {
+        $("#mail").val('admin@admin');
+        $("#password").val('123');
+    };
+    Auth.prototype.login = function () {
+        return Ajax.post('login', { mail: this.mail, password: this.password });
+    };
+    Auth.logout = function () {
+        localStorage.clear();
+        sessionStorage.clear();
+    };
+    return Auth;
+}());
+/// <reference path="./types/jquery.d.ts" />
+/// <reference path="./Ajax.ts" />
 var Usuario = /** @class */ (function () {
     function Usuario(mail, nombre, apellido, password, estado, admin, turno, pathFoto, id, entrada, token) {
         this.id = id;
@@ -217,6 +237,9 @@ $(document).ready(function () {
             $("#sel_turno").prop("disabled", false);
         $("#form_usuario").bootstrapValidator('validateField', 'sel_turno');
     });
+    $("#btn-estado-usuario").click(function (e) {
+        e.preventDefault();
+    });
 });
 function ValidadorForm(obj_param) {
     var id_form = obj_param.id_form || null;
@@ -296,26 +319,6 @@ var validator_usuario = {
         }
     }
 };
-/// <reference path="./types/jquery.d.ts" />
-/// <reference path="./Ajax.ts" />
-var Auth = /** @class */ (function () {
-    function Auth(mail, password) {
-        this.mail = mail;
-        this.password = password;
-    }
-    Auth.setForm = function () {
-        $("#mail").val('admin@admin');
-        $("#password").val('123');
-    };
-    Auth.prototype.login = function () {
-        return Ajax.post('login', { mail: this.mail, password: this.password });
-    };
-    Auth.logout = function () {
-        localStorage.clear();
-        sessionStorage.clear();
-    };
-    return Auth;
-}());
 var DataTable = /** @class */ (function () {
     function DataTable(id_tabla) {
         this.id_tabla = id_tabla;
@@ -356,7 +359,7 @@ var DataTable = /** @class */ (function () {
         sessionStorage.removeItem(nombre_item);
         console.log(123);
         $('#' + this.id_tabla + ' tbody').off('click', 'tr').on('click', 'tr', function (e) {
-            console.log(e.target);
+            console.log(e.currentTarget);
             if (e.target.className == 'selected') {
                 console.log(123);
                 e.target.className = '';

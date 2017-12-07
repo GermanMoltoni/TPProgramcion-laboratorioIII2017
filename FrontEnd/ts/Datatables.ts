@@ -37,7 +37,7 @@ class DataTable{
         sessionStorage.removeItem(nombre_item);
         console.log(123)
         $('#' + this.id_tabla + ' tbody').off('click', 'tr').on('click', 'tr',(e)=>{
-            console.log(e.target);
+            console.log(e.currentTarget);
             if (e.target.className == 'selected'){//cambiar
                 console.log(123);
                 e.target.className = '';

@@ -98,6 +98,9 @@ $(document).ready(()=>{
             $("#sel_turno").prop("disabled",false);
         $("#form_usuario").bootstrapValidator('validateField', 'sel_turno');    
     });
+    $("#btn-estado-usuario").click((e)=>{
+        e.preventDefault();
+    });
 });
 function ValidadorForm(obj_param:any){
     var id_form = obj_param.id_form || null;
