@@ -83,6 +83,7 @@ $(document).ready(()=>{
                         return row.pathFoto == null?'Sin Foto':'<img src='+row.pathFoto+'>';}},
             ]
         ,'http://localhost/TPProgramcion-laboratorioIII2017/Api/usuario/listar');
+        tabla_usuarios.selectFila();
         e.preventDefault();
         e.stopImmediatePropagation();
     });

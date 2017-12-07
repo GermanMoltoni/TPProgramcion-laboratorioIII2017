@@ -202,6 +202,7 @@ $(document).ready(function () {
                     return row.pathFoto == null ? 'Sin Foto' : '<img src=' + row.pathFoto + '>';
                 } },
         ], 'http://localhost/TPProgramcion-laboratorioIII2017/Api/usuario/listar');
+        tabla_usuarios.selectFila();
         e.preventDefault();
         e.stopImmediatePropagation();
     });
@@ -353,17 +354,21 @@ var DataTable = /** @class */ (function () {
         if (fn_nosel === void 0) { fn_nosel = null; }
         var nombre_item = 'tr-' + this.id_tabla;
         sessionStorage.removeItem(nombre_item);
-        $('#' + this.id_tabla + ' tbody').off('click', 'tr').on('click', 'tr', function () {
-            if ($(_this).hasClass('selected')) {
-                $(_this).removeClass('selected'); //cambiar
+        console.log(123);
+        $('#' + this.id_tabla + ' tbody').off('click', 'tr').on('click', 'tr', function (e) {
+            console.log(e.target);
+            if (e.target.className == 'selected') {
+                console.log(123);
+                e.target.className = '';
                 sessionStorage.removeItem(nombre_item);
                 if (fn_nosel !== null)
                     fn_nosel();
             }
             else {
-                var datos = _this.dt.row(_this).data(); //cambiar
+                var datos = _this.dt.row(e.target).data(); //cambiar
                 sessionStorage.setItem(nombre_item, JSON.stringify(datos));
-                $(_this).addClass('selected'); //cambiar
+                e.target.className += 'selected';
+                $(_this).addClass('selected').css('color', 'red');
                 if (fn_sel !== null)
                     fn_sel();
             }

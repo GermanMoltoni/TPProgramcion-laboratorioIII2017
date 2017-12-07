@@ -35,17 +35,22 @@ class DataTable{
     public selectFila(fn_sel:any=null,fn_nosel:any=null){
         let nombre_item = 'tr-' + this.id_tabla;
         sessionStorage.removeItem(nombre_item);
-        $('#' + this.id_tabla + ' tbody').off('click', 'tr').on('click', 'tr',()=>{
-            if ($(this).hasClass('selected')){//cambiar
-                $(this).removeClass('selected');//cambiar
+        console.log(123)
+        $('#' + this.id_tabla + ' tbody').off('click', 'tr').on('click', 'tr',(e)=>{
+            console.log(e.target);
+            if (e.target.className == 'selected'){//cambiar
+                console.log(123);
+                e.target.className = '';
                 sessionStorage.removeItem(nombre_item);
                 if(fn_nosel !== null)
                     fn_nosel();
             }
             else{
-                let datos = this.dt.row(this).data();//cambiar
+                let datos = this.dt.row(e.target).data();//cambiar
                 sessionStorage.setItem(nombre_item, JSON.stringify(datos));
-                $(this).addClass('selected');//cambiar
+                e.target.className += 'selected';
+                $(this).addClass('selected').css('color', 'red');                
+                
                 if(fn_sel !== null)
                     fn_sel();
             }
