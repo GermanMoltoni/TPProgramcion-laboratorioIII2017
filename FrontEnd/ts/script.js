@@ -354,21 +354,15 @@ var DataTable = /** @class */ (function () {
         if (fn_nosel === void 0) { fn_nosel = null; }
         var nombre_item = 'tr-' + this.id_tabla;
         sessionStorage.removeItem(nombre_item);
-        console.log(123);
-        $('#' + this.id_tabla + ' tbody').off('click', 'tr').on('click', 'tr', function (e) {
-            console.log(e.target);
-            if (e.target.className == 'selected') {
-                console.log(123);
-                e.target.className = '';
+        $('#' + this.id_tabla + ' tbody').off('click', 'tr').on('click', 'tr', function (e, dt, type, indexes) {
+            if ($(e.currentTarget).hasClass('selected')) {
                 sessionStorage.removeItem(nombre_item);
                 if (fn_nosel !== null)
                     fn_nosel();
             }
             else {
-                var datos = _this.dt.row(e.target).data(); //cambiar
+                var datos = _this.dt.row(e.currentTarget).data(); //cambiar
                 sessionStorage.setItem(nombre_item, JSON.stringify(datos));
-                e.target.className += 'selected';
-                $(_this).addClass('selected').css('color', 'red');
                 if (fn_sel !== null)
                     fn_sel();
             }
