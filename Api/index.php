@@ -27,10 +27,7 @@ $app->group('/usuario', function () {
     $this->delete('/baja', \UserApi::class .':BajaUserApi')
                 ->add(\AuthUser::class.':verificarUsuario');
 
-    $this->put('/suspender', \UserApi::class .':SuspenderUserApi')
-                ->add(\AuthUser::class.':verificarUsuario');
-
-    $this->put('/habilitar', \UserApi::class .':HabilitarUserApi')
+    $this->put('/estado', \UserApi::class .':EstadoUserApi')
                 ->add(\AuthUser::class.':verificarUsuario');
 
     $this->post('/alta', \UserApi::class .':AltaUsuarioApi')

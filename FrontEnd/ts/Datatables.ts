@@ -42,7 +42,6 @@ class DataTable{
                     fn_nosel();
             }
             else{
-                
                 let datos = this.dt.row(e.currentTarget).data();//cambiar
                 sessionStorage.setItem(nombre_item, JSON.stringify(datos));
                 if(fn_sel !== null)

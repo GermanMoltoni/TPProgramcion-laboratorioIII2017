@@ -59,24 +59,15 @@ class UserApi extends Usuario{
             return $response->withJson(array('error'=>'No se pudo borrar el usuario'),201);
     }
 
-    public static function SuspenderUserApi($request, $response, $args) {
+    public static function EstadoUserApi($request, $response, $args) {
             $id = $request->getAttribute('id'); 
             $id = filter_var($id, FILTER_SANITIZE_STRING);
-            if(Usuario::ModificarEstadoUsuario($id,0))
-                return $response->withJson(array('msg'=>'Usuario Suspendido'),200);
-            else
-                return $response->withJson(array('error'=>'No se pudo Suspender el usuario'),201);
-    }
-
-    
-    
-    public static function HabilitarUserApi($request, $response, $args) {
-            $id = $request->getAttribute('id'); 
-            $id = filter_var($id, FILTER_SANITIZE_STRING);
-            if(Usuario::ModificarEstadoUsuario($id,1))
+            $estado = Usuario::ModificarEstadoUsuario($id);
+            if($estado == true)
                 return $response->withJson(array('msg'=>'Usuario Habilitado'),200);
-            else
-                return $response->withJson(array('error'=>'No se pudo Habilitar el usuario'),201);
+            elseif($estado == false)
+                return $response->withJson(array('msg'=>'Usuario Suspendido'),200);
+            return $response->withJson(array('error'=>'No se pudo Suspender el usuario'),201);
     }
 
     public static function AltaUsuarioApi($request, $response, $args) {

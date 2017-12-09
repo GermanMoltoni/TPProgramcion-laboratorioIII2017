@@ -57,18 +57,19 @@
         *   return true si lo logra. false si no lo  encuentra o no se realiza la accion
         *
         */
-        static function ModificarEstadoUsuario($id,$estado)
+        static function ModificarEstadoUsuario($id)
         {
             if (count(self::BuscarUsuarioPorId($id)) != 0)
             {
+                $usuario = self::BuscarUsuarioPorId($id);
                 $objDB = AccesoDatos::DameUnObjetoAcceso(); 
                 $consulta = $objDB->RetornarConsulta("UPDATE `usuarios` SET `estado` = :estado WHERE `id` = :Id");
 		        $consulta->bindValue(':Id',$id, PDO::PARAM_INT);
-                $consulta->bindValue(':estado',$estado, PDO::PARAM_STR);
+                $consulta->bindValue(':estado',!$usuario->estado, PDO::PARAM_STR);
                 $consulta->execute();
-                return true;
+                return !$usuario->estado;
             }
-            return false;
+            return null;
         }
         static function ListarLogsUsuario($userId=0,$from=null,$to=null){
             $objDB = AccesoDatos::DameUnObjetoAcceso();
