@@ -58,26 +58,6 @@ var Ajax = /** @class */ (function () {
 }());
 /// <reference path="./types/jquery.d.ts" />
 /// <reference path="./Ajax.ts" />
-var Auth = /** @class */ (function () {
-    function Auth(mail, password) {
-        this.mail = mail;
-        this.password = password;
-    }
-    Auth.setForm = function () {
-        $("#mail").val('admin@admin');
-        $("#password").val('123');
-    };
-    Auth.prototype.login = function () {
-        return Ajax.post('login', { mail: this.mail, password: this.password });
-    };
-    Auth.logout = function () {
-        localStorage.clear();
-        sessionStorage.clear();
-    };
-    return Auth;
-}());
-/// <reference path="./types/jquery.d.ts" />
-/// <reference path="./Ajax.ts" />
 var Usuario = /** @class */ (function () {
     function Usuario(mail, nombre, apellido, password, estado, admin, turno, pathFoto, id, entrada, token) {
         this.id = id;
@@ -186,6 +166,18 @@ $(document).ready(function () {
     $("#btn-nuevo-usuario").click(function (e) {
         $('#admin_usr').bootstrapToggle('off');
         $('#form_usuario').bootstrapValidator('resetForm', true);
+        ValidadorForm(validator_usuario);
+        $("#modal-nuevo-usuario").modal("show");
+        e.preventDefault();
+        e.stopImmediatePropagation();
+    });
+    $("#btn-modificar-usuario").click(function (e) {
+        var datos = localStorage.getItem('tr-tabla_usuarios');
+        var usuario = JSON.parse(datos !== null ? datos : '');
+        Ajax.get();
+        if (usuario != null)
+            usuario.setForm();
+        console.log(usuario);
         ValidadorForm(validator_usuario);
         $("#modal-nuevo-usuario").modal("show");
         e.preventDefault();
@@ -319,6 +311,26 @@ var validator_usuario = {
         }
     }
 };
+/// <reference path="./types/jquery.d.ts" />
+/// <reference path="./Ajax.ts" />
+var Auth = /** @class */ (function () {
+    function Auth(mail, password) {
+        this.mail = mail;
+        this.password = password;
+    }
+    Auth.setForm = function () {
+        $("#mail").val('admin@admin');
+        $("#password").val('123');
+    };
+    Auth.prototype.login = function () {
+        return Ajax.post('login', { mail: this.mail, password: this.password });
+    };
+    Auth.logout = function () {
+        localStorage.clear();
+        sessionStorage.clear();
+    };
+    return Auth;
+}());
 var DataTable = /** @class */ (function () {
     function DataTable(id_tabla) {
         this.id_tabla = id_tabla;
@@ -357,17 +369,8 @@ var DataTable = /** @class */ (function () {
         if (fn_nosel === void 0) { fn_nosel = null; }
         var nombre_item = 'tr-' + this.id_tabla;
         sessionStorage.removeItem(nombre_item);
-<<<<<<< HEAD
         $('#' + this.id_tabla + ' tbody').off('click', 'tr').on('click', 'tr', function (e, dt, type, indexes) {
             if ($(e.currentTarget).hasClass('selected')) {
-=======
-        console.log(123);
-        $('#' + this.id_tabla + ' tbody').off('click', 'tr').on('click', 'tr', function (e) {
-            console.log(e.currentTarget);
-            if (e.target.className == 'selected') {
-                console.log(123);
-                e.target.className = '';
->>>>>>> 551c101c4e11e1546fab4cd254067f4244e13fc9
                 sessionStorage.removeItem(nombre_item);
                 if (fn_nosel !== null)
                     fn_nosel();

@@ -52,6 +52,18 @@ $(document).ready(()=>{
         e.preventDefault();
         e.stopImmediatePropagation();
     });
+    $("#btn-modificar-usuario").click((e)=>{
+        let datos = localStorage.getItem('tr-tabla_usuarios');
+        let usuario = JSON.parse(datos !== null?datos:'');
+        Ajax.get()
+        if(usuario != null)
+            usuario.setForm();
+        console.log(usuario);
+        ValidadorForm(validator_usuario);
+        $("#modal-nuevo-usuario").modal("show");
+        e.preventDefault();
+        e.stopImmediatePropagation();
+    });
     $("#a-usuarios-lis").click((e)=>{
         $("#form-login").prop("hidden",true);
         $("#usuarios").prop("hidden",false);
