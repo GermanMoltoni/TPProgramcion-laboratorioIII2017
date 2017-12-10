@@ -219,6 +219,7 @@ $(document).ready(function () {
     $("#a-usuarios-lis").click(function (e) {
         $("#form-login").prop("hidden", true);
         $("#usuarios").prop("hidden", false);
+        $("#estacionamiento").prop("hidden", true);
         tabla_usuarios = new DataTable("tabla_usuarios");
         tabla_usuarios.ajax([
             { render: function (data, type, row) { return row.nombre + ',' + row.apellido; } },
@@ -505,3 +506,37 @@ var DataTable = /** @class */ (function () {
     };
     return DataTable;
 }());
+$(document).ready(function () {
+    $("#a-estacionamiento").click(function (e) {
+        $("#form-login").prop("hidden", true);
+        $("#usuarios").prop("hidden", true);
+        $("#estacionamiento").prop("hidden", false);
+    });
+    $("#btn-ingreso-auto").click(function (e) {
+        $("#modal-ingreso-auto").modal("show");
+    });
+});
+var Estacionamiento = /** @class */ (function () {
+    function Estacionamiento() {
+    }
+    return Estacionamiento;
+}());
+var validator_modificar_usuario = {
+    id_form: "form_usuario",
+    callback: function () {
+        Usuario.modificar().done(function (e) {
+            tabla_usuarios.reloadTable();
+        }, function () { });
+        $("#modal-nuevo-usuario").modal("hide");
+    },
+    opciones: {
+        message: 'Este valor no es valido',
+        fields: {
+            in_nombre: {
+                validators: {
+                    notEmpty: { message: 'Ingrese Nombre' }
+                }
+            }
+        }
+    }
+};

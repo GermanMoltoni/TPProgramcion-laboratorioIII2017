@@ -66,6 +66,8 @@ $(document).ready(()=>{
     $("#a-usuarios-lis").click((e)=>{
         $("#form-login").prop("hidden",true);
         $("#usuarios").prop("hidden",false);
+        $("#estacionamiento").prop("hidden",true);
+        
         tabla_usuarios = new DataTable("tabla_usuarios");
         tabla_usuarios.ajax(
             [                
