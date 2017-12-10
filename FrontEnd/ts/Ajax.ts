@@ -21,6 +21,26 @@ class Ajax{
             headers:{'token':Ajax.getToken()}
         });
     }
+    public static put(path:string,data:any) {
+        return $.ajax({
+            url: Ajax.url+path,
+            type: 'PUT',
+            dataType: 'json',
+            data: data,
+            async:true,
+            headers:{'token':Ajax.getToken()}
+        });
+    }
+    public static delete(path:string,data:any) {
+        return $.ajax({
+            url: Ajax.url+path,
+            type: 'DELETE',
+            dataType: 'json',
+            data: data,
+            async:true,
+            headers:{'token':Ajax.getToken()}
+        });
+    }
     public static postArchivo(path:string,data:any) {
         let form_data = new FormData();
         for(let ind in data){

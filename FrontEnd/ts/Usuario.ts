@@ -27,11 +27,12 @@ class Usuario{
     }
     public static crear(){
          return Ajax.post('usuario/alta',Usuario.getForm());
-        
     }
-    public static listar(){
-        Ajax.get('usuario/listar').done((e:any)=>{console.log(e)},()=>{}); 
-        
+    public static modificar(){
+        return Ajax.post('usuario/modificar',Usuario.getForm());
+    }
+    public static listar(id?:number){
+        return Ajax.get('usuario/listar',{id:id});
     }
     public static setUsuario(usuario:any){
         if(usuario != undefined)
@@ -45,6 +46,11 @@ class Usuario{
         }
        
     }
+    public static jsonToUsuario(json:any){
+        if(json !== null){
+            return new Usuario(json.mail,json.nombre,json.apellido,json.password,json.estado,json.admin,json.turno,json.pathFoto,json.id)
+        }
+    }
     private static getForm(){
         return{
         "nombre":$("#in_nombre").val(),
@@ -57,18 +63,25 @@ class Usuario{
         "estado":"1"};
     }
     public setForm(){
-        $("#nombre").val(this.nombre);
-        $("#apellido").val(this.apellido);
-        $("#password").val('');
-        $("#id").val(this.id != undefined?this.id:'');
-        $("#mail").val(this.mail);
-        $("#turno").val(this.turno != undefined?this.turno:'');
-        $("#admin").val(this.admin != undefined?this.admin:'');
-        $("#estado").val(this.estado != undefined?this.estado:'');
+        console.log(this.id != undefined?this.id.toString():'');
+        $("#in_nombre").val(this.nombre);
+        $("#in_apellido").val(this.apellido);
+        $("#in_passwd1").val('');
+        $("#in_id").val(this.id != undefined?this.id.toString():'');
+        $("#in_mail").val(this.mail);
+        $("#sel_turno").val(this.turno != undefined?this.turno.toString():'');
+        if(this.admin != undefined && this.admin)
+            $('#admin_usr').bootstrapToggle('on');
+        else
+            $('#admin_usr').bootstrapToggle('off');
         $("#pathFoto").val('');
     }
     public static getTipo(){
         let usuario = Usuario.getUsuario();
         return usuario != undefined && usuario.admin;
+    }
+    public cambiarEstado(){
+        return Ajax.put('usuario/estado',{id:this.id});
+        
     }
 }

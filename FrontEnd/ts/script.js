@@ -22,6 +22,26 @@ var Ajax = /** @class */ (function () {
             headers: { 'token': Ajax.getToken() }
         });
     };
+    Ajax.put = function (path, data) {
+        return $.ajax({
+            url: Ajax.url + path,
+            type: 'PUT',
+            dataType: 'json',
+            data: data,
+            async: true,
+            headers: { 'token': Ajax.getToken() }
+        });
+    };
+    Ajax["delete"] = function (path, data) {
+        return $.ajax({
+            url: Ajax.url + path,
+            type: 'DELETE',
+            dataType: 'json',
+            data: data,
+            async: true,
+            headers: { 'token': Ajax.getToken() }
+        });
+    };
     Ajax.postArchivo = function (path, data) {
         var form_data = new FormData();
         for (var ind in data) {
@@ -75,8 +95,11 @@ var Usuario = /** @class */ (function () {
     Usuario.crear = function () {
         return Ajax.post('usuario/alta', Usuario.getForm());
     };
-    Usuario.listar = function () {
-        Ajax.get('usuario/listar').done(function (e) { console.log(e); }, function () { });
+    Usuario.modificar = function () {
+        return Ajax.post('usuario/modificar', Usuario.getForm());
+    };
+    Usuario.listar = function (id) {
+        return Ajax.get('usuario/listar', { id: id });
     };
     Usuario.setUsuario = function (usuario) {
         if (usuario != undefined)
@@ -87,6 +110,11 @@ var Usuario = /** @class */ (function () {
         var usuario = JSON.parse(datos !== null ? datos : '');
         if (usuario !== null) {
             return new Usuario(usuario.mail, usuario.nombre, usuario.apellido, usuario.password, usuario.estado, usuario.admin, usuario.turno, usuario.pathFoto, usuario.id);
+        }
+    };
+    Usuario.jsonToUsuario = function (json) {
+        if (json !== null) {
+            return new Usuario(json.mail, json.nombre, json.apellido, json.password, json.estado, json.admin, json.turno, json.pathFoto, json.id);
         }
     };
     Usuario.getForm = function () {
@@ -102,19 +130,25 @@ var Usuario = /** @class */ (function () {
         };
     };
     Usuario.prototype.setForm = function () {
-        $("#nombre").val(this.nombre);
-        $("#apellido").val(this.apellido);
-        $("#password").val('');
-        $("#id").val(this.id != undefined ? this.id : '');
-        $("#mail").val(this.mail);
-        $("#turno").val(this.turno != undefined ? this.turno : '');
-        $("#admin").val(this.admin != undefined ? this.admin : '');
-        $("#estado").val(this.estado != undefined ? this.estado : '');
+        console.log(this.id != undefined ? this.id.toString() : '');
+        $("#in_nombre").val(this.nombre);
+        $("#in_apellido").val(this.apellido);
+        $("#in_passwd1").val('');
+        $("#in_id").val(this.id != undefined ? this.id.toString() : '');
+        $("#in_mail").val(this.mail);
+        $("#sel_turno").val(this.turno != undefined ? this.turno.toString() : '');
+        if (this.admin != undefined && this.admin)
+            $('#admin_usr').bootstrapToggle('on');
+        else
+            $('#admin_usr').bootstrapToggle('off');
         $("#pathFoto").val('');
     };
     Usuario.getTipo = function () {
         var usuario = Usuario.getUsuario();
         return usuario != undefined && usuario.admin;
+    };
+    Usuario.prototype.cambiarEstado = function () {
+        return Ajax.put('usuario/estado', { id: this.id });
     };
     return Usuario;
 }());
@@ -130,6 +164,7 @@ $(document).ready(function () {
         login.login().done(function (e) {
             Usuario.setUsuario(e.user);
             if (e.error != undefined) {
+                $("#btn-eliminar-usr").addClass("hide_me");
                 $("#msg-info").text(e.error);
                 $("#modal-info").modal("show");
             }
@@ -166,19 +201,17 @@ $(document).ready(function () {
     $("#btn-nuevo-usuario").click(function (e) {
         $('#admin_usr').bootstrapToggle('off');
         $('#form_usuario').bootstrapValidator('resetForm', true);
-        ValidadorForm(validator_usuario);
+        ValidadorForm(validator_nuevo_usuario);
         $("#modal-nuevo-usuario").modal("show");
         e.preventDefault();
         e.stopImmediatePropagation();
     });
     $("#btn-modificar-usuario").click(function (e) {
-        var datos = localStorage.getItem('tr-tabla_usuarios');
+        var datos = sessionStorage.getItem('tr-tabla_usuarios');
         var usuario = JSON.parse(datos !== null ? datos : '');
-        Ajax.get();
-        if (usuario != null)
-            usuario.setForm();
-        console.log(usuario);
-        ValidadorForm(validator_usuario);
+        usuario = Usuario.jsonToUsuario(usuario);
+        usuario.setForm();
+        ValidadorForm(validator_modificar_usuario);
         $("#modal-nuevo-usuario").modal("show");
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -208,6 +241,9 @@ $(document).ready(function () {
                     return turno;
                 } },
             { render: function (data, type, row) {
+                    return row.estado == 1 ? '<span class="badge" style="background-color:green;">Habilitado</span>' : '<span class="badge" style="background-color:red;">Suspendido</span>';
+                } },
+            { render: function (data, type, row) {
                     return row.admin == 1 ? 'Administrador' : 'Empleado';
                 } },
             { render: function (data, type, row) {
@@ -230,6 +266,29 @@ $(document).ready(function () {
         $("#form_usuario").bootstrapValidator('validateField', 'sel_turno');
     });
     $("#btn-estado-usuario").click(function (e) {
+        var datos = sessionStorage.getItem('tr-tabla_usuarios');
+        var usuario = JSON.parse(datos !== null ? datos : '');
+        usuario = Usuario.jsonToUsuario(usuario);
+        usuario.cambiarEstado().done(function (e) {
+            tabla_usuarios.reloadTable();
+        }, function () { });
+        e.preventDefault();
+    });
+    $("#btn-baja-usuario").click(function (e) {
+        $("#msg-info").text("¿Desea borrar el usuario?");
+        $("#btn-eliminar-usr").removeClass("hide_me");
+        $("#modal-info").modal("show");
+        e.preventDefault();
+    });
+    $("#btn-eliminar-usr").click(function (e) {
+        var datos = sessionStorage.getItem('tr-tabla_usuarios');
+        var usuario = JSON.parse(datos !== null ? datos : '');
+        usuario = Usuario.jsonToUsuario(usuario);
+        Ajax["delete"]('usuario/baja', { id: usuario.id }).done(function () {
+            tabla_usuarios.reloadTable();
+            $("#btn-eliminar-usr").addClass("hide_me");
+            $("#modal-info").modal("hide");
+        });
         e.preventDefault();
     });
 });
@@ -248,7 +307,7 @@ function ValidadorForm(obj_param) {
         });
     }
 }
-var validator_usuario = {
+var validator_nuevo_usuario = {
     id_form: "form_usuario",
     callback: function () {
         Usuario.crear().done(function (e) {
@@ -302,6 +361,67 @@ var validator_usuario = {
             in_passwd2: {
                 validators: {
                     notEmpty: { message: 'Verificar Password' },
+                    identical: {
+                        field: 'in_passwd1',
+                        message: 'no coincide el password'
+                    }
+                }
+            }
+        }
+    }
+};
+var validator_modificar_usuario = {
+    id_form: "form_usuario",
+    callback: function () {
+        Usuario.modificar().done(function (e) {
+            tabla_usuarios.reloadTable();
+        }, function () { });
+        $("#modal-nuevo-usuario").modal("hide");
+    },
+    opciones: {
+        message: 'Este valor no es valido',
+        fields: {
+            in_nombre: {
+                validators: {
+                    notEmpty: { message: 'Ingrese Nombre' }
+                }
+            },
+            in_apellido: {
+                validators: {
+                    notEmpty: { message: 'Ingrese Apellido' }
+                }
+            },
+            sel_turno: {
+                validators: {
+                    callback: {
+                        message: 'Ingresar Documento',
+                        callback: function (value) {
+                            if (!$("#admin_usr").is(":checked"))
+                                return true;
+                            else
+                                return value > 0;
+                        }
+                    }
+                }
+            },
+            in_mail: {
+                validators: {
+                    notEmpty: { message: 'Ingrese Mail' },
+                    emailAddress: {
+                        message: 'No es un mail válido'
+                    }
+                }
+            },
+            in_passwd1: {
+                validators: {
+                    identical: {
+                        field: 'in_passwd2',
+                        message: 'No coincide el password'
+                    }
+                }
+            },
+            in_passwd2: {
+                validators: {
                     identical: {
                         field: 'in_passwd1',
                         message: 'no coincide el password'

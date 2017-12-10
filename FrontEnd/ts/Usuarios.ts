@@ -11,6 +11,7 @@ $(document).ready(()=>{
         login.login().done((e:any)=>{
             Usuario.setUsuario(e.user);
             if(e.error != undefined){
+                $("#btn-eliminar-usr").addClass("hide_me");                
                 $("#msg-info").text(e.error);
                 $("#modal-info").modal("show");
             }
@@ -47,19 +48,17 @@ $(document).ready(()=>{
     $("#btn-nuevo-usuario").click((e)=>{
         $('#admin_usr').bootstrapToggle('off');
         $('#form_usuario').bootstrapValidator('resetForm', true);
-        ValidadorForm(validator_usuario);
+        ValidadorForm(validator_nuevo_usuario);
         $("#modal-nuevo-usuario").modal("show");
         e.preventDefault();
         e.stopImmediatePropagation();
     });
     $("#btn-modificar-usuario").click((e)=>{
-        let datos = localStorage.getItem('tr-tabla_usuarios');
+        let datos = sessionStorage.getItem('tr-tabla_usuarios');
         let usuario = JSON.parse(datos !== null?datos:'');
-        Ajax.get()
-        if(usuario != null)
-            usuario.setForm();
-        console.log(usuario);
-        ValidadorForm(validator_usuario);
+        usuario = Usuario.jsonToUsuario(usuario);
+        usuario.setForm();
+        ValidadorForm(validator_modificar_usuario);
         $("#modal-nuevo-usuario").modal("show");
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -90,6 +89,8 @@ $(document).ready(()=>{
                       return turno;  
                      }},
                 {render:function(data:any,type:any,row:any){
+                        return row.estado == 1?'<span class="badge" style="background-color:green;">Habilitado</span>':'<span class="badge" style="background-color:red;">Suspendido</span>';}},   
+                {render:function(data:any,type:any,row:any){
                     return row.admin == 1?'Administrador':'Empleado';}},
                     {render:function(data:any,type:any,row:any){
                         return row.pathFoto == null?'Sin Foto':'<img src='+row.pathFoto+'>';}},
@@ -111,6 +112,29 @@ $(document).ready(()=>{
         $("#form_usuario").bootstrapValidator('validateField', 'sel_turno');    
     });
     $("#btn-estado-usuario").click((e)=>{
+        let datos = sessionStorage.getItem('tr-tabla_usuarios');
+        let usuario = JSON.parse(datos !== null?datos:'');
+        usuario = Usuario.jsonToUsuario(usuario);
+        usuario.cambiarEstado().done((e:any)=>{
+            tabla_usuarios.reloadTable();
+        },()=>{});
+        e.preventDefault();
+    });
+    $("#btn-baja-usuario").click((e)=>{
+        $("#msg-info").text("¿Desea borrar el usuario?");
+        $("#btn-eliminar-usr").removeClass("hide_me");
+        $("#modal-info").modal("show");
+        e.preventDefault();
+    });
+    $("#btn-eliminar-usr").click((e)=>{
+        let datos = sessionStorage.getItem('tr-tabla_usuarios');
+        let usuario = JSON.parse(datos !== null?datos:'');
+        usuario = Usuario.jsonToUsuario(usuario);
+        Ajax.delete('usuario/baja',{id:usuario.id}).done(()=>{
+            tabla_usuarios.reloadTable();
+            $("#btn-eliminar-usr").addClass("hide_me");
+            $("#modal-info").modal("hide");
+        });
         e.preventDefault();
     });
 });
@@ -130,7 +154,7 @@ function ValidadorForm(obj_param:any){
     }
 } 
 
-var validator_usuario = {
+var validator_nuevo_usuario = {
     id_form:"form_usuario",
     callback:()=>{
         Usuario.crear().done((e:any)=>{
@@ -185,6 +209,67 @@ var validator_usuario = {
                 validators:{
                     notEmpty:{message:'Verificar Password'},
                     identical:{
+                        field:'in_passwd1',
+                        message:'no coincide el password'
+                    }
+                }
+            }
+        }
+    }
+};
+var validator_modificar_usuario = {
+    id_form:"form_usuario",
+    callback:()=>{
+            Usuario.modificar().done((e:any)=>{
+                tabla_usuarios.reloadTable();
+            },()=>{}); 
+        $("#modal-nuevo-usuario").modal("hide");
+    },
+    opciones:{
+        message: 'Este valor no es valido',
+        fields: {
+            in_nombre:{
+                validators:{
+                    notEmpty:{message:'Ingrese Nombre'},
+                }
+            },
+            in_apellido:{
+                validators:{
+                    notEmpty:{message:'Ingrese Apellido'}
+                }
+            },
+            sel_turno:{
+                validators:{
+                    callback:{
+                        message:'Ingresar Documento',
+                        callback:(value:any)=>{
+                            if(!$("#admin_usr").is(":checked"))
+                                return true;
+                            else
+                                return value > 0;
+                        }
+                    }
+                }
+            },
+            in_mail:{
+                validators:{
+                    notEmpty:{message:'Ingrese Mail'},
+                    emailAddress: {
+                        message: 'No es un mail válido'
+                    }
+                }
+            },
+            in_passwd1:{
+                validators:{
+                     identical:{
+                        field:'in_passwd2',
+                        message:'No coincide el password'
+                    }
+                }
+            },
+            in_passwd2:{
+                validators:{
+                     identical:{
                         field:'in_passwd1',
                         message:'no coincide el password'
                     }
