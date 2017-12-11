@@ -63,7 +63,6 @@ class Usuario{
         "estado":"1"};
     }
     public setForm(){
-        console.log(this.id != undefined?this.id.toString():'');
         $("#in_nombre").val(this.nombre);
         $("#in_apellido").val(this.apellido);
         $("#in_passwd1").val('');

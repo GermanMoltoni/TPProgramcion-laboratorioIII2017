@@ -20,7 +20,11 @@ $(document).ready(()=>{
     
 });
 
- 
+function selectUsuarios(id_div:string,usuarios:any){
+    
+}
+
+
 var validator_ingreso_vehiculo = {
     id_form:"form_ingreso_vehiculo",
     callback:()=>{
@@ -52,3 +56,5 @@ var validator_ingreso_vehiculo = {
         }
     }
 };
+
+
