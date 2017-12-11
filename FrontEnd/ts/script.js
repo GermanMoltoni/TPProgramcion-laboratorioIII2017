@@ -514,20 +514,20 @@ $(document).ready(function () {
     });
     $("#btn-ingreso-auto").click(function (e) {
         $("#modal-ingreso-vehiculo").modal("show");
+        $('#form_ingreso_vehiculo').bootstrapValidator('resetForm', true);
+        ValidadorForm(validator_ingreso_vehiculo);
+        e.preventDefault();
+    });
+    $("#btn-egreso-auto").click(function (e) {
+        $("#modal-egreso-vehiculo").modal("show");
+        // $('#form_egreso_vehiculo').bootstrapValidator('resetForm', true);
+        //ValidadorForm(validator_ingreso_vehiculo);
         e.preventDefault();
     });
 });
-var Estacionamiento = /** @class */ (function () {
-    function Estacionamiento() {
-    }
-    return Estacionamiento;
-}());
 var validator_ingreso_vehiculo = {
     id_form: "form_ingreso_vehiculo",
     callback: function () {
-        Usuario.modificar().done(function (e) {
-            tabla_usuarios.reloadTable();
-        }, function () { });
         $("#modal-ingreso-vehiculo").modal("hide");
     },
     opciones: {
@@ -535,7 +535,11 @@ var validator_ingreso_vehiculo = {
         fields: {
             in_dominio: {
                 validators: {
-                    notEmpty: { message: 'Ingrese Dominio' }
+                    callback: {
+                        message: 'Ingrese Dominio',
+                        callback: function (value) {
+                        }
+                    }
                 }
             },
             in_color: {
@@ -551,3 +555,16 @@ var validator_ingreso_vehiculo = {
         }
     }
 };
+var tabla_operaciones;
+$(document).ready(function () {
+    $("#a-operaciones").click(function (e) {
+        $("#form-login").prop("hidden", true);
+        $("#usuarios").prop("hidden", true);
+        $("#estacionamiento").prop("hidden", true);
+        tabla_operaciones = new DataTable("tabla_operaciones");
+        $("#operaciones").prop("hidden", false);
+    });
+    $("#btn-buscar-oper").click(function (e) {
+        e.preventDefault();
+    });
+});
