@@ -6,7 +6,8 @@ $(document).ready(()=>{
         
     });
     $("#btn-ingreso-auto").click((e)=>{
-        $("#modal-ingreso-auto").modal("show");
+        $("#modal-ingreso-vehiculo").modal("show");
+        e.preventDefault();
     });
 });
 
@@ -14,20 +15,30 @@ class Estacionamiento{
     
 }
 
-var validator_modificar_usuario = {
-    id_form:"form_usuario",
+var validator_ingreso_vehiculo = {
+    id_form:"form_ingreso_vehiculo",
     callback:()=>{
             Usuario.modificar().done((e:any)=>{
                 tabla_usuarios.reloadTable();
             },()=>{}); 
-        $("#modal-nuevo-usuario").modal("hide");
+        $("#modal-ingreso-vehiculo").modal("hide");
     },
     opciones:{
         message: 'Este valor no es valido',
         fields: {
-            in_nombre:{
+            in_dominio:{
                 validators:{
-                    notEmpty:{message:'Ingrese Nombre'},
+                    notEmpty:{message:'Ingrese Dominio'},
+                }
+            },
+            in_color:{
+                validators:{
+                    notEmpty:{message:'Ingrese Color'},
+                }
+            },
+            in_marca:{
+                validators:{
+                    notEmpty:{message:'Ingrese Marca'},
                 }
             },
         }
