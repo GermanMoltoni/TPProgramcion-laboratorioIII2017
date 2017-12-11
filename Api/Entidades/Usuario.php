@@ -61,13 +61,13 @@
         {
             if (count(self::BuscarUsuarioPorId($id)) != 0)
             {
-                $usuario = self::BuscarUsuarioPorId($id);
+                $usuario = self::BuscarUsuarioPorId($id)[0];
                 $objDB = AccesoDatos::DameUnObjetoAcceso(); 
                 $consulta = $objDB->RetornarConsulta("UPDATE `usuarios` SET `estado` = :estado WHERE `id` = :Id");
 		        $consulta->bindValue(':Id',$id, PDO::PARAM_INT);
-                $consulta->bindValue(':estado',!$usuario->estado, PDO::PARAM_STR);
+                $consulta->bindValue(':estado',($usuario->estado == 1?0:1), PDO::PARAM_STR);
                 $consulta->execute();
-                return !$usuario->estado;
+                return !($usuario->estado == 1?0:1);
             }
             return null;
         }
@@ -142,7 +142,7 @@
         */
         static function ListarUsuarios(){
             $objDB = AccesoDatos::DameUnObjetoAcceso();
-		    $consulta = $objDB->RetornarConsulta("SELECT nombre,apellido,estado,turno,admin,pathFoto,id FROM usuarios");
+		    $consulta = $objDB->RetornarConsulta("SELECT nombre,apellido,mail,estado,turno,admin,pathFoto,id FROM usuarios");
             $consulta->execute();
             return $consulta->fetchAll(PDO::FETCH_OBJ);
         }
