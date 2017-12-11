@@ -7,7 +7,7 @@ $(document).ready(()=>{
         $("#estacionamiento").prop("hidden",true);
         tabla_operaciones = new DataTable("tabla_operaciones");
         Usuario.listar().done((e)=>{
-            crearSelect('lista_usuarios',e);
+            crearSelectUsr('lista_usuarios',e);
         });
         $("#operaciones").prop("hidden",false);
     });
@@ -19,7 +19,7 @@ $(document).ready(()=>{
  
     
 });
-function crearSelect(id_div:any,arr_datos:any){
+function crearSelectUsr(id_div:any,arr_datos:any){
     let div = document.getElementById(id_div);
     if(div === null){
         return;
