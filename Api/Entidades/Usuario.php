@@ -209,18 +209,53 @@
         }
          function ModificarUsuario(){
             $objDB = AccesoDatos::DameUnObjetoAcceso();
+            if($this->password != '' && $this->pathFoto != ''){
+                $consulta = $objDB->RetornarConsulta("UPDATE `usuarios` SET `mail`=:Mail,`nombre`=:Nombre, `apellido`=:Apellido,`password`=:Password, `turno`=:Turno,`admin`=:Admin,`pathFoto`=:pathFoto WHERE id=:Id");
+                $consulta->bindValue(':Id',$this->id, PDO::PARAM_INT);
+                $consulta->bindValue(':Nombre',$this->nombre, PDO::PARAM_STR);
+                $consulta->bindValue(':Apellido',$this->apellido, PDO::PARAM_STR);
+                $consulta->bindValue(':Password',$this->password, PDO::PARAM_STR);
+                $consulta->bindValue(':Mail',$this->mail, PDO::PARAM_STR);
+                $consulta->bindValue(':Admin',$this->admin, PDO::PARAM_STR);
+                $consulta->bindValue(':Turno',$this->turno, PDO::PARAM_STR);
+                $consulta->bindValue(':pathFoto',$this->pathFoto, PDO::PARAM_STR);
+                return $consulta->execute();
+            }
+            elseif($this->password == '' && $this->pathFoto == ''){
+                $consulta = $objDB->RetornarConsulta("UPDATE `usuarios` SET `mail`=:Mail,`nombre`=:Nombre, `apellido`=:Apellido, `turno`=:Turno,`admin`=:Admin WHERE id=:Id");
+                $consulta->bindValue(':Id',$this->id, PDO::PARAM_INT);
+                $consulta->bindValue(':Nombre',$this->nombre, PDO::PARAM_STR);
+                $consulta->bindValue(':Apellido',$this->apellido, PDO::PARAM_STR);
+                $consulta->bindValue(':Mail',$this->mail, PDO::PARAM_STR);
+                $consulta->bindValue(':Admin',$this->admin, PDO::PARAM_STR);
+                $consulta->bindValue(':Turno',$this->turno, PDO::PARAM_STR);
+                return $consulta->execute();
+            }
+            elseif($this->password != '' && $this->pathFoto == ''){
+                $consulta = $objDB->RetornarConsulta("UPDATE `usuarios` SET `mail`=:Mail,`nombre`=:Nombre, `apellido`=:Apellido,`password`=:Password, `turno`=:Turno,`admin`=:Admin WHERE id=:Id");
+                $consulta->bindValue(':Id',$this->id, PDO::PARAM_INT);
+                $consulta->bindValue(':Nombre',$this->nombre, PDO::PARAM_STR);
+                $consulta->bindValue(':Apellido',$this->apellido, PDO::PARAM_STR);
+                $consulta->bindValue(':Password',$this->password, PDO::PARAM_STR);
+                $consulta->bindValue(':Mail',$this->mail, PDO::PARAM_STR);
+                $consulta->bindValue(':Admin',$this->admin, PDO::PARAM_STR);
+                $consulta->bindValue(':Turno',$this->turno, PDO::PARAM_STR);
+                return $consulta->execute();
+            }
+            elseif($this->password == '' && $this->pathFoto != ''){
+                $consulta = $objDB->RetornarConsulta("UPDATE `usuarios` SET `mail`=:Mail,`nombre`=:Nombre, `apellido`=:Apellido,`pathFoto`=:pathFoto, `turno`=:Turno,`admin`=:Admin WHERE id=:Id");
+                $consulta->bindValue(':Id',$this->id, PDO::PARAM_INT);
+                $consulta->bindValue(':Nombre',$this->nombre, PDO::PARAM_STR);
+                $consulta->bindValue(':Apellido',$this->apellido, PDO::PARAM_STR);
+                $consulta->bindValue(':Mail',$this->mail, PDO::PARAM_STR);
+                $consulta->bindValue(':Admin',$this->admin, PDO::PARAM_STR);
+                $consulta->bindValue(':Turno',$this->turno, PDO::PARAM_STR);
+                $consulta->bindValue(':pathFoto',$this->pathFoto, PDO::PARAM_STR);
+                
+                return $consulta->execute();
+            }
 
-            $consulta = $objDB->RetornarConsulta("UPDATE `usuarios` SET `mail`=:Mail,`nombre`=:Nombre, `apellido`=:Apellido,`password`=:Password, `turno`=:Turno,`admin`=:Admin,`estado`=:Estado,`pathFoto`=:pathFoto WHERE id=:Id");
-            $consulta->bindValue(':Id',$this->id, PDO::PARAM_INT);
-            $consulta->bindValue(':Nombre',$this->nombre, PDO::PARAM_STR);
-            $consulta->bindValue(':Apellido',$this->apellido, PDO::PARAM_STR);
-            $consulta->bindValue(':Password',$this->password, PDO::PARAM_STR);
-            $consulta->bindValue(':Mail',$this->mail, PDO::PARAM_STR);
-            $consulta->bindValue(':Estado',$this->estado, PDO::PARAM_STR);
-            $consulta->bindValue(':Admin',$this->admin, PDO::PARAM_STR);
-                        $consulta->bindValue(':Turno',$this->turno, PDO::PARAM_STR);
-            $consulta->bindValue(':pathFoto',$this->pathFoto, PDO::PARAM_STR);
-            return $consulta->execute();
+            
         }
 
     }
