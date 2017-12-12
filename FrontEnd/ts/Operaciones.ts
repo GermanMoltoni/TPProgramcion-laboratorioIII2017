@@ -30,10 +30,10 @@ $(document).ready(()=>{
     });
     
     $('#in_desde').datetimepicker({
-        format: 'DD-MM-YYYY HH:mm:ss'
+        format: 'YYYY-MM-DD HH:mm:ss'
     });
     $('#in_hasta').datetimepicker({
-        format: 'DD-MM-YYYY HH:mm:ss',
+        format: 'YYYY-MM-DD HH:mm:ss',
         useCurrent: false //Important! See issue #1075
     });
     $("#in_desde").on("dp.change", function (e:any) {

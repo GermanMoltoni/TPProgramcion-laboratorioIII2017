@@ -660,10 +660,10 @@ $(document).ready(function () {
         e.preventDefault();
     });
     $('#in_desde').datetimepicker({
-        format: 'DD-MM-YYYY HH:mm:ss'
+        format: 'YYYY-MM-DD HH:mm:ss'
     });
     $('#in_hasta').datetimepicker({
-        format: 'DD-MM-YYYY HH:mm:ss',
+        format: 'YYYY-MM-DD HH:mm:ss',
         useCurrent: false //Important! See issue #1075
     });
     $("#in_desde").on("dp.change", function (e) {
@@ -722,3 +722,9 @@ var Operacion = /** @class */ (function () {
     };
     return Operacion;
 }());
+function FechaSql(fecha) {
+    var aux = fecha.split('');
+    var fec = aux[0].split('-');
+    var hor = aux[1];
+    return fec[2] + '-' + fec[1] + '-' + fec[0] + ' ' + hor;
+}

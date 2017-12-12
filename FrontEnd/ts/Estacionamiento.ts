@@ -124,7 +124,6 @@ class Estacionamiento{
         $("#lbl-salida-salida").text(datos.salida);
         $("#lbl-pago-salida").text(datos.pago);
         $("#lbl-tiempo-salida").text(datos.tiempo);
-        
     }
     public static getFormEgreso(){
         return $("#in_dominio_egre").val();
