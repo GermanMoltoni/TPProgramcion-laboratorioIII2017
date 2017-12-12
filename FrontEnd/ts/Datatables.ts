@@ -1,15 +1,19 @@
 class DataTable{
     private dt:any;
     private id_tabla:string;
+    public path:string;
     constructor(id_tabla:string){
         this.id_tabla = id_tabla;
     }
-    public  ajax(columns:any,path:string){
+    public setPath(path:string){
+        this.path = path;
+    }
+    public ajax(columns:any){
         $('#' + this.id_tabla).DataTable().destroy();
         this.dt = $('#' + this.id_tabla).DataTable({
             autoWidth: false,
             destroy: true,
-            ajax:{ url:path,
+            ajax:{ url:this.path,
             dataSrc:(data:any)=>{
                 if(data =="{}" )
                     return {};

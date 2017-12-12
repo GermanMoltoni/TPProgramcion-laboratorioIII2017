@@ -31,7 +31,7 @@ class Ajax{
             headers:{'token':Ajax.getToken()}
         });
     }
-    public static delete(path:string,data:any) {
+    public static delete(path:string,data?:any) {
         return $.ajax({
             url: Ajax.url+path,
             type: 'DELETE',
@@ -68,7 +68,7 @@ class Ajax{
             return token;
         //return null;
     }
-    private static setToken(data:any){
+    public static setToken(data:any){
         localStorage.setItem('token',data);
 
     }

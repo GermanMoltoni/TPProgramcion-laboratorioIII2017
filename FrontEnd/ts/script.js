@@ -130,7 +130,6 @@ var Usuario = /** @class */ (function () {
         };
     };
     Usuario.prototype.setForm = function () {
-        console.log(this.id != undefined ? this.id.toString() : '');
         $("#in_nombre").val(this.nombre);
         $("#in_apellido").val(this.apellido);
         $("#in_passwd1").val('');
@@ -162,7 +161,9 @@ $(document).ready(function () {
     $("#btn-login").click(function (e) {
         var login = new Auth($("#mail").val(), $("#password").val());
         login.login().done(function (e) {
+            console.log(e);
             Usuario.setUsuario(e.user);
+            Ajax.setToken(e.token);
             if (e.error != undefined) {
                 $("#btn-eliminar-usr").addClass("hide_me");
                 $("#msg-info").text(e.error);
@@ -250,7 +251,8 @@ $(document).ready(function () {
             { render: function (data, type, row) {
                     return row.pathFoto == null ? 'Sin Foto' : '<img src=' + row.pathFoto + '>';
                 } },
-        ], 'http://localhost/TPProgramcion-laboratorioIII2017/Api/usuario/listar');
+        ]);
+        tabla_usuarios.setPath('http://localhost/TPProgramcion-laboratorioIII2017/Api/usuario/listar');
         tabla_usuarios.selectFila();
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -456,12 +458,15 @@ var DataTable = /** @class */ (function () {
     function DataTable(id_tabla) {
         this.id_tabla = id_tabla;
     }
-    DataTable.prototype.ajax = function (columns, path) {
+    DataTable.prototype.setPath = function (path) {
+        this.path = path;
+    };
+    DataTable.prototype.ajax = function (columns) {
         $('#' + this.id_tabla).DataTable().destroy();
         this.dt = $('#' + this.id_tabla).DataTable({
             autoWidth: false,
             destroy: true,
-            ajax: { url: path,
+            ajax: { url: this.path,
                 dataSrc: function (data) {
                     if (data == "{}")
                         return {};
@@ -510,6 +515,7 @@ $(document).ready(function () {
     $("#a-estacionamiento").click(function (e) {
         $("#form-login").prop("hidden", true);
         $("#usuarios").prop("hidden", true);
+        $("#operaciones").prop("hidden", true);
         $("#estacionamiento").prop("hidden", false);
     });
     $("#btn-ingreso-auto").click(function (e) {
@@ -520,8 +526,8 @@ $(document).ready(function () {
     });
     $("#btn-egreso-auto").click(function (e) {
         $("#modal-egreso-vehiculo").modal("show");
-        // $('#form_egreso_vehiculo').bootstrapValidator('resetForm', true);
-        //ValidadorForm(validator_ingreso_vehiculo);
+        $('#form_egreso_vehiculo').bootstrapValidator('resetForm', true);
+        ValidadorForm(validator_egreso_vehiculo);
         e.preventDefault();
     });
 });
@@ -529,6 +535,14 @@ var validator_ingreso_vehiculo = {
     id_form: "form_ingreso_vehiculo",
     callback: function () {
         $("#modal-ingreso-vehiculo").modal("hide");
+        Estacionamiento.ingresar().done(function (e) {
+            $("#btn-eliminar-usr").addClass("hide_me");
+            if (e.cochera != undefined)
+                $("#msg-info").text('Cochera Asignada:' + e.cochera);
+            else
+                $("#msg-info").text(e.error);
+            $("#modal-info").modal("show");
+        });
     },
     opciones: {
         message: 'Este valor no es valido',
@@ -555,16 +569,156 @@ var validator_ingreso_vehiculo = {
         }
     }
 };
+var validator_egreso_vehiculo = {
+    id_form: "form_egreso_vehiculo",
+    callback: function () {
+        $("#modal-egreso-vehiculo").modal("hide");
+        Estacionamiento.retirar().done(function (e) {
+            $("#btn-eliminar-usr").addClass("hide_me");
+            if (e.error != undefined) {
+                $("#msg-info").text(e.error);
+                $("#modal-info").modal("show");
+            }
+            else {
+                Estacionamiento.setTicket(e);
+                $("#modal-tk-vehiculo").modal("show");
+            }
+        });
+    },
+    opciones: {
+        message: 'Este valor no es valido',
+        fields: {
+            in_dominio_egre: {
+                validators: {
+                    callback: {
+                        message: 'Ingrese Dominio',
+                        callback: function (value) {
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+var Estacionamiento = /** @class */ (function () {
+    function Estacionamiento() {
+    }
+    Estacionamiento.ingresar = function () {
+        return Ajax.post('estacionamiento/ingreso', Estacionamiento.getFormIngreso());
+    };
+    Estacionamiento.retirar = function () {
+        return Ajax["delete"]('estacionamiento/egreso/' + encodeURI(Estacionamiento.getFormEgreso()));
+    };
+    Estacionamiento.getFormIngreso = function () {
+        return {
+            color: $("#in_color").val(),
+            patente: $("#in_dominio").val(),
+            especial: $("#vehi_esp").is(":checked") ? '1' : '0',
+            marca: $("#in_marca").val()
+        };
+    };
+    Estacionamiento.setTicket = function (datos) {
+        $("#lbl-dom-salida").text(datos.patente);
+        $("#lbl-cochera-salida").text(datos.idCochera);
+        $("#lbl-entrada-salida").text(datos.entrada);
+        $("#lbl-salida-salida").text(datos.salida);
+        $("#lbl-pago-salida").text(datos.pago);
+        $("#lbl-tiempo-salida").text(datos.tiempo);
+    };
+    Estacionamiento.getFormEgreso = function () {
+        return $("#in_dominio_egre").val();
+    };
+    return Estacionamiento;
+}());
 var tabla_operaciones;
+/// <reference path="./Operacion.ts" />
 $(document).ready(function () {
     $("#a-operaciones").click(function (e) {
         $("#form-login").prop("hidden", true);
         $("#usuarios").prop("hidden", true);
         $("#estacionamiento").prop("hidden", true);
+        $("#operaciones").prop("hidden", false);
         tabla_operaciones = new DataTable("tabla_operaciones");
+        tabla_operaciones.ajax([
+            { data: 'idCochera' },
+            { data: 'patente' },
+            { data: 'entrada' },
+            { data: 'salida' },
+            { data: 'tiempo' },
+            { data: 'pago' },
+            { data: 'idUser' },
+        ]);
+        Usuario.listar().done(function (e) {
+            crearSelectUsr('lista_usuarios', e);
+        });
         $("#operaciones").prop("hidden", false);
     });
     $("#btn-buscar-oper").click(function (e) {
+        var datos = Operacion.getForm();
+        tabla_operaciones.setPath('http://localhost/TPProgramcion-laboratorioIII2017/Api/operaciones/listar?id=' + datos.id + encodeURI('&from=' + datos.from + '&to=' + datos.to));
+        tabla_operaciones.reloadTable();
+        e.preventDefault();
+    });
+    $('#in_desde').datetimepicker({
+        format: 'DD-MM-YYYY HH:mm:ss'
+    });
+    $('#in_hasta').datetimepicker({
+        format: 'DD-MM-YYYY HH:mm:ss',
+        useCurrent: false //Important! See issue #1075
+    });
+    $("#in_desde").on("dp.change", function (e) {
+        $('#in_hasta').data("DateTimePicker").minDate(e.date);
+    });
+    $("#in_hasta").on("dp.change", function (e) {
+        $('#in_desde').data("DateTimePicker").maxDate(e.date);
+    });
+    $("#btn-exporta-pdf").click(function (e) {
+        var datos = Operacion.getForm();
+        datos["export"] = 'pdf';
+        Ajax.get('operaciones/listar', datos);
         e.preventDefault();
     });
 });
+function crearSelectUsr(id_div, arr_datos) {
+    var div = document.getElementById(id_div);
+    if (div === null) {
+        return;
+    }
+    while (div.firstChild) {
+        div.removeChild(div.firstChild);
+    }
+    var label = document.createElement('label');
+    label.textContent = 'Usuario';
+    var select = document.createElement('select');
+    select.id = "sel-usr";
+    select.name = "sel-usr";
+    select.className = "form-control";
+    var opcion = document.createElement('option');
+    opcion.value = '0';
+    opcion.text = 'Todos';
+    select.appendChild(opcion);
+    if (arr_datos !== null) {
+        arr_datos.forEach(function (obj) {
+            var opcion = document.createElement('option');
+            opcion.value = obj.id;
+            opcion.text = obj.nombre + ' ' + obj.apellido;
+            select.appendChild(opcion);
+        });
+    }
+    div.appendChild(label);
+    div.appendChild(select);
+}
+/// <reference path="./Ajax.ts" />
+var Operacion = /** @class */ (function () {
+    function Operacion() {
+    }
+    Operacion.getForm = function () {
+        return {
+            id: $("#sel-usr").val(),
+            from: $("#in_desde").val(),
+            to: $("#in_hasta").val(),
+            "export": ''
+        };
+    };
+    return Operacion;
+}());

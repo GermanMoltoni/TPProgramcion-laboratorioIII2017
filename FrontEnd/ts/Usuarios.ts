@@ -9,7 +9,9 @@ $(document).ready(()=>{
     $("#btn-login").click((e)=>{
         let login = new Auth($("#mail").val(),$("#password").val());
         login.login().done((e:any)=>{
+            console.log(e)
             Usuario.setUsuario(e.user);
+            Ajax.setToken(e.token);
             if(e.error != undefined){
                 $("#btn-eliminar-usr").addClass("hide_me");                
                 $("#msg-info").text(e.error);
@@ -97,7 +99,8 @@ $(document).ready(()=>{
                     {render:function(data:any,type:any,row:any){
                         return row.pathFoto == null?'Sin Foto':'<img src='+row.pathFoto+'>';}},
             ]
-        ,'http://localhost/TPProgramcion-laboratorioIII2017/Api/usuario/listar');
+        );
+        tabla_usuarios.setPath('http://localhost/TPProgramcion-laboratorioIII2017/Api/usuario/listar');
         tabla_usuarios.selectFila();
         e.preventDefault();
         e.stopImmediatePropagation();
