@@ -109,12 +109,14 @@ class Estacionamiento{
         return Ajax.delete('estacionamiento/egreso/'+encodeURI(Estacionamiento.getFormEgreso()));
     }
     public static getFormIngreso(){
-        return {
+        let auto = new Auto($("#in_dominio").val(),$("#in_marca").val(),$("#in_color").val(),$("#vehi_esp").is(":checked"));
+        return auto.toJson();
+       /* return {
             color:$("#in_color").val(),
             patente:$("#in_dominio").val(),
             especial:$("#vehi_esp").is(":checked")?'1':'0',
             marca:$("#in_marca").val(),
-        }
+        }*/
     }
     public static setTicket(datos:any){
         $("#lbl-dom-salida").text(datos.patente);

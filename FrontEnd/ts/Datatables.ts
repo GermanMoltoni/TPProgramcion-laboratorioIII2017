@@ -1,3 +1,5 @@
+//        $('#os_pac_des').DataTable().columns.adjust().draw();
+
 class DataTable{
     private dt:any;
     private url:string='http://localhost/TPProgramcion-laboratorioIII2017/Api/';

@@ -101,8 +101,8 @@ $(document).ready(()=>{
                         return row.estado == 1?'<span class="badge" style="background-color:green;">Habilitado</span>':'<span class="badge" style="background-color:red;">Suspendido</span>';}},   
                 {render:function(data:any,type:any,row:any){
                     return row.admin == 1?'Administrador':'Empleado';}},
-                    {render:function(data:any,type:any,row:any){
-                        return row.pathFoto == null?'Sin Foto':'<img src='+row.pathFoto+'>';}},
+                {render:function(data:any,type:any,row:any){
+                    return row.pathFoto == null?'Sin Foto':'<img src='+row.pathFoto+'>';}},
             ]
          ,'usuario/listar');
         tabla_usuarios.selectFila();
