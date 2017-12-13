@@ -3,7 +3,7 @@ $(document).ready(()=>{
         $("#form-login").prop("hidden",true);
         $("#usuarios").prop("hidden",true);
         $("#operaciones").prop("hidden",true);
-        
+        $("#estadistica").prop("hidden",true);
         $("#estacionamiento").prop("hidden",false);
     });
     $("#btn-ingreso-auto").click((e)=>{
@@ -12,7 +12,6 @@ $(document).ready(()=>{
         ValidadorForm(validator_ingreso_vehiculo);
         e.preventDefault();
     });
-    
     $("#btn-egreso-auto").click((e)=>{
         $("#modal-egreso-vehiculo").modal("show");
          $('#form_egreso_vehiculo').bootstrapValidator('resetForm', true);

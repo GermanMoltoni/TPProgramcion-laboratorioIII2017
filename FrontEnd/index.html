@@ -12,7 +12,10 @@
      <script type="application/javascript" src="./bower_components/datatables/media/js/jquery.dataTables.js"></script>
      <script type="application/javascript" src="./bower_components/bootstrapvalidator/dist/js/bootstrapValidator.min.js"></script>
      <script type="application/javascript" src="https://cdn.datatables.net/select/1.2.3/js/dataTables.select.min.js"></script>
-     
+     <script type="text/javascript" src="./bower_components/moment/min/moment.min.js"></script>
+     <script type="text/javascript" src="./bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+     <script type="text/javascript" src="./bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+
     <script type="application/javascript" src="./ts/script.js"></script>
      <link  rel="stylesheet" type="text/css"  href="./css/style.css">
     <link  rel="stylesheet" type="text/css"  href="./css/bootstrap.min.css">
@@ -20,7 +23,10 @@
     <link  rel="stylesheet" type="text/css"  href="./bower_components/datatables/media/css/jquery.dataTables.css">
     <link  rel="stylesheet" type="text/css"  href="./bower_components/datatables/media/css/dataTables.bootstrap.css">
     <link  rel="stylesheet" type="text/css"  href="./bower_components/datatables/media/css/dataTables.jqueryui.css">
+    <link  rel="stylesheet" type="text/css"  href="./bower_components/glyphicons/styles/glyphicons.css">
+    
     <link   rel="shortcut icon" type="image/png" href="./css/favicon.ico"/>
+     <link rel="stylesheet" href="./bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
     <style>
     .hide_me{
         display: none;
@@ -43,12 +49,12 @@
                 <div class="collapse navbar-collapse" >
                     <ul class="nav navbar-nav hide_me" id="ul-admin">
                         <li class="active "><a id="a-estacionamiento">Estacionamiento<span class="sr-only">(current)</span></a></li>
-                        <li class="hide_me"><a href="#" >Estadisticas</a></li>
-                        <li class="hide_me"><a href="#" >Operaciones</a></li>
+                        <li class="hide_me"><a id="a-estadistica" >Estadisticas</a></li>
+                        <li class="hide_me"><a id="a-operaciones" >Operaciones</a></li>
                         
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Usuarios<span class="caret"></span></a>
-                            <ul hidden class="dropdown-menu" role="menu">
+                            <ul  class="dropdown-menu" role="menu">
                                 <li ><a id="a-usuarios-lis">Listado</a></li>
                                 <li><a href="#">Logs</a></li>
                             </ul>
@@ -58,7 +64,7 @@
                             <li class="active "><a href="#">Link <span class="sr-only">(current)</span></a></li>
                             <li class="hide_me"><a href="#" >Linasdasdk</a></li>
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
                                 <ul hidden class="dropdown-menu" role="menu">
                                     <li ><a href="#">Action</a></li>
                                     <li><a href="#">Another action</a></li>
@@ -186,30 +192,134 @@
                 </div>
             </div>
         </div>
-
+        <div class="row" id="estadistica" hidden>
+            <div class="col-md-12 col-sm-12">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="panel panel-default">
+                            <div class="panel-body">Promedios Mensuales</div>
+                            <div class="panel-footer">
+                                <div class="row">
+                                    <div class="col-md-1 col-sm-1"></div>
+                                    <div class="col-md-4 col-sm-4">
+                                        <input class="form-control input-sm" placeholder="Periodo" id="in_periodo">
+                                    </div>
+                                    <div class="col-md-2 col-sm-2">
+                                        <button class="btn btn-info btn-sm" id="btn-bus-mensual">Buscar</button>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-6">
+                                        <p>Facturación:<label id="lbl-factu-mensual"></label></p>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6">
+                                        <p>Autos:<label id="lbl-autos-mensual"></label></p>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12">
+                                        <div class="row">  
+                                            <p class="text-center">Operaciones Por Usuario</p>
+                                        </div>
+                                        <div class="row">
+                                            <table class="table table-bordered table-condensed" id="tabla_est_mensual">
+                                                <thead>
+                                                    <tr>
+                                                        <th>id Usuario</th>
+                                                        <th>Promedio/mes de Operaciones</th>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="panel panel-default">
+                            <div class="panel-body">Estadísticas</div>
+                            <div class="panel-footer">
+                                <div class="row">
+                                    <div class="col-md-1 col-sm-1"></div>
+                                    <div class="col-md-4 col-sm-4">
+                                        <input class="form-control input-sm" placeholder="Desde" id="in_desde_est">
+                                    </div>
+                                    <div class="col-md-4 col-sm-4">
+                                        <input class="form-control input-sm" placeholder="Hasta" id="in_hasta_est">
+                                    </div>
+                                    <div class="col-md-2 col-sm-2">
+                                        <button class="btn btn-info btn-sm" id="btn-bus-est">Buscar</button>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-6">
+                                        <p>Cantidad de Vechículos:<label id="lbl-autos-periodo"></label></p>
+                                    </div>
+                                        <div class="col-md-6 col-sm-6">
+                                        <p>Valor Recaudado:<label id="lbl-factu-periodo"></label></p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3 col-sm-3">
+                                        <p>Vehículos Únicos:<label id="lbl-factu"></label></p>
+                                    </div>
+                                    <div class="col-md-2 col-sm-2"></div>
+                                    <div class="col-md-6 col-sm-6">
+                                        <div class="row">     
+                                            <p class="text-center">Vechículos repetidos</p>
+                                        </div>
+                                        <div class="row">
+                                            <table class="table table-bordered table-condensed" id="tabla_est_fechas">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Patente</th>
+                                                        <th>Cant. veces Estacionado</th>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="row" id="operaciones" hidden>
-            <div class="col-md-12">
+            <div class="col-md-8">
                 <div class="panel panel-default" >
                     <div class="panel-heading">Listado de Operaciones</div>
-                    <div class="panel-body" style="height:300px">
+                    <div class="panel-body" style="height:500px">
                         <div class="row">
                             <div class="col-md-3 col-sm-3 form-group" id="lista_usuarios">
                             </div>
                             <div class="col-md-3 col-sm-3 form-group" >
-                                <label>Desde</label>
-                                <input type="text" class="form-control input-sm">
+                                <label for="in_desde">Desde</label>
+                                <input type="text" class="form-control input-sm" id="in_desde">
                             </div>
                             <div class="col-md-3 col-sm-3 form-group" >
-                                <label>Hasta</label>
-                                <input type="text" class="form-control input-sm">
+                                <label for="in_hasta">Hasta</label>
+                                <input type="text" class="form-control input-sm" id="in_hasta">
                             </div>
                             <div class="col-md-1 col-sm-1 form-group" >
-                                <button class="btn btn-default btn-sm glyphicon glyphicon-search" style="margin:30px 0px 0px 0px;">Buscar</button>
+                                <button class="btn btn-default btn-sm  " style="margin:30px 0px 0px 0px;" id="btn-buscar-oper">Buscar</button>
                             </div>
                         </div>
                         <div class="row">
+                            <div class="col-md-8"></div>
+                            <div class="col-md-4">
+                                <div style="float:right">
+                                <button class="btn btn-info btn-sm " style="margin:0px 0px 15px 0px;" id="btn-exporta-csv">Excel</button>
+                                <button class="btn btn-info btn-sm " style="margin:0px 0px 15px 0px;" id="btn-exporta-pdf">PDF</button></div>
+                            </div>
+                        </div>
+                        <div class="row" >
                             <div class="col-md-12">
-                                <table class="table table-condensed table-bordered">
+                                <table class="table table-condensed table-bordered" id="tabla_operaciones" >
                                     <thead>
                                         <tr>
                                             <th>Cochera</th>
@@ -218,7 +328,7 @@
                                             <th>H. Salida</th>
                                             <th>Tiempo</th>
                                             <th>Pago</th>
-                                            <th>Usuario N°</th>
+                                            <th>Usr N°</th>
                                         </tr>
                                     </thead>
                                     <tbody></tbody>                                        
@@ -227,7 +337,23 @@
                         </div>
                     </div>
                 </div>
-            </div>    
+            </div> 
+            <div class="col-md-4 col-sm-4">
+                    <div class="panel panel-default" >
+                        <div class="panel-heading">Operaciones Por Usuarios</div>
+                        <div class="panel-body" style="height:400px">
+                            <table class="table table-bordered table-condensed" id="tabla_oper_usr">
+                                <thead>
+                                    <tr>
+                                        <th>Id Usuario</th>
+                                        <th>Cant. Operaciones</th>
+                                        
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+            </div>   
         </div>
         <!--MODALS -->
         <div class="modal fade" id="modal-info" tabindex="-1" role="dialog" aria-labelledby="modal-info" aria-hidden="true">
@@ -371,7 +497,7 @@
                                     <div class="col-md-2 col-sm-2"></div>        
                                     <div class="form-group  col-md-6 col-sm-6">
                                             <label class="text-center">Dominio</label>
-                                            <input class="form-control input-sm" type="text" id="in_dominio">
+                                            <input class="form-control input-sm" type="text" id="in_dominio_egre">
                                     </div>
                                 </div>
                             </div>
@@ -383,7 +509,50 @@
                     </div>
                 </div>
             </div>
-
+            <div class="modal fade" id="modal-tk-vehiculo" tabindex="-1" role="dialog" aria-labelledby="modal-info" aria-hidden="true">
+                    <div class="modal-dialog modal-md">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title" id="title-mod-info">Pago de Estacionamiento</h4>
+                                </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-1 col-sm-1"></div>        
+                                            <div class="form-group  col-md-5 col-sm-5">
+                                                <p>Dominio:&nbsp;<label id="lbl-dom-salida"></label></p></div>
+                                                <div class="form-group  col-md-5 col-sm-5">
+                                                <p>Cochera:&nbsp;<label id="lbl-cochera-salida"></label></p>
+                                                
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                                <div class="col-md-1 col-sm-1"></div>        
+                                                <div class="form-group  col-md-5 col-sm-5">
+                                                    <p>Entrada:&nbsp;<label id="lbl-entrada-salida"></label></p>
+                                                </div>
+                                                    <div class="form-group  col-md-5 col-sm-5">
+                                                    <p>Salida:&nbsp;<label id="lbl-salida-salida"></label></p>
+                                                    
+                                                </div>
+                                            </div>                                            
+                                        <div class="row">
+                                                <div class="col-md-1 col-sm-1"></div>        
+                                                <div class="  col-md-5 col-sm-5">
+                                                    <p>Tiempo:&nbsp;<label id="lbl-tiempo-salida"></label></p>                                                    
+                                                </div>
+                                                <div class="  col-md-5 col-sm-5">
+                                                        <p>Pago:&nbsp;<strong>$</strong><label id="lbl-pago-salida" style="color:red;"></label></p>
+                                                </div>
+                                            </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Cerrar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
 
 
 

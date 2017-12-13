@@ -1,4 +1,5 @@
 var tabla_operaciones:DataTable;
+var tabla_oper_usr:DataTable;
 /// <reference path="./Operacion.ts" />
 
 $(document).ready(()=>{
@@ -7,7 +8,20 @@ $(document).ready(()=>{
         $("#usuarios").prop("hidden",true);
         $("#estacionamiento").prop("hidden",true);
         $("#operaciones").prop("hidden",false);
+        $("#estadistica").prop("hidden",true);
         tabla_operaciones = new DataTable("tabla_operaciones");
+        tabla_oper_usr = new DataTable("tabla_oper_usr",false);
+        tabla_oper_usr.iniciar();
+        
+        tabla_operaciones.iniciar();
+        
+         Usuario.listar().done((e)=>{
+            crearSelectUsr('lista_usuarios',e);
+        });
+        $("#operaciones").prop("hidden",false);
+    });
+    $("#btn-buscar-oper").click((e)=>{
+        let datos = Operacion.getForm()
         tabla_operaciones.ajax([                
             {data:'idCochera'},
             {data:'patente'},
@@ -16,16 +30,13 @@ $(document).ready(()=>{
             {data:'tiempo'},
             {data:'pago'},
             {data:'idUser'},
-        ]);
-         Usuario.listar().done((e)=>{
-            crearSelectUsr('lista_usuarios',e);
-        });
-        $("#operaciones").prop("hidden",false);
-    });
-    $("#btn-buscar-oper").click((e)=>{
-        let datos = Operacion.getForm()
-        tabla_operaciones.setPath('http://localhost/TPProgramcion-laboratorioIII2017/Api/operaciones/listar?id='+datos.id+encodeURI('&from='+datos.from+'&to='+datos.to));
-         tabla_operaciones.reloadTable();
+        ],'operaciones/listar?id='+datos.id+encodeURI('&from='+datos.from+'&to='+datos.to));
+        tabla_oper_usr.ajax([                
+            {data:'idUser'},
+            {data:'cantidad'},
+
+        ],'operaciones/operacionesUsuarios?id='+datos.id+encodeURI('&from='+datos.from+'&to='+datos.to));
+         
         e.preventDefault();
     });
     

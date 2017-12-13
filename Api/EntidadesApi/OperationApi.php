@@ -16,9 +16,9 @@ class OperationApi extends Operacion{
     {
         $file = new Export($operaciones,'Listado de Operaciones');
         if($export == 'excel')
-            return $file->ToExcel();
+            return $file->ToExcel($response);
         elseif($export == 'pdf')
-            return $file->ToPDF();
+            return $file->ToPDF($response);
     }
     return $response->withJson($operaciones);
   

@@ -42,7 +42,7 @@ class Export{
 
         $this->excel= $objPHPExcel;
     }
-    public function ToExcel(){
+    public function ToExcel($response){
         $this->ArmarExcel();
         $objWriter = new PHPExcel_Writer_Excel2007($this->excel,'Excel2007');
         $nombre = $this->titulo.".xlsx";
@@ -58,7 +58,7 @@ class Export{
 
 
 
-    public function ToPDF(){
+    public function ToPDF($response){
         $this->ArmarExcel();
         $rendererName = PHPExcel_Settings::PDF_RENDERER_TCPDF;
         if(!PHPExcel_Settings::setPdfRenderer($rendererName,'./vendor/tecnickcom/tcpdf/')){
@@ -67,7 +67,7 @@ class Export{
         $objWriter = PHPExcel_IOFactory::createWriter($this->excel, 'PDF');
         $objWriter->save('php://output');
         $nombre = $this->titulo.".pdf";
-
+        var_dump($nombre);
         return $response
             ->withHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             ->withHeader('Content-Disposition', 'attachment;filename="'.$nombre.'"')

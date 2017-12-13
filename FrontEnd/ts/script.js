@@ -154,7 +154,11 @@ var Usuario = /** @class */ (function () {
 var tabla_usuarios;
 $(document).ready(function () {
     $("#a-login").click(function (e) {
-        $("#form-login").removeAttr("hidden");
+        $("#form-login").prop("hidden", false);
+        $("#usuarios").prop("hidden", true);
+        $("#estacionamiento").prop("hidden", true);
+        $("#estadistica").prop("hidden", true);
+        $("#operaciones").prop("hidden", true);
         e.preventDefault();
         e.stopImmediatePropagation();
     });
@@ -221,6 +225,7 @@ $(document).ready(function () {
         $("#form-login").prop("hidden", true);
         $("#usuarios").prop("hidden", false);
         $("#estacionamiento").prop("hidden", true);
+        $("#estadistica").prop("hidden", true);
         tabla_usuarios = new DataTable("tabla_usuarios");
         tabla_usuarios.ajax([
             { render: function (data, type, row) { return row.nombre + ',' + row.apellido; } },
@@ -251,8 +256,7 @@ $(document).ready(function () {
             { render: function (data, type, row) {
                     return row.pathFoto == null ? 'Sin Foto' : '<img src=' + row.pathFoto + '>';
                 } },
-        ]);
-        tabla_usuarios.setPath('http://localhost/TPProgramcion-laboratorioIII2017/Api/usuario/listar');
+        ], 'usuario/listar');
         tabla_usuarios.selectFila();
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -455,18 +459,26 @@ var Auth = /** @class */ (function () {
     return Auth;
 }());
 var DataTable = /** @class */ (function () {
-    function DataTable(id_tabla) {
+    function DataTable(id_tabla, search) {
+        this.url = 'http://localhost/TPProgramcion-laboratorioIII2017/Api/';
         this.id_tabla = id_tabla;
+        this.search = search != undefined ? search : true;
     }
-    DataTable.prototype.setPath = function (path) {
-        this.path = path;
+    DataTable.prototype.iniciar = function () {
+        $('#' + this.id_tabla).DataTable().destroy();
+        $("#" + this.id_tabla).DataTable({
+            searching: false,
+            paging: false,
+            info: false
+        });
     };
-    DataTable.prototype.ajax = function (columns) {
+    DataTable.prototype.ajax = function (columns, path) {
+        console.log(123);
         $('#' + this.id_tabla).DataTable().destroy();
         this.dt = $('#' + this.id_tabla).DataTable({
             autoWidth: false,
             destroy: true,
-            ajax: { url: this.path,
+            ajax: { url: this.url + path,
                 dataSrc: function (data) {
                     if (data == "{}")
                         return {};
@@ -474,12 +486,12 @@ var DataTable = /** @class */ (function () {
                 } },
             info: false,
             select: true,
-            searching: true,
+            searching: this.search,
             scroller: {
                 loadingIndicator: true
             },
             paging: false,
-            scrollY: 400,
+            scrollY: 250,
             scrollX: true,
             scrollCollapse: true,
             columns: columns,
@@ -516,6 +528,7 @@ $(document).ready(function () {
         $("#form-login").prop("hidden", true);
         $("#usuarios").prop("hidden", true);
         $("#operaciones").prop("hidden", true);
+        $("#estadistica").prop("hidden", true);
         $("#estacionamiento").prop("hidden", false);
     });
     $("#btn-ingreso-auto").click(function (e) {
@@ -631,6 +644,7 @@ var Estacionamiento = /** @class */ (function () {
     return Estacionamiento;
 }());
 var tabla_operaciones;
+var tabla_oper_usr;
 /// <reference path="./Operacion.ts" />
 $(document).ready(function () {
     $("#a-operaciones").click(function (e) {
@@ -638,7 +652,18 @@ $(document).ready(function () {
         $("#usuarios").prop("hidden", true);
         $("#estacionamiento").prop("hidden", true);
         $("#operaciones").prop("hidden", false);
+        $("#estadistica").prop("hidden", true);
         tabla_operaciones = new DataTable("tabla_operaciones");
+        tabla_oper_usr = new DataTable("tabla_oper_usr", false);
+        tabla_oper_usr.iniciar();
+        tabla_operaciones.iniciar();
+        Usuario.listar().done(function (e) {
+            crearSelectUsr('lista_usuarios', e);
+        });
+        $("#operaciones").prop("hidden", false);
+    });
+    $("#btn-buscar-oper").click(function (e) {
+        var datos = Operacion.getForm();
         tabla_operaciones.ajax([
             { data: 'idCochera' },
             { data: 'patente' },
@@ -647,16 +672,11 @@ $(document).ready(function () {
             { data: 'tiempo' },
             { data: 'pago' },
             { data: 'idUser' },
-        ]);
-        Usuario.listar().done(function (e) {
-            crearSelectUsr('lista_usuarios', e);
-        });
-        $("#operaciones").prop("hidden", false);
-    });
-    $("#btn-buscar-oper").click(function (e) {
-        var datos = Operacion.getForm();
-        tabla_operaciones.setPath('http://localhost/TPProgramcion-laboratorioIII2017/Api/operaciones/listar?id=' + datos.id + encodeURI('&from=' + datos.from + '&to=' + datos.to));
-        tabla_operaciones.reloadTable();
+        ], 'operaciones/listar?id=' + datos.id + encodeURI('&from=' + datos.from + '&to=' + datos.to));
+        tabla_oper_usr.ajax([
+            { data: 'idUser' },
+            { data: 'cantidad' },
+        ], 'operaciones/operacionesUsuarios?id=' + datos.id + encodeURI('&from=' + datos.from + '&to=' + datos.to));
         e.preventDefault();
     });
     $('#in_desde').datetimepicker({
@@ -728,3 +748,95 @@ function FechaSql(fecha) {
     var hor = aux[1];
     return fec[2] + '-' + fec[1] + '-' + fec[0] + ' ' + hor;
 }
+var Estadistica = /** @class */ (function () {
+    function Estadistica() {
+    }
+    Estadistica.getFormPeriodo = function () {
+        return ($("#in_periodo").val()).split('-')[1] + '-' + ($("#in_periodo").val()).split('-')[0];
+    };
+    Estadistica.getFormFechas = function () {
+        return {
+            from: $("#in_desde_est").val(),
+            to: $("#in_hasta_est").val()
+        };
+    };
+    return Estadistica;
+}());
+var tabla_est_fechas;
+var tabla_est_mensual;
+$(document).ready(function () {
+    tabla_est_fechas = new DataTable("tabla_est_fechas", false);
+    tabla_est_mensual = new DataTable("tabla_est_mensual", false);
+    tabla_est_fechas.iniciar();
+    tabla_est_mensual.iniciar();
+    $("#a-estadistica").click(function (e) {
+        $("#form-login").prop("hidden", true);
+        $("#usuarios").prop("hidden", true);
+        $("#estacionamiento").prop("hidden", true);
+        $("#operaciones").prop("hidden", true);
+        $("#estadistica").prop("hidden", false);
+        e.preventDefault();
+    });
+    $("#btn-bus-mensual").click(function (e) {
+        var datos = Estadistica.getFormPeriodo();
+        tabla_est_mensual.ajax([
+            { data: 'idUser' },
+            { data: 'promedio' },
+        ], 'estadistica/promediousuariomensual?' + encodeURI('periodo=' + datos));
+        Ajax.get('estadistica/promediofacturacionmensual?' + encodeURI('periodo=' + datos)).done(function (res) {
+            if (res.msg == undefined) {
+                $("#lbl-factu-mensual").text(res);
+            }
+        });
+        Ajax.get('estadistica/promedioautosmensual?' + encodeURI('periodo=' + datos)).done(function (res) {
+            if (res.msg == undefined) {
+                $("#lbl-autos-mensual").text(res);
+            }
+        });
+        e.preventDefault();
+    });
+    $('#in_hasta_est').datetimepicker({
+        format: 'YYYY-MM-DD',
+        useCurrent: false //Important! See issue #1075
+    });
+    $('#in_desde_est').datetimepicker({
+        format: 'YYYY-MM-DD'
+    });
+    $('#in_periodo').datetimepicker({
+        format: 'MM-YYYY',
+        useCurrent: false //Important! See issue #1075
+    });
+    $("#in_desde_est").on("dp.change", function (e) {
+        $('#in_hasta_est').data("DateTimePicker").minDate(e.date);
+    });
+    $("#in_hasta_est").on("dp.change", function (e) {
+        $('#in_desde_est').data("DateTimePicker").maxDate(e.date);
+    });
+    $("#btn-bus-est").click(function (e) {
+        var datos = Estadistica.getFormFechas();
+        Ajax.get('estadistica/facturacion?' + encodeURI('&from=' + datos.from + '&to=' + datos.to)).done(function (res) {
+            if (res.msg == undefined) {
+                $("#lbl-factu-periodo").text(res[0].facturacion);
+                $("#lbl-autos-periodo").text(res[0].cantidad_autos);
+            }
+        });
+        Ajax.get('estadistica/vehiculos?' + encodeURI('&from=' + datos.from + '&to=' + datos.to)).done(function (res) {
+            if (res.msg == undefined) {
+                $("#lbl-factu-periodo").text(res[0].facturacion);
+                $("#lbl-autos-periodo").text(res[0].cantidad_autos);
+            }
+        });
+        /*  tabla_operaciones.ajax([
+              {data:'cochera'},
+              {data:'cantidad'},
+  
+          ],'operaciones/listar?'+encodeURI('from='+datos.from+'&to='+datos.to));
+          tabla_oper_usr.ajax([
+              {data:'idUser'},
+              {data:'cantidad'},
+  
+          ],'http://localhost/TPProgramcion-laboratorioIII2017/Api/operaciones/operacionesUsuarios?id='+datos.id+encodeURI('&from='+datos.from+'&to='+datos.to));
+           */
+        e.preventDefault();
+    });
+});

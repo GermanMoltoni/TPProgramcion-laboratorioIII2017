@@ -50,7 +50,7 @@ public static function PromedioFacMensualApi($request, $response, $args) {
     $op = parent::PromedioFacturacionMensual($periodo['mes'],$periodo['anio']);
     if($op == null)
         return $response->withJson(array('msg'=>'No hay operaciones Cargadas'));
-    return $response->withJson(array('importe'=>$op,'periodo'=>$periodo['mes'].'-'.$periodo['anio']));
+    return $response->withJson($op);
   
 }
 public static function PromedioAutosMensualApi($request, $response, $args) {
@@ -58,7 +58,7 @@ public static function PromedioAutosMensualApi($request, $response, $args) {
     $op = parent::PromedioAutosMensual($periodo['mes'],$periodo['anio']);
     if($op == 0)
         return $response->withJson(array('msg'=>'No hay operaciones Cargadas'));
-    return $response->withJson(array('autos_dia'=>$op,'periodo'=>$periodo['mes'].'-'.$periodo['anio']));
+    return $response->withJson($op);
   
 }
 public static function PromedioUsuarioMensualApi($request, $response, $args) {
@@ -66,7 +66,7 @@ public static function PromedioUsuarioMensualApi($request, $response, $args) {
     $op = parent::PromedioUsuarioMensual($periodo['mes'],$periodo['anio']);
     if(count($op) == 0)
         return $response->withJson(array('msg'=>'No hay operaciones Cargadas'));
-    return $response->withJson(array('operaciones_usuario'=>$op,'periodo'=>$periodo['mes'].'-'.$periodo['anio']));
+    return $response->withJson($op);
   
 }
 

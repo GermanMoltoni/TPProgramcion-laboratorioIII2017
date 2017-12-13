@@ -2,8 +2,12 @@ var tabla_usuarios:DataTable;
 $(document).ready(()=>{
     
     $("#a-login").click((e)=>{
-        $("#form-login").removeAttr("hidden");
-        e.preventDefault();
+        $("#form-login").prop("hidden",false);
+        $("#usuarios").prop("hidden",true);
+        $("#estacionamiento").prop("hidden",true);
+        $("#estadistica").prop("hidden",true);
+        $("#operaciones").prop("hidden",true);
+         e.preventDefault();
         e.stopImmediatePropagation();
     });
     $("#btn-login").click((e)=>{
@@ -69,6 +73,7 @@ $(document).ready(()=>{
         $("#form-login").prop("hidden",true);
         $("#usuarios").prop("hidden",false);
         $("#estacionamiento").prop("hidden",true);
+        $("#estadistica").prop("hidden",true);
         
         tabla_usuarios = new DataTable("tabla_usuarios");
         tabla_usuarios.ajax(
@@ -99,8 +104,7 @@ $(document).ready(()=>{
                     {render:function(data:any,type:any,row:any){
                         return row.pathFoto == null?'Sin Foto':'<img src='+row.pathFoto+'>';}},
             ]
-        );
-        tabla_usuarios.setPath('http://localhost/TPProgramcion-laboratorioIII2017/Api/usuario/listar');
+         ,'usuario/listar');
         tabla_usuarios.selectFila();
         e.preventDefault();
         e.stopImmediatePropagation();

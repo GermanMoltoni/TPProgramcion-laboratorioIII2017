@@ -1,19 +1,28 @@
 class DataTable{
     private dt:any;
+    private url:string='http://localhost/TPProgramcion-laboratorioIII2017/Api/';
     private id_tabla:string;
-    public path:string;
-    constructor(id_tabla:string){
+    private search:boolean;
+     constructor(id_tabla:string,search?:boolean){
         this.id_tabla = id_tabla;
+        this.search = search != undefined?search:true;
     }
-    public setPath(path:string){
-        this.path = path;
+    public iniciar(){
+        $('#' + this.id_tabla).DataTable().destroy();        
+        $("#"+this.id_tabla).DataTable({
+            searching:false,
+            paging:false,
+            info:false
+        });
     }
-    public ajax(columns:any){
+    public ajax(columns:any,path:string){
+        console.log(123)
         $('#' + this.id_tabla).DataTable().destroy();
+        
         this.dt = $('#' + this.id_tabla).DataTable({
             autoWidth: false,
             destroy: true,
-            ajax:{ url:this.path,
+            ajax:{ url:this.url+path,
             dataSrc:(data:any)=>{
                 if(data =="{}" )
                     return {};
@@ -21,12 +30,12 @@ class DataTable{
             }},
             info: false,
             select: true,
-            searching: true,
+            searching: this.search,
             scroller: {
                 loadingIndicator: true
             },
             paging: false,
-            scrollY: 400,
+            scrollY: 250,
             scrollX: true,
             scrollCollapse: true,
             columns:columns,
