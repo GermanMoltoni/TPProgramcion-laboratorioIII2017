@@ -27,6 +27,7 @@ class Estacionamiento{
             pisos.forEach((piso:any) => {
                 cap+= piso.cantidadCocheras + piso.cantidadReservados;
             });
+            
             return lugares.length < cap;
         }
     }

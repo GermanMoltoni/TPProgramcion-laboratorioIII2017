@@ -193,7 +193,7 @@ var validator_ingreso_vehiculo = {
     callback:()=>{
         $("#modal-ingreso-vehiculo").modal("hide");
         let auto = new Auto($("#in_dominio").val(),$("#in_marca").val(),$("#in_color").val(),$("#vehi_esp").is(":checked"));
-        if(!Estacionamiento.verificarLugares()){
+        if(Estacionamiento.verificarLugares()){
             Estacionamiento.ingresar(auto).done((e)=>{
                 $("#btn-eliminar-usr").addClass("hide_me"); 
                 if(e.cochera != undefined)               
@@ -217,19 +217,32 @@ var validator_ingreso_vehiculo = {
                     callback:{
                         message:'Ingrese Dominio',
                         callback:(value:any)=>{
-                   
+                            value = value.toUpperCase();
+                             return (value.match(/^[A-Z]{3}[0-9]{3}/) != null || value.match(/^[A-Z]{2}[0-9]{3}[A-Z]{2}/) != null);
                         }
                     }
                 }
             },
             in_color:{
                 validators:{
-                    notEmpty:{message:'Ingrese Color'},
+                    callback:{
+                        message:'Ingrese Color',
+                        callback:(value:any)=>{
+                            value = value.toUpperCase();
+                             return value.match(/^[a-zA-ZÀ-ÿ\u00f1\u00d1]+(\s*[a-zA-ZÀ-ÿ\u00f1\u00d1]*)*[a-zA-ZÀ-ÿ\u00f1\u00d1]+$/i);
+                        }
+                    }
                 }
             },
             in_marca:{
                 validators:{
-                    notEmpty:{message:'Ingrese Marca'},
+                    callback:{
+                        message:'Ingrese Marca',
+                        callback:(value:any)=>{
+                            value = value.toUpperCase();
+                             return value.match(/^[a-zA-ZÀ-ÿ\u00f1\u00d1]+(\s*[a-zA-ZÀ-ÿ\u00f1\u00d1]*)*[a-zA-ZÀ-ÿ\u00f1\u00d1]+$/i);
+                        }
+                    }
                 }
             },
         }

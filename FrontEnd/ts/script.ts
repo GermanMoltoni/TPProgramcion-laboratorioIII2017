@@ -224,11 +224,7 @@ $(document).ready(()=>{
         $("#logs-usuarios").prop("hidden",true);
         Ajax.get('estacionamiento/listaCocheras').done((e)=>{
             localStorage.setItem('lugares',JSON.stringify(e));
-            var tabla=' <table class="table table-condensed"><thead><tr class="active"><th>Piso</th><th class="text-center"colspan="2">Libres</th></tr><tr class="active"><th></th><th>Disp.</th><th>Ocup.</th></tr></thead><tbody>';
-            array.forEach(function(piso){
-              tabla+='<tr><td>'+piso.numero+'</td><td>'+piso.cantidadCocheras+'</td><td>'+piso.cantidadAutos+'</td><tr>';
-              });
-            tabla+='</table>'; 
+            
         });
     });
     $("#btn-ingreso-auto").click((e)=>{
