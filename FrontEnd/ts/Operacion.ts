@@ -9,5 +9,10 @@ class Operacion{
             export:''
         };
     }
+    public static vaciarForm(){
+        $("#in_desde").val('');
+        $("#in_hasta").val('');
+        $("#sel-usr").val('');
+    }
  
 }

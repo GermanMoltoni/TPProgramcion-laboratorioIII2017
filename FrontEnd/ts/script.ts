@@ -165,6 +165,7 @@ $(document).ready(()=>{
         $("#estacionamiento").prop("hidden",true);
         $("#estadistica").prop("hidden",true);
         $("#operaciones").prop("hidden",true);
+        Usuario.vaciarFormFec();
         tabla_log_usr = new DataTable("tabla_log_usr",true);
         tabla_log_usr.iniciar();
         stopEvent(e);
@@ -221,7 +222,14 @@ $(document).ready(()=>{
         $("#estadistica").prop("hidden",true);
         $("#estacionamiento").prop("hidden",false);
         $("#logs-usuarios").prop("hidden",true);
-        
+        Ajax.get('estacionamiento/listaCocheras').done((e)=>{
+            localStorage.setItem('lugares',JSON.stringify(e));
+            var tabla=' <table class="table table-condensed"><thead><tr class="active"><th>Piso</th><th class="text-center"colspan="2">Libres</th></tr><tr class="active"><th></th><th>Disp.</th><th>Ocup.</th></tr></thead><tbody>';
+            array.forEach(function(piso){
+              tabla+='<tr><td>'+piso.numero+'</td><td>'+piso.cantidadCocheras+'</td><td>'+piso.cantidadAutos+'</td><tr>';
+              });
+            tabla+='</table>'; 
+        });
     });
     $("#btn-ingreso-auto").click((e)=>{
         $("#modal-ingreso-vehiculo").modal("show");
@@ -238,12 +246,12 @@ $(document).ready(()=>{
     /* Operaciones */
     $("#a-operaciones").click((e)=>{
         $("#logs-usuarios").prop("hidden",true);
-        
         $("#form-login").prop("hidden",true);
         $("#usuarios").prop("hidden",true);
         $("#estacionamiento").prop("hidden",true);
         $("#operaciones").prop("hidden",false);
         $("#estadistica").prop("hidden",true);
+        Operacion.vaciarForm();
         tabla_operaciones = new DataTable("tabla_operaciones");
         tabla_oper_usr = new DataTable("tabla_oper_usr",false);
         tabla_oper_usr.iniciar();
@@ -315,7 +323,7 @@ $(document).ready(()=>{
         $("#estacionamiento").prop("hidden",true);
         $("#operaciones").prop("hidden",true);
         $("#logs-usuarios").prop("hidden",true);
-        
+        Estadistica.vaciarForm();
         tabla_est_fechas = new DataTable("tabla_est_fechas",false);
         tabla_est_mensual = new DataTable("tabla_est_mensual",true);
         tabla_est_cochera = new DataTable("tabla_est_cochera",false);

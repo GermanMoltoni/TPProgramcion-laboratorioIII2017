@@ -93,95 +93,9 @@ var Ajax = /** @class */ (function () {
     Ajax.setToken = function (data) {
         localStorage.setItem('token', data);
     };
-    Ajax.url = 'http://localhost/TPProgramcion-laboratorioIII2017/Api/';
+    // private static url:string = 'http://localhost/TPProgramcion-laboratorioIII2017/Api/';
+    Ajax.url = 'http://localhost:8080/prueba/TPProgramcion-laboratorioIII2017/Api/';
     return Ajax;
-}());
-/// <reference path="./types/jquery.d.ts" />
-/// <reference path="./Ajax.ts" />
-var Usuario = /** @class */ (function () {
-    function Usuario(mail, nombre, apellido, password, estado, admin, turno, pathFoto, id, entrada, token) {
-        this.id = id;
-        this.mail = mail;
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.password = password;
-        this.estado = estado;
-        this.turno = turno;
-        this.admin = admin;
-        this.entrada = entrada;
-        this.pathFoto = pathFoto;
-        this.token = token;
-    }
-    Usuario.crear = function () {
-        return Ajax.postForm('usuario/alta', Usuario.getForm());
-    };
-    Usuario.modificar = function () {
-        return Ajax.postForm('usuario/modificar', Usuario.getForm());
-    };
-    Usuario.listar = function (id) {
-        return Ajax.get('usuario/listar', { id: id });
-    };
-    Usuario.setUsuario = function (usuario) {
-        if (usuario != undefined)
-            localStorage.setItem('usuario', JSON.stringify(usuario));
-    };
-    Usuario.getUsuario = function () {
-        var datos = localStorage.getItem('usuario');
-        if (datos != null) {
-            var usuario = JSON.parse(datos);
-            return Usuario.jsonToUsuario(usuario);
-        }
-        return null;
-    };
-    Usuario.jsonToUsuario = function (json) {
-        if (json !== null) {
-            return new Usuario(json.mail, json.nombre, json.apellido, json.password, json.estado, json.admin, json.turno, json.pathFoto, json.id);
-        }
-        return null;
-    };
-    Usuario.getForm = function () {
-        var form = new FormData();
-        form.append("nombre", $("#in_nombre").val());
-        form.append("apellido", $("#in_apellido").val());
-        form.append("password", $("#in_passwd1").val());
-        form.append("mail", $("#in_mail").val());
-        form.append("id", $("#in_id").val());
-        form.append("turno", $("#sel_turno :selected").val());
-        form.append("admin", $("#admin_usr").is(":checked") ? '1' : '0');
-        form.append("estado", '1');
-        var file = $("#file").prop("files")[0];
-        if (file != undefined)
-            form.append("file", file);
-        return form;
-    };
-    Usuario.prototype.setForm = function () {
-        $("#in_nombre").val(this.nombre);
-        $("#in_apellido").val(this.apellido);
-        $("#in_passwd1").val('');
-        $("#in_id").val(this.id != undefined ? this.id.toString() : '');
-        $("#in_mail").val(this.mail);
-        $("#sel_turno").val(this.turno != undefined ? this.turno.toString() : '');
-        if (this.admin != undefined && this.admin)
-            $('#admin_usr').bootstrapToggle('on');
-        else
-            $('#admin_usr').bootstrapToggle('off');
-        $("#pathFoto").val('');
-    };
-    Usuario.getTipo = function () {
-        var usuario = Usuario.getUsuario();
-        return usuario != null && (usuario.admin == '1');
-    };
-    Usuario.prototype.cambiarEstado = function () {
-        return Ajax.put('usuario/estado', { id: this.id });
-    };
-    Usuario.getFechas = function () {
-        return {
-            id: 0,
-            from: $("#in_des_usr").val(),
-            to: $("#in_has_usr").val()
-        };
-    };
-    return Usuario;
 }());
 /// <reference path="./types/jquery.d.ts" />
 /// <reference path="./Ajax.ts" />
@@ -221,91 +135,14 @@ var Auth = /** @class */ (function () {
     };
     return Auth;
 }());
-//        $('#os_pac_des').DataTable().columns.adjust().draw();
-var DataTable = /** @class */ (function () {
-    function DataTable(id_tabla, search) {
-        this.url = 'http://localhost/TPProgramcion-laboratorioIII2017/Api/';
-        this.id_tabla = id_tabla;
-        this.search = search != undefined ? search : true;
+var Auto = /** @class */ (function () {
+    function Auto(patente, marca, color, especial) {
+        this.marca = marca;
+        this.color = color;
+        this.patente = patente;
+        this.especial = especial;
     }
-    DataTable.prototype.iniciar = function () {
-        $('#' + this.id_tabla).DataTable().destroy();
-        $("#" + this.id_tabla).DataTable({
-            searching: false,
-            paging: false,
-            info: false
-        }).columns.adjust().draw();
-    };
-    DataTable.prototype.data = function (columns, data) {
-        $('#' + this.id_tabla).DataTable().destroy();
-        this.dt = $('#' + this.id_tabla).DataTable({
-            autoWidth: false,
-            destroy: true,
-            data: data,
-            info: false,
-            select: true,
-            searching: this.search,
-            scroller: {
-                loadingIndicator: true
-            },
-            paging: false,
-            scrollY: 250,
-            scrollX: true,
-            scrollCollapse: true,
-            columns: columns,
-            dom: '<"top"i>rt<"bottom"flp><"clear"><"toolbar">'
-        });
-    };
-    DataTable.prototype.ajax = function (columns, path) {
-        $('#' + this.id_tabla).DataTable().destroy();
-        this.dt = $('#' + this.id_tabla).DataTable({
-            autoWidth: false,
-            destroy: true,
-            ajax: { headers: { 'token': Ajax.getToken() },
-                url: this.url + path,
-                dataSrc: function (data) {
-                    if (data == "{}")
-                        return {};
-                    return data;
-                } },
-            info: false,
-            select: true,
-            searching: this.search,
-            scroller: {
-                loadingIndicator: true
-            },
-            paging: false,
-            scrollY: 250,
-            scrollX: true,
-            scrollCollapse: true,
-            columns: columns,
-            dom: '<"top"i>rt<"bottom"flp><"clear"><"toolbar">'
-        });
-    };
-    DataTable.prototype.reloadTable = function () {
-        this.dt.ajax.reload();
-    };
-    DataTable.prototype.selectFila = function (fn_sel, fn_nosel) {
-        var _this = this;
-        if (fn_sel === void 0) { fn_sel = null; }
-        if (fn_nosel === void 0) { fn_nosel = null; }
-        var nombre_item = 'tr-' + this.id_tabla;
-        sessionStorage.removeItem(nombre_item);
-        $('#' + this.id_tabla + ' tbody').off('click', 'tr').on('click', 'tr', function (e, dt, type, indexes) {
-            if ($(e.currentTarget).hasClass('selected')) {
-                sessionStorage.removeItem(nombre_item);
-                if (fn_nosel !== null)
-                    fn_nosel();
-            }
-            else {
-                var datos = _this.dt.row(e.currentTarget).data(); //cambiar
-                sessionStorage.setItem(nombre_item, JSON.stringify(datos));
-                if (fn_sel !== null)
-                    fn_sel();
-            }
-        });
-    };
-    return DataTable;
+    return Auto;
 }());
 var Estacionamiento = /** @class */ (function () {
     function Estacionamiento() {
@@ -327,7 +164,60 @@ var Estacionamiento = /** @class */ (function () {
     Estacionamiento.getFormEgreso = function () {
         return $("#in_dominio_egre").val();
     };
+    Estacionamiento.verificarLugares = function () {
+        var datos = localStorage.getItem('lugares');
+        var lugares;
+        var pisos;
+        if (datos !== null) {
+            lugares = JSON.parse(datos).ocupados;
+            pisos = JSON.parse(datos).pisos;
+            var cap_1 = 0;
+            pisos.forEach(function (piso) {
+                cap_1 += piso.cantidadCocheras + piso.cantidadReservados;
+            });
+            return lugares.length < cap_1;
+        }
+    };
     return Estacionamiento;
+}());
+var Formato = /** @class */ (function () {
+    function Formato() {
+    }
+    Formato.validator = function (obj_param) {
+        var id_form = obj_param.id_form || null;
+        var opciones = obj_param.opciones || null;
+        var callback = obj_param.callback || null;
+        if (opciones != null && id_form != null) {
+            $("#" + id_form).bootstrapValidator('destroy');
+            return $("#" + id_form).bootstrapValidator(opciones).
+                on('success.form.bv', function (e) {
+                if (typeof callback === 'function') {
+                    callback();
+                }
+                e.preventDefault();
+            });
+        }
+    };
+    return Formato;
+}());
+var Estadistica = /** @class */ (function () {
+    function Estadistica() {
+    }
+    Estadistica.getFormPeriodo = function () {
+        return ($("#in_periodo").val()).split('-')[1] + '-' + ($("#in_periodo").val()).split('-')[0];
+    };
+    Estadistica.vaciarForm = function () {
+        $("#in_desde_est").val('');
+        $("#in_hasta_est").val('');
+        $("#in_periodo").val('');
+    };
+    Estadistica.getFormFechas = function () {
+        return {
+            from: $("#in_desde_est").val(),
+            to: $("#in_hasta_est").val()
+        };
+    };
+    return Estadistica;
 }());
 /// <reference path="./Ajax.ts" />
 var Operacion = /** @class */ (function () {
@@ -341,30 +231,12 @@ var Operacion = /** @class */ (function () {
             "export": ''
         };
     };
+    Operacion.vaciarForm = function () {
+        $("#in_desde").val('');
+        $("#in_hasta").val('');
+        $("#sel-usr").val('');
+    };
     return Operacion;
-}());
-var Estadistica = /** @class */ (function () {
-    function Estadistica() {
-    }
-    Estadistica.getFormPeriodo = function () {
-        return ($("#in_periodo").val()).split('-')[1] + '-' + ($("#in_periodo").val()).split('-')[0];
-    };
-    Estadistica.getFormFechas = function () {
-        return {
-            from: $("#in_desde_est").val(),
-            to: $("#in_hasta_est").val()
-        };
-    };
-    return Estadistica;
-}());
-var Auto = /** @class */ (function () {
-    function Auto(patente, marca, color, especial) {
-        this.marca = marca;
-        this.color = color;
-        this.patente = patente;
-        this.especial = especial;
-    }
-    return Auto;
 }());
 var tabla_est_fechas;
 var tabla_est_mensual;
@@ -529,6 +401,7 @@ $(document).ready(function () {
         $("#estacionamiento").prop("hidden", true);
         $("#estadistica").prop("hidden", true);
         $("#operaciones").prop("hidden", true);
+        Usuario.vaciarFormFec();
         tabla_log_usr = new DataTable("tabla_log_usr", true);
         tabla_log_usr.iniciar();
         stopEvent(e);
@@ -584,6 +457,9 @@ $(document).ready(function () {
         $("#estadistica").prop("hidden", true);
         $("#estacionamiento").prop("hidden", false);
         $("#logs-usuarios").prop("hidden", true);
+        Ajax.get('estacionamiento/listaCocheras').done(function (e) {
+            localStorage.setItem('lugares', JSON.stringify(e));
+        });
     });
     $("#btn-ingreso-auto").click(function (e) {
         $("#modal-ingreso-vehiculo").modal("show");
@@ -605,6 +481,7 @@ $(document).ready(function () {
         $("#estacionamiento").prop("hidden", true);
         $("#operaciones").prop("hidden", false);
         $("#estadistica").prop("hidden", true);
+        Operacion.vaciarForm();
         tabla_operaciones = new DataTable("tabla_operaciones");
         tabla_oper_usr = new DataTable("tabla_oper_usr", false);
         tabla_oper_usr.iniciar();
@@ -675,6 +552,7 @@ $(document).ready(function () {
         $("#estacionamiento").prop("hidden", true);
         $("#operaciones").prop("hidden", true);
         $("#logs-usuarios").prop("hidden", true);
+        Estadistica.vaciarForm();
         tabla_est_fechas = new DataTable("tabla_est_fechas", false);
         tabla_est_mensual = new DataTable("tabla_est_mensual", true);
         tabla_est_cochera = new DataTable("tabla_est_cochera", false);
@@ -772,25 +650,96 @@ function stopEvent(event) {
     event.preventDefault();
     event.stopImmediatePropagation();
 }
-var Formato = /** @class */ (function () {
-    function Formato() {
+/// <reference path="./types/jquery.d.ts" />
+/// <reference path="./Ajax.ts" />
+var Usuario = /** @class */ (function () {
+    function Usuario(mail, nombre, apellido, password, estado, admin, turno, pathFoto, id, entrada, token) {
+        this.id = id;
+        this.mail = mail;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.password = password;
+        this.estado = estado;
+        this.turno = turno;
+        this.admin = admin;
+        this.entrada = entrada;
+        this.pathFoto = pathFoto;
+        this.token = token;
     }
-    Formato.validator = function (obj_param) {
-        var id_form = obj_param.id_form || null;
-        var opciones = obj_param.opciones || null;
-        var callback = obj_param.callback || null;
-        if (opciones != null && id_form != null) {
-            $("#" + id_form).bootstrapValidator('destroy');
-            return $("#" + id_form).bootstrapValidator(opciones).
-                on('success.form.bv', function (e) {
-                if (typeof callback === 'function') {
-                    callback();
-                }
-                e.preventDefault();
-            });
-        }
+    Usuario.crear = function () {
+        return Ajax.postForm('usuario/alta', Usuario.getForm());
     };
-    return Formato;
+    Usuario.modificar = function () {
+        return Ajax.postForm('usuario/modificar', Usuario.getForm());
+    };
+    Usuario.listar = function (id) {
+        return Ajax.get('usuario/listar', { id: id });
+    };
+    Usuario.setUsuario = function (usuario) {
+        if (usuario != undefined)
+            localStorage.setItem('usuario', JSON.stringify(usuario));
+    };
+    Usuario.getUsuario = function () {
+        var datos = localStorage.getItem('usuario');
+        if (datos != null) {
+            var usuario = JSON.parse(datos);
+            return Usuario.jsonToUsuario(usuario);
+        }
+        return null;
+    };
+    Usuario.jsonToUsuario = function (json) {
+        if (json !== null) {
+            return new Usuario(json.mail, json.nombre, json.apellido, json.password, json.estado, json.admin, json.turno, json.pathFoto, json.id);
+        }
+        return null;
+    };
+    Usuario.getForm = function () {
+        var form = new FormData();
+        form.append("nombre", $("#in_nombre").val());
+        form.append("apellido", $("#in_apellido").val());
+        form.append("password", $("#in_passwd1").val());
+        form.append("mail", $("#in_mail").val());
+        form.append("id", $("#in_id").val());
+        form.append("turno", $("#sel_turno :selected").val());
+        form.append("admin", $("#admin_usr").is(":checked") ? '1' : '0');
+        form.append("estado", '1');
+        var file = $("#file").prop("files")[0];
+        if (file != undefined)
+            form.append("file", file);
+        return form;
+    };
+    Usuario.prototype.setForm = function () {
+        $("#in_nombre").val(this.nombre);
+        $("#in_apellido").val(this.apellido);
+        $("#in_passwd1").val('');
+        $("#in_id").val(this.id != undefined ? this.id.toString() : '');
+        $("#in_mail").val(this.mail);
+        $("#sel_turno").val(this.turno != undefined ? this.turno.toString() : '');
+        if (this.admin != undefined && this.admin)
+            $('#admin_usr').bootstrapToggle('on');
+        else
+            $('#admin_usr').bootstrapToggle('off');
+        $("#pathFoto").val('');
+    };
+    Usuario.getTipo = function () {
+        var usuario = Usuario.getUsuario();
+        return usuario != null && (usuario.admin == '1');
+    };
+    Usuario.prototype.cambiarEstado = function () {
+        return Ajax.put('usuario/estado', { id: this.id });
+    };
+    Usuario.vaciarFormFec = function () {
+        $("#in_des_usr").val('');
+        $("#in_has_usr").val('');
+    };
+    Usuario.getFechas = function () {
+        return {
+            id: 0,
+            from: $("#in_des_usr").val(),
+            to: $("#in_has_usr").val()
+        };
+    };
+    return Usuario;
 }());
 function crearSelectUsr(id_div, arr_datos) {
     var div = document.getElementById(id_div);
@@ -985,14 +934,20 @@ var validator_ingreso_vehiculo = {
     callback: function () {
         $("#modal-ingreso-vehiculo").modal("hide");
         var auto = new Auto($("#in_dominio").val(), $("#in_marca").val(), $("#in_color").val(), $("#vehi_esp").is(":checked"));
-        Estacionamiento.ingresar(auto).done(function (e) {
-            $("#btn-eliminar-usr").addClass("hide_me");
-            if (e.cochera != undefined)
-                $("#msg-info").text('Cochera Asignada:' + e.cochera);
-            else
-                $("#msg-info").text(e.error);
+        if (!Estacionamiento.verificarLugares()) {
+            Estacionamiento.ingresar(auto).done(function (e) {
+                $("#btn-eliminar-usr").addClass("hide_me");
+                if (e.cochera != undefined)
+                    $("#msg-info").text('Cochera Asignada:' + e.cochera);
+                else
+                    $("#msg-info").text(e.error);
+                $("#modal-info").modal("show");
+            });
+        }
+        else {
+            $("#msg-info").text('Capacidad Alcanzada');
             $("#modal-info").modal("show");
-        });
+        }
     },
     opciones: {
         message: 'Este valor no es valido',
@@ -1019,3 +974,107 @@ var validator_ingreso_vehiculo = {
         }
     }
 };
+//        $('#os_pac_des').DataTable().columns.adjust().draw();
+var lenguage = {
+    searchPlaceholder: "Filtrar",
+    search: "_INPUT_",
+    emptyTable: "Sin Datos",
+    infoEmpty: "Sin Datos",
+    zeroRecords: "No hay datos coincidentes",
+    //loading: "<span ><img src='./info_vista/images/icon/spinner.gif'></span>",
+    //processing: "<span ><img src='./info_vista/images/icon/spinner.gif'></span>",
+    paginate: {
+        previous: '<p style="color: black;">Anterior</p>',
+        next: '<p style="color: black;">Siguiente</p>'
+    },
+    lengthMenu: "Ver _MENU_ registros",
+    loadingRecords: 'Cargando...'
+};
+var DataTable = /** @class */ (function () {
+    function DataTable(id_tabla, search) {
+        this.url = 'http://localhost:8080/prueba/TPProgramcion-laboratorioIII2017/Api/';
+        this.id_tabla = id_tabla;
+        this.search = search != undefined ? search : true;
+    }
+    DataTable.prototype.iniciar = function () {
+        $('#' + this.id_tabla).DataTable().destroy();
+        $("#" + this.id_tabla).DataTable({
+            searching: false,
+            paging: false,
+            info: false,
+            language: lenguage
+        }).clear().draw();
+    };
+    DataTable.prototype.data = function (columns, data) {
+        $('#' + this.id_tabla).DataTable().destroy();
+        this.dt = $('#' + this.id_tabla).DataTable({
+            autoWidth: false,
+            destroy: true,
+            data: data,
+            info: false,
+            select: true,
+            searching: this.search,
+            scroller: {
+                loadingIndicator: true
+            },
+            paging: false,
+            scrollY: 250,
+            scrollX: true,
+            scrollCollapse: true,
+            columns: columns,
+            language: lenguage,
+            dom: '<"top"i>rt<"bottom"flp><"clear"><"toolbar">'
+        });
+    };
+    DataTable.prototype.ajax = function (columns, path) {
+        $('#' + this.id_tabla).DataTable().destroy();
+        this.dt = $('#' + this.id_tabla).DataTable({
+            autoWidth: false,
+            destroy: true,
+            ajax: { headers: { 'token': Ajax.getToken() },
+                url: this.url + path,
+                dataSrc: function (data) {
+                    if (data == "{}")
+                        return {};
+                    return data;
+                } },
+            info: false,
+            select: true,
+            searching: this.search,
+            scroller: {
+                loadingIndicator: true
+            },
+            paging: false,
+            scrollY: 250,
+            scrollX: true,
+            scrollCollapse: true,
+            columns: columns,
+            language: lenguage,
+            dom: '<"top"i>rt<"bottom"flp><"clear"><"toolbar">'
+        });
+    };
+    DataTable.prototype.reloadTable = function () {
+        this.dt.ajax.reload();
+    };
+    DataTable.prototype.selectFila = function (fn_sel, fn_nosel) {
+        var _this = this;
+        if (fn_sel === void 0) { fn_sel = null; }
+        if (fn_nosel === void 0) { fn_nosel = null; }
+        var nombre_item = 'tr-' + this.id_tabla;
+        sessionStorage.removeItem(nombre_item);
+        $('#' + this.id_tabla + ' tbody').off('click', 'tr').on('click', 'tr', function (e, dt, type, indexes) {
+            if ($(e.currentTarget).hasClass('selected')) {
+                sessionStorage.removeItem(nombre_item);
+                if (fn_nosel !== null)
+                    fn_nosel();
+            }
+            else {
+                var datos = _this.dt.row(e.currentTarget).data(); //cambiar
+                sessionStorage.setItem(nombre_item, JSON.stringify(datos));
+                if (fn_sel !== null)
+                    fn_sel();
+            }
+        });
+    };
+    return DataTable;
+}());

@@ -1,8 +1,24 @@
 //        $('#os_pac_des').DataTable().columns.adjust().draw();
-
+var lenguage = {
+    searchPlaceholder: "Filtrar",
+    search: "_INPUT_",
+    emptyTable: "Sin Datos",
+    infoEmpty: "Sin Datos",
+    zeroRecords: "No hay datos coincidentes",
+    //loading: "<span ><img src='./info_vista/images/icon/spinner.gif'></span>",
+    //processing: "<span ><img src='./info_vista/images/icon/spinner.gif'></span>",
+    paginate: {
+        previous: '<p style="color: black;">Anterior</p>',
+        next: '<p style="color: black;">Siguiente</p>'
+    },
+    lengthMenu: "Ver _MENU_ registros",
+    loadingRecords: 'Cargando...'
+};
 class DataTable{
     public dt:any;
-    private url:string='http://localhost/TPProgramcion-laboratorioIII2017/Api/';
+    private url:string='http://localhost:8080/prueba/TPProgramcion-laboratorioIII2017/Api/';
+    
+    //private url:string='http://localhost/TPProgramcion-laboratorioIII2017/Api/';
     private id_tabla:string;
     private search:boolean;
      constructor(id_tabla:string,search?:boolean){
@@ -14,9 +30,9 @@ class DataTable{
         $("#"+this.id_tabla).DataTable({
             searching:false,
             paging:false,
-            info:false
-        }).columns.adjust().draw();
-        
+            info:false,
+            language:lenguage
+        }).clear().draw();
     }
     public data(columns:any,data:any){
         $('#' + this.id_tabla).DataTable().destroy();
@@ -36,6 +52,7 @@ class DataTable{
             scrollX: true,
             scrollCollapse: true,
             columns:columns,
+            language:lenguage,            
             dom: '<"top"i>rt<"bottom"flp><"clear"><"toolbar">',
         });
         
@@ -64,6 +81,7 @@ class DataTable{
             scrollX: true,
             scrollCollapse: true,
             columns:columns,
+            language:lenguage,            
             dom: '<"top"i>rt<"bottom"flp><"clear"><"toolbar">',
         });
         

@@ -193,15 +193,21 @@ var validator_ingreso_vehiculo = {
     callback:()=>{
         $("#modal-ingreso-vehiculo").modal("hide");
         let auto = new Auto($("#in_dominio").val(),$("#in_marca").val(),$("#in_color").val(),$("#vehi_esp").is(":checked"));
-        
-        Estacionamiento.ingresar(auto).done((e)=>{
-            $("#btn-eliminar-usr").addClass("hide_me"); 
-            if(e.cochera != undefined)               
-                $("#msg-info").text( 'Cochera Asignada:'+e.cochera);
-            else
-                $("#msg-info").text(e.error);
+        if(!Estacionamiento.verificarLugares()){
+            Estacionamiento.ingresar(auto).done((e)=>{
+                $("#btn-eliminar-usr").addClass("hide_me"); 
+                if(e.cochera != undefined)               
+                    $("#msg-info").text( 'Cochera Asignada:'+e.cochera);
+                else
+                    $("#msg-info").text(e.error);
+                $("#modal-info").modal("show");
+            });
+        }
+        else{
+            $("#msg-info").text('Capacidad Alcanzada');
             $("#modal-info").modal("show");
-        });
+        }
+        
     },
     opciones:{
         message: 'Este valor no es valido',

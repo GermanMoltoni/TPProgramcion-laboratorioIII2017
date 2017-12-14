@@ -16,5 +16,19 @@ class Estacionamiento{
     public static getFormEgreso(){
         return $("#in_dominio_egre").val();
     }
+    public static verificarLugares(){
+        let datos = localStorage.getItem('lugares');
+        let lugares;
+        let pisos;
+        if(datos !== null){
+            lugares = JSON.parse(datos).ocupados; 
+            pisos = JSON.parse(datos).pisos; 
+            let cap:number=0;
+            pisos.forEach((piso:any) => {
+                cap+= piso.cantidadCocheras + piso.cantidadReservados;
+            });
+            return lugares.length < cap;
+        }
+    }
 }
 

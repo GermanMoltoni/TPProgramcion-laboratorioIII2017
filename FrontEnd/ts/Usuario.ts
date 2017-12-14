@@ -87,6 +87,10 @@ class Usuario{
     public cambiarEstado(){
         return Ajax.put('usuario/estado',{id:this.id}); 
     }
+    public static vaciarFormFec(){
+        $("#in_des_usr").val('');
+        $("#in_has_usr").val('');
+    }
     public static getFechas(){
         return {
             id:0,
