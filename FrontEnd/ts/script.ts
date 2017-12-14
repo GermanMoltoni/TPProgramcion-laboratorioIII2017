@@ -286,6 +286,16 @@ $(document).ready(()=>{
     $("#in_hasta").on("dp.change", function (e:any) {
         $('#in_desde').data("DateTimePicker").maxDate(e.date);
     });
+    $("#btn-exporta-csv").click((e)=>{
+        let datos = Operacion.getForm();
+        datos.export = 'excel';
+        Ajax.getPdf('operaciones/listar',datos).done((res)=>{
+            let win = window.open();
+            if(win !== null)
+                win.document.body.innerHTML = "<iframe src='"+res.pdf+"' width='100%' height='100%'><a href='"+res.pdf+"'>Download PDF</a> </iframe>";
+        });
+        stopEvent(e);
+    });
     $("#btn-exporta-pdf").click((e)=>{
         let datos = Operacion.getForm();
         datos.export = 'pdf';
