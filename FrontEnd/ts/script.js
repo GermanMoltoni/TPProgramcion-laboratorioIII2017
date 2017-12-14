@@ -372,6 +372,7 @@ var tabla_usuarios;
 var tabla_operaciones;
 var tabla_oper_usr;
 var tabla_log_usr;
+var tabla_est_cochera;
 $(document).ready(function () {
     var usr = Usuario.getUsuario();
     if (usr != null) {
@@ -675,9 +676,11 @@ $(document).ready(function () {
         $("#operaciones").prop("hidden", true);
         $("#logs-usuarios").prop("hidden", true);
         tabla_est_fechas = new DataTable("tabla_est_fechas", false);
-        tabla_est_mensual = new DataTable("tabla_est_mensual", false);
+        tabla_est_mensual = new DataTable("tabla_est_mensual", true);
+        tabla_est_cochera = new DataTable("tabla_est_cochera", false);
         tabla_est_fechas.iniciar();
         tabla_est_mensual.iniciar();
+        tabla_est_cochera.iniciar();
         $(window).resize(function () {
             //  tabla_est_fechas.dt.columns.adjust().draw();
             //tabla_est_mensual.dt.columns.adjust().draw();
@@ -739,6 +742,27 @@ $(document).ready(function () {
                             return row.cantidad;
                         } },
                 ], res.repetidos);
+            }
+        });
+        Ajax.get('estadistica/usococheras?' + encodeURI('&from=' + datos.from + '&to=' + datos.to)).done(function (res) {
+            if (res.msg == undefined) {
+                var cocheras_1 = new Array();
+                res.especial.forEach(function (element) {
+                    element.tipo = 'especial';
+                    cocheras_1.push(element);
+                });
+                res.comun.forEach(function (element) {
+                    element.tipo = 'otro';
+                    cocheras_1.push(element);
+                });
+                tabla_est_cochera.data([
+                    { render: function (data, type, row) {
+                            return row.cochera;
+                        } },
+                    { render: function (data, type, row) {
+                            return row.cantidad;
+                        } },
+                ], cocheras_1);
             }
         });
         stopEvent(e);

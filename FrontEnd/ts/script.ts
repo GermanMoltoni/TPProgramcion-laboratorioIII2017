@@ -4,6 +4,7 @@ var tabla_usuarios:DataTable;
 var tabla_operaciones:DataTable;
 var tabla_oper_usr:DataTable;
 var tabla_log_usr:DataTable;
+var tabla_est_cochera:DataTable;
 $(document).ready(()=>{
 
     let usr = Usuario.getUsuario();
@@ -316,9 +317,12 @@ $(document).ready(()=>{
         $("#logs-usuarios").prop("hidden",true);
         
         tabla_est_fechas = new DataTable("tabla_est_fechas",false);
-        tabla_est_mensual = new DataTable("tabla_est_mensual",false);
+        tabla_est_mensual = new DataTable("tabla_est_mensual",true);
+        tabla_est_cochera = new DataTable("tabla_est_cochera",false);
         tabla_est_fechas.iniciar();
         tabla_est_mensual.iniciar();
+        tabla_est_cochera.iniciar();
+        
         $( window ).resize(function() {
           //  tabla_est_fechas.dt.columns.adjust().draw();
             //tabla_est_mensual.dt.columns.adjust().draw();
@@ -384,7 +388,28 @@ $(document).ready(()=>{
               
             }
         });
- 
+        Ajax.get('estadistica/usococheras?'+encodeURI('&from='+datos.from+'&to='+datos.to)).done((res)=>{
+            if(res.msg == undefined){
+                let cocheras:any[] =new Array<any>();
+                res.especial.forEach((element:any) => {
+                    element.tipo = 'especial';
+                    cocheras.push(element);
+                });  
+                res.comun.forEach((element:any) => {
+                    element.tipo = 'otro';
+                    cocheras.push(element);
+                });      
+                 tabla_est_cochera.data([                
+                    {render:function(data:any,type:any,row:any){
+                        
+                        return  row.cochera;}},
+                    {render:function(data:any,type:any,row:any){
+                        return  row.cantidad;}},
+                    
+                ],cocheras);
+              
+            }
+        });
      
         stopEvent(e);
     });
