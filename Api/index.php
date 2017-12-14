@@ -20,7 +20,7 @@ $app->add(\MDWCORS::class . ':HabilitarCORS');
 
 $app->group('/usuario', function () {
     $this->get('/listar',\UserApi::class . ':ListaUserApi');//listo
-    $this->get('/listarLogs', \UserApi::class .':ListaLogUserApi')
+    $this->get('/listarLogs', \UserApi::class .':ListaLogUserApi')//listo
                 ->add(\AuthUser::class.':verificarFormTiempo');
     $this->delete('/baja', \UserApi::class .':BajaUserApi')//listo
                 ->add(\AuthUser::class.':verificarUsuario');
@@ -38,7 +38,7 @@ $app->group('/usuario', function () {
                 ->add(\AuthUser::class.':VerificarUsuario')
                 ->add(\AuthUser::class.':VerificarModifFormUser');
 
-});//->add(\AuthUser::class.':admin');
+})->add(\AuthUser::class.':admin');
 
 
 
@@ -70,11 +70,11 @@ $app->group('/operaciones', function () {
 });//->add(\AuthUser::class.':admin');
 
 $app->group('/estadistica', function () {
-    $this->get('/facturacion',\EstadisticaApi::class . ':FacturacionApi')
+    $this->get('/facturacion',\EstadisticaApi::class . ':FacturacionApi')//
         ->add(\AuthUser::class.':verificarFechas');
     $this->get('/usococheras',\EstadisticaApi::class . ':UsoCocherasApi')
         ->add(\AuthUser::class.':verificarFechas');
-    $this->get('/vehiculos',\EstadisticaApi::class . ':ListadoVehiculosEstApi')
+    $this->get('/vehiculos',\EstadisticaApi::class . ':ListadoVehiculosEstApi')//
         ->add(\AuthUser::class.':verificarFechas');   
     $this->get('/promediofacturacionmensual',\EstadisticaApi::class . ':PromedioFacMensualApi')//
         ->add(\AuthUser::class.':verificarPromedioTiempo');

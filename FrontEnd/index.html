@@ -13,7 +13,7 @@
      <script type="application/javascript" src="./bower_components/bootstrapvalidator/dist/js/bootstrapValidator.min.js"></script>
      <script type="application/javascript" src="https://cdn.datatables.net/select/1.2.3/js/dataTables.select.min.js"></script>
      <script type="text/javascript" src="./bower_components/moment/min/moment.min.js"></script>
-     <script type="text/javascript" src="./bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+   
      <script type="text/javascript" src="./bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
 
     <script type="application/javascript" src="./ts/script.js"></script>
@@ -44,37 +44,23 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="#">Brand</a>
+                    <a class="navbar-brand" href="#">Estacionamiento</a>
                 </div>
                 <div class="collapse navbar-collapse" >
                     <ul class="nav navbar-nav hide_me" id="ul-admin">
                         <li class="active "><a id="a-estacionamiento">Estacionamiento<span class="sr-only">(current)</span></a></li>
-                        <li class="hide_me"><a id="a-estadistica" >Estadisticas</a></li>
-                        <li class="hide_me"><a id="a-operaciones" >Operaciones</a></li>
-                        
+                        <li ><a id="a-estadistica" >Estadisticas</a></li>
+                        <li ><a id="a-operaciones" >Operaciones</a></li>
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Usuarios<span class="caret"></span></a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Usuarios<span class="caret"></span></a>
                             <ul  class="dropdown-menu" role="menu">
                                 <li ><a id="a-usuarios-lis">Listado</a></li>
-                                <li><a href="#">Logs</a></li>
+                                <li><a id="a-logs-usuarios">Logs</a></li>
                             </ul>
                         </li>
                     </ul>
                     <ul class="nav navbar-nav hide_me" id="ul-user">
-                            <li class="active "><a href="#">Link <span class="sr-only">(current)</span></a></li>
-                            <li class="hide_me"><a href="#" >Linasdasdk</a></li>
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-                                <ul hidden class="dropdown-menu" role="menu">
-                                    <li ><a href="#">Action</a></li>
-                                    <li><a href="#">Another action</a></li>
-                                    <li><a href="#">Something else here</a></li>
-                                    <li class="divider"></li>
-                                    <li><a href="#">Separated link</a></li>
-                                    <li class="divider"></li>
-                                    <li><a href="#">One more separated link</a></li>
-                                </ul>
-                            </li>
+                        <li class="active "><a id="a-estacionamiento">Estacionamiento<span class="sr-only">(current)</span></a></li>                        
                         </ul>
                     <ul id="ul-login" class="nav navbar-nav navbar-right">
                         <li ><a id="a-login"><span><img src="./css/login.png">Login</span></a></li>
@@ -142,7 +128,34 @@
                                 <button class="btn btn-primary btn-block" id="btn-egreso-auto">Egreso</button>
                             </div>
                         </div>
-                    </div>
+                        <div class="row">&nbsp;</div>
+                        <div class="row">
+                            <div class="col-md-12 col-sm-12">
+                                <table class="table table-condensed ">
+                                    <thead class="bg-info">
+                                        <tr>
+                                            <th>Tiempo</th>
+                                            <th>Precio</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="background-color:whitesmoke;">
+                                        <tr>
+                                            <td>Hora</td>
+                                            <td>$10</td>
+                                         </tr>
+                                         <tr>
+                                                <td>Media Estadía</td>
+                                                <td>$90</td>
+                                             </tr>
+                                             <tr>
+                                                    <td>Estadía Completa</td>
+                                                    <td>$170</td>
+                                                 </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                </div>
             <div class="col-md-8 col-sm-8">
                 <table class="table">
                             
@@ -153,7 +166,7 @@
         <div class="row" id="usuarios" hidden>
             <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
                 <table class="table table-condensed table-striped" id="tabla_usuarios">
-                    <thead>
+                    <thead class="bg-info">
                         <tr>
                             <th>Nombre y Apellido</th>
                             <th>Turno</th>
@@ -196,9 +209,9 @@
             <div class="col-md-12 col-sm-12">
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="panel panel-default">
+                        <div class="panel panel-default" >
                             <div class="panel-body">Promedios Mensuales</div>
-                            <div class="panel-footer">
+                            <div class="panel-footer " style="height:480px">
                                 <div class="row">
                                     <div class="col-md-1 col-sm-1"></div>
                                     <div class="col-md-4 col-sm-4">
@@ -216,15 +229,15 @@
                                         <p>Autos:<label id="lbl-autos-mensual"></label></p>
                                     </div>
                                 </div>
-                                <hr>
+                                 
                                 <div class="row">
                                     <div class="col-md-12 col-sm-12">
                                         <div class="row">  
                                             <p class="text-center">Operaciones Por Usuario</p>
                                         </div>
                                         <div class="row">
-                                            <table class="table table-bordered table-condensed" id="tabla_est_mensual">
-                                                <thead>
+                                            <table class="table table-bordered table-condensed" width="100%"id="tabla_est_mensual">
+                                                <thead class="bg-info">
                                                     <tr>
                                                         <th>id Usuario</th>
                                                         <th>Promedio/mes de Operaciones</th>
@@ -240,7 +253,7 @@
                     <div class="col-md-6">
                         <div class="panel panel-default">
                             <div class="panel-body">Estadísticas</div>
-                            <div class="panel-footer">
+                            <div class="panel-footer" style="height:480px">
                                 <div class="row">
                                     <div class="col-md-1 col-sm-1"></div>
                                     <div class="col-md-4 col-sm-4">
@@ -253,7 +266,7 @@
                                         <button class="btn btn-info btn-sm" id="btn-bus-est">Buscar</button>
                                     </div>
                                 </div>
-                                <hr>
+                              
                                 <div class="row">
                                     <div class="col-md-6 col-sm-6">
                                         <p>Cantidad de Vechículos:<label id="lbl-autos-periodo"></label></p>
@@ -263,17 +276,18 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-3 col-sm-3">
-                                        <p>Vehículos Únicos:<label id="lbl-factu"></label></p>
-                                    </div>
-                                    <div class="col-md-2 col-sm-2"></div>
+                                        <div class="col-md-3 col-sm-3">
+                                                <p>Vehículos Únicos:<label id="lbl-factu"></label></p>
+                                            </div>
+                                </div>
+                                <div class="row">
                                     <div class="col-md-6 col-sm-6">
                                         <div class="row">     
                                             <p class="text-center">Vechículos repetidos</p>
                                         </div>
                                         <div class="row">
                                             <table class="table table-bordered table-condensed" id="tabla_est_fechas">
-                                                <thead>
+                                                <thead class="bg-info">
                                                     <tr>
                                                         <th>Patente</th>
                                                         <th>Cant. veces Estacionado</th>
@@ -282,6 +296,21 @@
                                             </table>
                                         </div>
                                     </div>
+                                    <div class="col-md-6 col-sm-6">
+                                            <div class="row">     
+                                                <p class="text-center">Uso de Cocheras</p>
+                                            </div>
+                                            <div class="row">
+                                                <table class="table table-bordered table-condensed" id="tabla_est_cochera">
+                                                    <thead class="bg-info">
+                                                        <tr>
+                                                            <th>Cochera</th>
+                                                            <th>Cant. de veces Utilizada</th>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                            </div>
+                                        </div>
                                 </div>
                             </div>
                         </div>
@@ -320,7 +349,7 @@
                         <div class="row" >
                             <div class="col-md-12">
                                 <table class="table table-condensed table-bordered" id="tabla_operaciones" >
-                                    <thead>
+                                    <thead class="bg-info">
                                         <tr>
                                             <th>Cochera</th>
                                             <th>Patente</th>
@@ -343,7 +372,7 @@
                         <div class="panel-heading">Operaciones Por Usuarios</div>
                         <div class="panel-body" style="height:400px">
                             <table class="table table-bordered table-condensed" id="tabla_oper_usr">
-                                <thead>
+                                <thead class="bg-info">
                                     <tr>
                                         <th>Id Usuario</th>
                                         <th>Cant. Operaciones</th>
@@ -354,6 +383,40 @@
                         </div>
                     </div>
             </div>   
+        </div>
+        <div class="row" id="logs-usuarios" hidden>
+            <div class="col-md-12 col-sm-12">
+                <div class="panel ">
+                    <div class="row" >
+                        <div class="col-md-3 col-sm-3" ></div>                                    
+                        <div class="col-md-3 col-sm-3 form-group" >
+                            <label for="in_desde">Desde</label>
+                            <input type="text" class="form-control input-sm" id="in_des_usr">
+                        </div>
+                        <div class="col-md-3 col-sm-3 form-group" >
+                            <label for="in_hasta">Hasta</label>
+                            <input type="text" class="form-control input-sm" id="in_has_usr">
+                        </div>
+                        <div class="col-md-1 col-sm-1 form-group" >
+                            <button class="btn btn-primary btn-sm  " style="margin:30px 0px 0px 0px;" id="btn-bus-log-usr">Buscar</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2 col-md-2"></div>
+                        <div class="col-sm-8 col-md-8">
+                            <table class="table table-condensed table-bordered" id="tabla_log_usr">
+                               <thead class="bg-info">
+                                <tr>
+                                    <th>Nombre y Apellido</th>
+                                    <th>Entrada</th>
+                                    <th>Tipo Usuario</th>
+                                    <th>Turno</th>
+                                </tr></thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <!--MODALS -->
         <div class="modal fade" id="modal-info" tabindex="-1" role="dialog" aria-labelledby="modal-info" aria-hidden="true">

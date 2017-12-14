@@ -59,6 +59,7 @@ public static function VerificarFormIngreso($request, $response, $next){
 
 
 public function admin($request, $response, $next) {
+   
         try{
                 if($request->getHeader('token') != null)
                {

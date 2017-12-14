@@ -46,14 +46,16 @@ class Export{
         $this->ArmarExcel();
         $objWriter = new PHPExcel_Writer_Excel2007($this->excel,'Excel2007');
         $nombre = $this->titulo.".xlsx";
-        ob_end_clean();
-        $objWriter->save('php://output');
-        return $response
+         $objWriter->save($nombre);
+        
+                
+                 $xlsData = file_get_contents($nombre); 
+        return  $response
             ->withHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             ->withHeader('Content-Disposition', 'attachment;filename="'.$nombre.'"')
             ->withHeader('Cache-Control', 'max-age=0')
-            ->withHeader('Pragma', 'public');
-        //$objWriter->save('./'.$this->titulo.'.xlsx');
+            ->withHeader('Pragma', 'public')->withJson(array("pdf"=>"data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,".base64_encode($xlsData)));; 
+      
     }
 
 
@@ -65,15 +67,16 @@ class Export{
             die('Please set the $rendererName and $rendererLibraryPath values' .PHP_EOL .' as appropriate for your directory structure');
         }
         $objWriter = PHPExcel_IOFactory::createWriter($this->excel, 'PDF');
-        $objWriter->save('php://output');
         $nombre = $this->titulo.".pdf";
-        var_dump($nombre);
-        return $response
-            ->withHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        $objWriter->save($nombre);
+
+        
+         $xlsData = file_get_contents($nombre); 
+          return 
+            $response->withHeader('Content-Type', 'application/pdf;base64')
             ->withHeader('Content-Disposition', 'attachment;filename="'.$nombre.'"')
             ->withHeader('Cache-Control', 'max-age=0')
-            ->withHeader('Pragma', 'public');
-        //$objWriter->save('./'.$this->titulo.'.pdf');
-    }
+            ->withHeader('Pragma', 'public')->withJson(array("pdf"=>"data:application/pdf;base64,".base64_encode($xlsData)));
+     }
 }
 ?>
