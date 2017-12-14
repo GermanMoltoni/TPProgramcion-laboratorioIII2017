@@ -12,11 +12,31 @@ var Ajax = /** @class */ (function () {
             headers: { 'token': Ajax.getToken() }
         });
     };
+    Ajax.getPdf = function (path, data) {
+        return $.ajax({
+            url: Ajax.url + path,
+            type: 'GET',
+            data: data,
+            async: true,
+            headers: { 'token': Ajax.getToken() }
+        });
+    };
     Ajax.post = function (path, data) {
         return $.ajax({
             url: Ajax.url + path,
             type: 'POST',
-            dataType: 'json',
+            data: data,
+            async: true,
+            headers: { 'token': Ajax.getToken() }
+        });
+    };
+    Ajax.postForm = function (path, data) {
+        return $.ajax({
+            url: Ajax.url + path,
+            type: 'POST',
+            contentType: false,
+            processData: false,
+            cache: false,
             data: data,
             async: true,
             headers: { 'token': Ajax.getToken() }
@@ -93,10 +113,10 @@ var Usuario = /** @class */ (function () {
         this.token = token;
     }
     Usuario.crear = function () {
-        return Ajax.post('usuario/alta', Usuario.getForm());
+        return Ajax.postForm('usuario/alta', Usuario.getForm());
     };
     Usuario.modificar = function () {
-        return Ajax.post('usuario/modificar', Usuario.getForm());
+        return Ajax.postForm('usuario/modificar', Usuario.getForm());
     };
     Usuario.listar = function (id) {
         return Ajax.get('usuario/listar', { id: id });
@@ -107,27 +127,32 @@ var Usuario = /** @class */ (function () {
     };
     Usuario.getUsuario = function () {
         var datos = localStorage.getItem('usuario');
-        var usuario = JSON.parse(datos !== null ? datos : '');
-        if (usuario !== null) {
-            return new Usuario(usuario.mail, usuario.nombre, usuario.apellido, usuario.password, usuario.estado, usuario.admin, usuario.turno, usuario.pathFoto, usuario.id);
+        if (datos != null) {
+            var usuario = JSON.parse(datos);
+            return Usuario.jsonToUsuario(usuario);
         }
+        return null;
     };
     Usuario.jsonToUsuario = function (json) {
         if (json !== null) {
             return new Usuario(json.mail, json.nombre, json.apellido, json.password, json.estado, json.admin, json.turno, json.pathFoto, json.id);
         }
+        return null;
     };
     Usuario.getForm = function () {
-        return {
-            "nombre": $("#in_nombre").val(),
-            "apellido": $("#in_apellido").val(),
-            "password": $("#in_passwd1").val(),
-            "mail": $("#in_mail").val(),
-            "id": $("#in_id").val(),
-            "turno": $("#sel_turno :selected").val(),
-            "admin": $("#admin_usr").is(":checked") ? '1' : '0',
-            "estado": "1"
-        };
+        var form = new FormData();
+        form.append("nombre", $("#in_nombre").val());
+        form.append("apellido", $("#in_apellido").val());
+        form.append("password", $("#in_passwd1").val());
+        form.append("mail", $("#in_mail").val());
+        form.append("id", $("#in_id").val());
+        form.append("turno", $("#sel_turno :selected").val());
+        form.append("admin", $("#admin_usr").is(":checked") ? '1' : '0');
+        form.append("estado", '1');
+        var file = $("#file").prop("files")[0];
+        if (file != undefined)
+            form.append("file", file);
+        return form;
     };
     Usuario.prototype.setForm = function () {
         $("#in_nombre").val(this.nombre);
@@ -144,50 +169,218 @@ var Usuario = /** @class */ (function () {
     };
     Usuario.getTipo = function () {
         var usuario = Usuario.getUsuario();
-        return usuario != undefined && usuario.admin;
+        return usuario != null && (usuario.admin == '1');
     };
     Usuario.prototype.cambiarEstado = function () {
         return Ajax.put('usuario/estado', { id: this.id });
     };
+    Usuario.getFechas = function () {
+        return {
+            id: 0,
+            from: $("#in_des_usr").val(),
+            to: $("#in_has_usr").val()
+        };
+    };
     return Usuario;
 }());
+/// <reference path="./types/jquery.d.ts" />
+/// <reference path="./Ajax.ts" />
+var Auth = /** @class */ (function () {
+    function Auth(mail, password) {
+        this.mail = mail;
+        this.password = password;
+    }
+    Auth.setForm = function () {
+        document.getElementById('mail').value = 'admin@admin';
+        document.getElementById('password').value = '123';
+    };
+    Auth.clearForm = function () {
+        document.getElementById('mail').value = '';
+        document.getElementById('password').value = '';
+    };
+    Auth.prototype.login = function () {
+        return Ajax.post('login', { mail: this.mail, password: this.password });
+    };
+    Auth.logout = function () {
+        localStorage.clear();
+        sessionStorage.clear();
+        Auth.clearForm();
+    };
+    Auth.pagina = function (tipo) {
+        if (tipo) {
+            $("#form-login").prop("hidden", true);
+            $("#ul-admin").removeClass("hide_me");
+        }
+        else {
+            $("#form-login").prop("hidden", true);
+            $("#ul-user").removeClass("hide_me");
+            $("#estacionamiento").prop("hidden", false);
+        }
+        $("#ul-login").prop("hidden", true);
+        $("#ul-logout").prop("hidden", false);
+    };
+    return Auth;
+}());
+//        $('#os_pac_des').DataTable().columns.adjust().draw();
+var DataTable = /** @class */ (function () {
+    function DataTable(id_tabla, search) {
+        this.url = 'http://localhost/TPProgramcion-laboratorioIII2017/Api/';
+        this.id_tabla = id_tabla;
+        this.search = search != undefined ? search : true;
+    }
+    DataTable.prototype.iniciar = function () {
+        $('#' + this.id_tabla).DataTable().destroy();
+        $("#" + this.id_tabla).DataTable({
+            searching: false,
+            paging: false,
+            info: false
+        }).columns.adjust().draw();
+    };
+    DataTable.prototype.ajax = function (columns, path) {
+        $('#' + this.id_tabla).DataTable().destroy();
+        this.dt = $('#' + this.id_tabla).DataTable({
+            autoWidth: false,
+            destroy: true,
+            ajax: { url: this.url + path,
+                dataSrc: function (data) {
+                    if (data == "{}")
+                        return {};
+                    return data;
+                } },
+            info: false,
+            select: true,
+            searching: this.search,
+            scroller: {
+                loadingIndicator: true
+            },
+            paging: false,
+            scrollY: 250,
+            scrollX: true,
+            scrollCollapse: true,
+            columns: columns,
+            dom: '<"top"i>rt<"bottom"flp><"clear"><"toolbar">'
+        });
+    };
+    DataTable.prototype.reloadTable = function () {
+        this.dt.ajax.reload();
+    };
+    DataTable.prototype.selectFila = function (fn_sel, fn_nosel) {
+        var _this = this;
+        if (fn_sel === void 0) { fn_sel = null; }
+        if (fn_nosel === void 0) { fn_nosel = null; }
+        var nombre_item = 'tr-' + this.id_tabla;
+        sessionStorage.removeItem(nombre_item);
+        $('#' + this.id_tabla + ' tbody').off('click', 'tr').on('click', 'tr', function (e, dt, type, indexes) {
+            if ($(e.currentTarget).hasClass('selected')) {
+                sessionStorage.removeItem(nombre_item);
+                if (fn_nosel !== null)
+                    fn_nosel();
+            }
+            else {
+                var datos = _this.dt.row(e.currentTarget).data(); //cambiar
+                sessionStorage.setItem(nombre_item, JSON.stringify(datos));
+                if (fn_sel !== null)
+                    fn_sel();
+            }
+        });
+    };
+    return DataTable;
+}());
+var Estacionamiento = /** @class */ (function () {
+    function Estacionamiento() {
+    }
+    Estacionamiento.ingresar = function (auto) {
+        return Ajax.post('estacionamiento/ingreso', auto);
+    };
+    Estacionamiento.retirar = function () {
+        return Ajax["delete"]('estacionamiento/egreso/' + encodeURI(Estacionamiento.getFormEgreso()));
+    };
+    Estacionamiento.setTicket = function (datos) {
+        $("#lbl-dom-salida").text(datos.patente);
+        $("#lbl-cochera-salida").text(datos.idCochera);
+        $("#lbl-entrada-salida").text(datos.entrada);
+        $("#lbl-salida-salida").text(datos.salida);
+        $("#lbl-pago-salida").text(datos.pago);
+        $("#lbl-tiempo-salida").text(datos.tiempo);
+    };
+    Estacionamiento.getFormEgreso = function () {
+        return $("#in_dominio_egre").val();
+    };
+    return Estacionamiento;
+}());
+/// <reference path="./Ajax.ts" />
+var Operacion = /** @class */ (function () {
+    function Operacion() {
+    }
+    Operacion.getForm = function () {
+        return {
+            id: $("#sel-usr").val(),
+            from: $("#in_desde").val(),
+            to: $("#in_hasta").val(),
+            "export": ''
+        };
+    };
+    return Operacion;
+}());
+var Estadistica = /** @class */ (function () {
+    function Estadistica() {
+    }
+    Estadistica.getFormPeriodo = function () {
+        return ($("#in_periodo").val()).split('-')[1] + '-' + ($("#in_periodo").val()).split('-')[0];
+    };
+    Estadistica.getFormFechas = function () {
+        return {
+            from: $("#in_desde_est").val(),
+            to: $("#in_hasta_est").val()
+        };
+    };
+    return Estadistica;
+}());
+var Auto = /** @class */ (function () {
+    function Auto(patente, marca, color, especial) {
+        this.marca = marca;
+        this.color = color;
+        this.patente = patente;
+        this.especial = especial;
+    }
+    return Auto;
+}());
+var tabla_est_fechas;
+var tabla_est_mensual;
 var tabla_usuarios;
+var tabla_operaciones;
+var tabla_oper_usr;
+var tabla_log_usr;
 $(document).ready(function () {
+    var usr = Usuario.getUsuario();
+    if (usr != null) {
+        Auth.pagina(Usuario.getTipo());
+    }
+    /* Login y Logout */
     $("#a-login").click(function (e) {
         $("#form-login").prop("hidden", false);
         $("#usuarios").prop("hidden", true);
         $("#estacionamiento").prop("hidden", true);
         $("#estadistica").prop("hidden", true);
         $("#operaciones").prop("hidden", true);
-        e.preventDefault();
-        e.stopImmediatePropagation();
+        $("#logs-usuarios").prop("hidden", true);
+        stopEvent(e);
     });
     $("#btn-login").click(function (e) {
         var login = new Auth($("#mail").val(), $("#password").val());
         login.login().done(function (e) {
-            console.log(e);
-            Usuario.setUsuario(e.user);
-            Ajax.setToken(e.token);
             if (e.error != undefined) {
                 $("#btn-eliminar-usr").addClass("hide_me");
                 $("#msg-info").text(e.error);
                 $("#modal-info").modal("show");
             }
             else {
-                if (Usuario.getTipo()) {
-                    $("#form-login").prop("hidden", true);
-                    $("#ul-admin").removeClass("hide_me");
-                }
-                else {
-                    $("#form-login").prop("hidden", true);
-                    $("#ul-user").removeClass("hide_me");
-                }
-                $("#ul-login").prop("hidden", true);
-                $("#ul-logout").prop("hidden", false);
+                Usuario.setUsuario(e.user);
+                Ajax.setToken(e.token);
+                Auth.pagina(Usuario.getTipo());
             }
-        }, function () { });
-        e.preventDefault();
-        e.stopImmediatePropagation();
+        });
+        stopEvent(e);
     });
     $("#a-logout").click(function (e) {
         Auth.logout();
@@ -195,37 +388,25 @@ $(document).ready(function () {
         $("#ul-logout").prop("hidden", true);
         $("#ul-admin").addClass("hide_me");
         $("#ul-user").addClass("hide_me");
-        e.preventDefault();
-        e.stopImmediatePropagation();
+        $("#usuarios").prop("hidden", true);
+        $("#estacionamiento").prop("hidden", true);
+        $("#estadistica").prop("hidden", true);
+        $("#operaciones").prop("hidden", true);
+        $("#logs-usuarios").prop("hidden", true);
+        stopEvent(e);
     });
     $("#btn-carga-login").click(function (e) {
         Auth.setForm();
-        e.preventDefault();
-        e.stopImmediatePropagation();
+        stopEvent(e);
     });
-    $("#btn-nuevo-usuario").click(function (e) {
-        $('#admin_usr').bootstrapToggle('off');
-        $('#form_usuario').bootstrapValidator('resetForm', true);
-        ValidadorForm(validator_nuevo_usuario);
-        $("#modal-nuevo-usuario").modal("show");
-        e.preventDefault();
-        e.stopImmediatePropagation();
-    });
-    $("#btn-modificar-usuario").click(function (e) {
-        var datos = sessionStorage.getItem('tr-tabla_usuarios');
-        var usuario = JSON.parse(datos !== null ? datos : '');
-        usuario = Usuario.jsonToUsuario(usuario);
-        usuario.setForm();
-        ValidadorForm(validator_modificar_usuario);
-        $("#modal-nuevo-usuario").modal("show");
-        e.preventDefault();
-        e.stopImmediatePropagation();
-    });
+    /*Usuarios*/
     $("#a-usuarios-lis").click(function (e) {
         $("#form-login").prop("hidden", true);
         $("#usuarios").prop("hidden", false);
         $("#estacionamiento").prop("hidden", true);
         $("#estadistica").prop("hidden", true);
+        $("#operaciones").prop("hidden", true);
+        $("#logs-usuarios").prop("hidden", true);
         tabla_usuarios = new DataTable("tabla_usuarios");
         tabla_usuarios.ajax([
             { render: function (data, type, row) { return row.nombre + ',' + row.apellido; } },
@@ -246,7 +427,8 @@ $(document).ready(function () {
                             break;
                     }
                     return turno;
-                } },
+                }
+            },
             { render: function (data, type, row) {
                     return row.estado == 1 ? '<span class="badge" style="background-color:green;">Habilitado</span>' : '<span class="badge" style="background-color:red;">Suspendido</span>';
                 } },
@@ -254,12 +436,32 @@ $(document).ready(function () {
                     return row.admin == 1 ? 'Administrador' : 'Empleado';
                 } },
             { render: function (data, type, row) {
-                    return row.pathFoto == null ? 'Sin Foto' : '<img src=' + row.pathFoto + '>';
-                } },
+                    return row.pathFoto == null ? 'Sin Foto' : '<img height="50" src=../Api/foto?mail=' + row.mail + '>';
+                }
+            }
         ], 'usuario/listar');
         tabla_usuarios.selectFila();
-        e.preventDefault();
-        e.stopImmediatePropagation();
+        $(window).resize(function () {
+            //   tabla_usuarios.dt.columns.adjust().draw();
+        });
+        stopEvent(e);
+    });
+    $("#btn-nuevo-usuario").click(function (e) {
+        if (Usuario.getTipo()) {
+            $('#admin_usr').bootstrapToggle('off');
+            Formato.validator(validator_nuevo_usuario);
+            $("#modal-nuevo-usuario").modal("show");
+        }
+        stopEvent(e);
+    });
+    $("#btn-modificar-usuario").click(function (e) {
+        var datos = sessionStorage.getItem('tr-tabla_usuarios');
+        var usuario = JSON.parse(datos !== null ? datos : '');
+        usuario = Usuario.jsonToUsuario(usuario);
+        usuario.setForm();
+        Formato.validator(validator_modificar_usuario);
+        $("#modal-nuevo-usuario").modal("show");
+        stopEvent(e);
     });
     $('#admin_usr').bootstrapToggle({
         on: 'Si',
@@ -278,14 +480,14 @@ $(document).ready(function () {
         usuario = Usuario.jsonToUsuario(usuario);
         usuario.cambiarEstado().done(function (e) {
             tabla_usuarios.reloadTable();
-        }, function () { });
-        e.preventDefault();
+        });
+        stopEvent(e);
     });
     $("#btn-baja-usuario").click(function (e) {
         $("#msg-info").text("¿Desea borrar el usuario?");
         $("#btn-eliminar-usr").removeClass("hide_me");
         $("#modal-info").modal("show");
-        e.preventDefault();
+        stopEvent(e);
     });
     $("#btn-eliminar-usr").click(function (e) {
         var datos = sessionStorage.getItem('tr-tabla_usuarios');
@@ -296,30 +498,285 @@ $(document).ready(function () {
             $("#btn-eliminar-usr").addClass("hide_me");
             $("#modal-info").modal("hide");
         });
+        stopEvent(e);
+    });
+    $("#a-logs-usuarios").click(function (e) {
+        $("#form-login").prop("hidden", true);
+        $("#usuarios").prop("hidden", true);
+        $("#logs-usuarios").prop("hidden", false);
+        $("#estacionamiento").prop("hidden", true);
+        $("#estadistica").prop("hidden", true);
+        $("#operaciones").prop("hidden", true);
+        tabla_log_usr = new DataTable("tabla_log_usr", true);
+        tabla_log_usr.iniciar();
+        stopEvent(e);
+    });
+    $("#btn-bus-log-usr").click(function (e) {
+        var fecha = Usuario.getFechas();
+        tabla_log_usr.ajax([
+            { render: function (data, type, row) { return row.nombre + ',' + row.apellido; } },
+            { render: function (data, type, row) { return row.entrada; } },
+            { render: function (data, type, row) {
+                    return row.admin == 1 ? 'Administrador' : 'Empleado';
+                } },
+            { render: function (data, type, row) {
+                    var turno;
+                    switch (row.turno) {
+                        case 1:
+                            turno = 'Mañana';
+                            break;
+                        case 2:
+                            turno = 'Tarde';
+                            break;
+                        case 3:
+                            turno = 'Noche';
+                            break;
+                        default:
+                            turno = 'Sin Turno';
+                            break;
+                    }
+                    return turno;
+                }
+            },
+        ], 'usuario/listarLogs?id=' + fecha.id + encodeURI('&from=' + fecha.from + '&to=' + fecha.to));
+        stopEvent(e);
+    });
+    $('#in_des_usr').datetimepicker({
+        format: 'YYYY-MM-DD'
+    });
+    $('#in_has_usr').datetimepicker({
+        format: 'YYYY-MM-DD',
+        useCurrent: false
+    });
+    $("#in_des_usr").on("dp.change", function (e) {
+        $('#in_has_usr').data("DateTimePicker").minDate(e.date);
+    });
+    $("#in_has_usr").on("dp.change", function (e) {
+        $('#in_des_usr').data("DateTimePicker").maxDate(e.date);
+    });
+    /* Estacionamiento */
+    $("#a-estacionamiento").click(function (e) {
+        $("#form-login").prop("hidden", true);
+        $("#usuarios").prop("hidden", true);
+        $("#operaciones").prop("hidden", true);
+        $("#estadistica").prop("hidden", true);
+        $("#estacionamiento").prop("hidden", false);
+        $("#logs-usuarios").prop("hidden", true);
+    });
+    $("#btn-ingreso-auto").click(function (e) {
+        $("#modal-ingreso-vehiculo").modal("show");
+        $('#form_ingreso_vehiculo').bootstrapValidator('resetForm', true);
+        Formato.validator(validator_ingreso_vehiculo);
+        stopEvent(e);
+    });
+    $("#btn-egreso-auto").click(function (e) {
+        $("#modal-egreso-vehiculo").modal("show");
+        $('#form_egreso_vehiculo').bootstrapValidator('resetForm', true);
+        Formato.validator(validator_egreso_vehiculo);
+        stopEvent(e);
+    });
+    /* Operaciones */
+    $("#a-operaciones").click(function (e) {
+        $("#logs-usuarios").prop("hidden", true);
+        $("#form-login").prop("hidden", true);
+        $("#usuarios").prop("hidden", true);
+        $("#estacionamiento").prop("hidden", true);
+        $("#operaciones").prop("hidden", false);
+        $("#estadistica").prop("hidden", true);
+        tabla_operaciones = new DataTable("tabla_operaciones");
+        tabla_oper_usr = new DataTable("tabla_oper_usr", false);
+        tabla_oper_usr.iniciar();
+        tabla_operaciones.iniciar();
+        $(window).resize(function () {
+            // tabla_operaciones.dt.columns.adjust().draw();
+            //tabla_oper_usr.dt.columns.adjust().draw();
+        });
+        Usuario.listar().done(function (datos) {
+            crearSelectUsr('lista_usuarios', datos);
+        });
+        $("#operaciones").prop("hidden", false);
+    });
+    $("#btn-buscar-oper").click(function (e) {
+        var datos = Operacion.getForm();
+        tabla_operaciones.ajax([
+            { data: 'idCochera' },
+            { data: 'patente' },
+            { data: 'entrada' },
+            { data: 'salida' },
+            { data: 'tiempo' },
+            { data: 'pago' },
+            { data: 'idUser' },
+        ], 'operaciones/listar?id=' + datos.id + encodeURI('&from=' + datos.from + '&to=' + datos.to));
+        tabla_oper_usr.ajax([
+            { data: 'idUser' },
+            { data: 'cantidad' },
+        ], 'operaciones/operacionesUsuarios?id=' + datos.id + encodeURI('&from=' + datos.from + '&to=' + datos.to));
+        stopEvent(e);
+    });
+    $('#in_desde').datetimepicker({
+        format: 'YYYY-MM-DD HH:mm:ss'
+    });
+    $('#in_hasta').datetimepicker({
+        format: 'YYYY-MM-DD HH:mm:ss',
+        useCurrent: false
+    });
+    $("#in_desde").on("dp.change", function (e) {
+        $('#in_hasta').data("DateTimePicker").minDate(e.date);
+    });
+    $("#in_hasta").on("dp.change", function (e) {
+        $('#in_desde').data("DateTimePicker").maxDate(e.date);
+    });
+    $("#btn-exporta-pdf").click(function (e) {
+        var datos = Operacion.getForm();
+        datos["export"] = 'pdf';
+        Ajax.getPdf('operaciones/listar', datos).done(function (res) {
+            var win = window.open();
+            if (win !== null)
+                win.document.body.innerHTML = "<iframe src='" + res.pdf + "' width='100%' height='100%'><a href='" + res.pdf + "'>Download PDF</a> </iframe>";
+        });
+        stopEvent(e);
+    });
+    /* Estadisticas */
+    $("#a-estadistica").click(function (e) {
+        $("#form-login").prop("hidden", true);
+        $("#usuarios").prop("hidden", true);
+        $("#estacionamiento").prop("hidden", true);
+        $("#operaciones").prop("hidden", true);
+        tabla_est_fechas = new DataTable("tabla_est_fechas", false);
+        tabla_est_mensual = new DataTable("tabla_est_mensual", false);
+        tabla_est_fechas.iniciar();
+        tabla_est_mensual.iniciar();
+        $(window).resize(function () {
+            //  tabla_est_fechas.dt.columns.adjust().draw();
+            //tabla_est_mensual.dt.columns.adjust().draw();
+        });
+        $("#estadistica").prop("hidden", false);
+        stopEvent(e);
+    });
+    $("#btn-bus-mensual").click(function (e) {
+        var datos = Estadistica.getFormPeriodo();
+        tabla_est_mensual.ajax([
+            { data: 'idUser' },
+            { data: 'promedio' },
+        ], 'estadistica/promediousuariomensual?' + encodeURI('periodo=' + datos));
+        Ajax.get('estadistica/promediofacturacionmensual?' + encodeURI('periodo=' + datos)).done(function (res) {
+            if (res.msg == undefined) {
+                $("#lbl-factu-mensual").text(res);
+            }
+        });
+        Ajax.get('estadistica/promedioautosmensual?' + encodeURI('periodo=' + datos)).done(function (res) {
+            if (res.msg == undefined) {
+                $("#lbl-autos-mensual").text(res);
+            }
+        });
+        stopEvent(e);
+    });
+    $('#in_hasta_est').datetimepicker({
+        format: 'YYYY-MM-DD',
+        useCurrent: false //Important! See issue #1075
+    });
+    $('#in_desde_est').datetimepicker({
+        format: 'YYYY-MM-DD'
+    });
+    $('#in_periodo').datetimepicker({
+        format: 'MM-YYYY',
+        useCurrent: false //Important! See issue #1075
+    });
+    $("#in_desde_est").on("dp.change", function (e) {
+        $('#in_hasta_est').data("DateTimePicker").minDate(e.date);
+    });
+    $("#in_hasta_est").on("dp.change", function (e) {
+        $('#in_desde_est').data("DateTimePicker").maxDate(e.date);
+    });
+    $("#btn-bus-est").click(function (e) {
+        var datos = Estadistica.getFormFechas();
+        Ajax.get('estadistica/facturacion?' + encodeURI('&from=' + datos.from + '&to=' + datos.to)).done(function (res) {
+            if (res.msg == undefined) {
+                $("#lbl-factu-periodo").text(res[0].facturacion);
+                $("#lbl-autos-periodo").text(res[0].cantidad_autos);
+            }
+        });
+        Ajax.get('estadistica/vehiculos?' + encodeURI('&from=' + datos.from + '&to=' + datos.to)).done(function (res) {
+            if (res.msg == undefined) {
+                $("#lbl-factu-periodo").text(res[0].facturacion);
+                $("#lbl-autos-periodo").text(res[0].cantidad_autos);
+            }
+        });
+        /*  tabla_operaciones.ajax([
+              {data:'cochera'},
+              {data:'cantidad'},
+  
+          ],'operaciones/listar?'+encodeURI('from='+datos.from+'&to='+datos.to));
+          tabla_oper_usr.ajax([
+              {data:'idUser'},
+              {data:'cantidad'},
+  
+          ],'http://localhost/TPProgramcion-laboratorioIII2017/Api/operaciones/operacionesUsuarios?id='+datos.id+encodeURI('&from='+datos.from+'&to='+datos.to));
+           */
         e.preventDefault();
     });
 });
-function ValidadorForm(obj_param) {
-    var id_form = obj_param.id_form || null;
-    var opciones = obj_param.opciones || null;
-    var callback = obj_param.callback || null;
-    if (opciones != null && id_form != null) {
-        $("#" + id_form).bootstrapValidator('destroy');
-        return $("#" + id_form).bootstrapValidator(opciones).
-            on('success.form.bv', function (e) {
-            if (typeof callback === 'function') {
-                callback();
-            }
-            e.preventDefault();
+function stopEvent(event) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+}
+var Formato = /** @class */ (function () {
+    function Formato() {
+    }
+    Formato.validator = function (obj_param) {
+        var id_form = obj_param.id_form || null;
+        var opciones = obj_param.opciones || null;
+        var callback = obj_param.callback || null;
+        if (opciones != null && id_form != null) {
+            $("#" + id_form).bootstrapValidator('destroy');
+            return $("#" + id_form).bootstrapValidator(opciones).
+                on('success.form.bv', function (e) {
+                if (typeof callback === 'function') {
+                    callback();
+                }
+                e.preventDefault();
+            });
+        }
+    };
+    return Formato;
+}());
+function crearSelectUsr(id_div, arr_datos) {
+    var div = document.getElementById(id_div);
+    if (div === null) {
+        return;
+    }
+    while (div.firstChild) {
+        div.removeChild(div.firstChild);
+    }
+    var label = document.createElement('label');
+    label.textContent = 'Usuario';
+    var select = document.createElement('select');
+    select.id = "sel-usr";
+    select.name = "sel-usr";
+    select.className = "form-control";
+    var opcion = document.createElement('option');
+    opcion.value = '0';
+    opcion.text = 'Todos';
+    select.appendChild(opcion);
+    if (arr_datos !== null) {
+        arr_datos.forEach(function (obj) {
+            var opcion = document.createElement('option');
+            opcion.value = obj.id;
+            opcion.text = obj.nombre + ' ' + obj.apellido;
+            select.appendChild(opcion);
         });
     }
+    div.appendChild(label);
+    div.appendChild(select);
 }
 var validator_nuevo_usuario = {
     id_form: "form_usuario",
     callback: function () {
         Usuario.crear().done(function (e) {
-            tabla_usuarios.reloadTable();
-        }, function () { });
+            setTimeout(function () {
+                tabla_usuarios.reloadTable();
+            }, 500);
+        });
         $("#modal-nuevo-usuario").modal("hide");
     },
     opciones: {
@@ -381,7 +838,9 @@ var validator_modificar_usuario = {
     id_form: "form_usuario",
     callback: function () {
         Usuario.modificar().done(function (e) {
-            tabla_usuarios.reloadTable();
+            setTimeout(function () {
+                tabla_usuarios.reloadTable();
+            }, 500);
         }, function () { });
         $("#modal-nuevo-usuario").modal("hide");
     },
@@ -438,117 +897,43 @@ var validator_modificar_usuario = {
         }
     }
 };
-/// <reference path="./types/jquery.d.ts" />
-/// <reference path="./Ajax.ts" />
-var Auth = /** @class */ (function () {
-    function Auth(mail, password) {
-        this.mail = mail;
-        this.password = password;
-    }
-    Auth.setForm = function () {
-        $("#mail").val('admin@admin');
-        $("#password").val('123');
-    };
-    Auth.prototype.login = function () {
-        return Ajax.post('login', { mail: this.mail, password: this.password });
-    };
-    Auth.logout = function () {
-        localStorage.clear();
-        sessionStorage.clear();
-    };
-    return Auth;
-}());
-var DataTable = /** @class */ (function () {
-    function DataTable(id_tabla, search) {
-        this.url = 'http://localhost/TPProgramcion-laboratorioIII2017/Api/';
-        this.id_tabla = id_tabla;
-        this.search = search != undefined ? search : true;
-    }
-    DataTable.prototype.iniciar = function () {
-        $('#' + this.id_tabla).DataTable().destroy();
-        $("#" + this.id_tabla).DataTable({
-            searching: false,
-            paging: false,
-            info: false
-        });
-    };
-    DataTable.prototype.ajax = function (columns, path) {
-        console.log(123);
-        $('#' + this.id_tabla).DataTable().destroy();
-        this.dt = $('#' + this.id_tabla).DataTable({
-            autoWidth: false,
-            destroy: true,
-            ajax: { url: this.url + path,
-                dataSrc: function (data) {
-                    if (data == "{}")
-                        return {};
-                    return data;
-                } },
-            info: false,
-            select: true,
-            searching: this.search,
-            scroller: {
-                loadingIndicator: true
-            },
-            paging: false,
-            scrollY: 250,
-            scrollX: true,
-            scrollCollapse: true,
-            columns: columns,
-            dom: '<"top"i>rt<"bottom"flp><"clear"><"toolbar">'
-        });
-    };
-    DataTable.prototype.reloadTable = function () {
-        this.dt.ajax.reload();
-    };
-    DataTable.prototype.selectFila = function (fn_sel, fn_nosel) {
-        var _this = this;
-        if (fn_sel === void 0) { fn_sel = null; }
-        if (fn_nosel === void 0) { fn_nosel = null; }
-        var nombre_item = 'tr-' + this.id_tabla;
-        sessionStorage.removeItem(nombre_item);
-        $('#' + this.id_tabla + ' tbody').off('click', 'tr').on('click', 'tr', function (e, dt, type, indexes) {
-            if ($(e.currentTarget).hasClass('selected')) {
-                sessionStorage.removeItem(nombre_item);
-                if (fn_nosel !== null)
-                    fn_nosel();
+var validator_egreso_vehiculo = {
+    id_form: "form_egreso_vehiculo",
+    callback: function () {
+        $("#modal-egreso-vehiculo").modal("hide");
+        Estacionamiento.retirar().done(function (e) {
+            $("#btn-eliminar-usr").addClass("hide_me");
+            if (e.error != undefined) {
+                $("#msg-info").text(e.error);
+                $("#modal-info").modal("show");
             }
             else {
-                var datos = _this.dt.row(e.currentTarget).data(); //cambiar
-                sessionStorage.setItem(nombre_item, JSON.stringify(datos));
-                if (fn_sel !== null)
-                    fn_sel();
+                Estacionamiento.setTicket(e);
+                $("#modal-tk-vehiculo").modal("show");
             }
         });
-    };
-    return DataTable;
-}());
-$(document).ready(function () {
-    $("#a-estacionamiento").click(function (e) {
-        $("#form-login").prop("hidden", true);
-        $("#usuarios").prop("hidden", true);
-        $("#operaciones").prop("hidden", true);
-        $("#estadistica").prop("hidden", true);
-        $("#estacionamiento").prop("hidden", false);
-    });
-    $("#btn-ingreso-auto").click(function (e) {
-        $("#modal-ingreso-vehiculo").modal("show");
-        $('#form_ingreso_vehiculo').bootstrapValidator('resetForm', true);
-        ValidadorForm(validator_ingreso_vehiculo);
-        e.preventDefault();
-    });
-    $("#btn-egreso-auto").click(function (e) {
-        $("#modal-egreso-vehiculo").modal("show");
-        $('#form_egreso_vehiculo').bootstrapValidator('resetForm', true);
-        ValidadorForm(validator_egreso_vehiculo);
-        e.preventDefault();
-    });
-});
+    },
+    opciones: {
+        message: 'Este valor no es valido',
+        fields: {
+            in_dominio_egre: {
+                validators: {
+                    callback: {
+                        message: 'Ingrese Dominio',
+                        callback: function (value) {
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
 var validator_ingreso_vehiculo = {
     id_form: "form_ingreso_vehiculo",
     callback: function () {
         $("#modal-ingreso-vehiculo").modal("hide");
-        Estacionamiento.ingresar().done(function (e) {
+        var auto = new Auto($("#in_dominio").val(), $("#in_marca").val(), $("#in_color").val(), $("#vehi_esp").is(":checked"));
+        Estacionamiento.ingresar(auto).done(function (e) {
             $("#btn-eliminar-usr").addClass("hide_me");
             if (e.cochera != undefined)
                 $("#msg-info").text('Cochera Asignada:' + e.cochera);
@@ -582,261 +967,3 @@ var validator_ingreso_vehiculo = {
         }
     }
 };
-var validator_egreso_vehiculo = {
-    id_form: "form_egreso_vehiculo",
-    callback: function () {
-        $("#modal-egreso-vehiculo").modal("hide");
-        Estacionamiento.retirar().done(function (e) {
-            $("#btn-eliminar-usr").addClass("hide_me");
-            if (e.error != undefined) {
-                $("#msg-info").text(e.error);
-                $("#modal-info").modal("show");
-            }
-            else {
-                Estacionamiento.setTicket(e);
-                $("#modal-tk-vehiculo").modal("show");
-            }
-        });
-    },
-    opciones: {
-        message: 'Este valor no es valido',
-        fields: {
-            in_dominio_egre: {
-                validators: {
-                    callback: {
-                        message: 'Ingrese Dominio',
-                        callback: function (value) {
-                        }
-                    }
-                }
-            }
-        }
-    }
-};
-var Estacionamiento = /** @class */ (function () {
-    function Estacionamiento() {
-    }
-    Estacionamiento.ingresar = function () {
-        return Ajax.post('estacionamiento/ingreso', Estacionamiento.getFormIngreso());
-    };
-    Estacionamiento.retirar = function () {
-        return Ajax["delete"]('estacionamiento/egreso/' + encodeURI(Estacionamiento.getFormEgreso()));
-    };
-    Estacionamiento.getFormIngreso = function () {
-        return {
-            color: $("#in_color").val(),
-            patente: $("#in_dominio").val(),
-            especial: $("#vehi_esp").is(":checked") ? '1' : '0',
-            marca: $("#in_marca").val()
-        };
-    };
-    Estacionamiento.setTicket = function (datos) {
-        $("#lbl-dom-salida").text(datos.patente);
-        $("#lbl-cochera-salida").text(datos.idCochera);
-        $("#lbl-entrada-salida").text(datos.entrada);
-        $("#lbl-salida-salida").text(datos.salida);
-        $("#lbl-pago-salida").text(datos.pago);
-        $("#lbl-tiempo-salida").text(datos.tiempo);
-    };
-    Estacionamiento.getFormEgreso = function () {
-        return $("#in_dominio_egre").val();
-    };
-    return Estacionamiento;
-}());
-var tabla_operaciones;
-var tabla_oper_usr;
-/// <reference path="./Operacion.ts" />
-$(document).ready(function () {
-    $("#a-operaciones").click(function (e) {
-        $("#form-login").prop("hidden", true);
-        $("#usuarios").prop("hidden", true);
-        $("#estacionamiento").prop("hidden", true);
-        $("#operaciones").prop("hidden", false);
-        $("#estadistica").prop("hidden", true);
-        tabla_operaciones = new DataTable("tabla_operaciones");
-        tabla_oper_usr = new DataTable("tabla_oper_usr", false);
-        tabla_oper_usr.iniciar();
-        tabla_operaciones.iniciar();
-        Usuario.listar().done(function (e) {
-            crearSelectUsr('lista_usuarios', e);
-        });
-        $("#operaciones").prop("hidden", false);
-    });
-    $("#btn-buscar-oper").click(function (e) {
-        var datos = Operacion.getForm();
-        tabla_operaciones.ajax([
-            { data: 'idCochera' },
-            { data: 'patente' },
-            { data: 'entrada' },
-            { data: 'salida' },
-            { data: 'tiempo' },
-            { data: 'pago' },
-            { data: 'idUser' },
-        ], 'operaciones/listar?id=' + datos.id + encodeURI('&from=' + datos.from + '&to=' + datos.to));
-        tabla_oper_usr.ajax([
-            { data: 'idUser' },
-            { data: 'cantidad' },
-        ], 'operaciones/operacionesUsuarios?id=' + datos.id + encodeURI('&from=' + datos.from + '&to=' + datos.to));
-        e.preventDefault();
-    });
-    $('#in_desde').datetimepicker({
-        format: 'YYYY-MM-DD HH:mm:ss'
-    });
-    $('#in_hasta').datetimepicker({
-        format: 'YYYY-MM-DD HH:mm:ss',
-        useCurrent: false //Important! See issue #1075
-    });
-    $("#in_desde").on("dp.change", function (e) {
-        $('#in_hasta').data("DateTimePicker").minDate(e.date);
-    });
-    $("#in_hasta").on("dp.change", function (e) {
-        $('#in_desde').data("DateTimePicker").maxDate(e.date);
-    });
-    $("#btn-exporta-pdf").click(function (e) {
-        var datos = Operacion.getForm();
-        datos["export"] = 'pdf';
-        Ajax.get('operaciones/listar', datos);
-        e.preventDefault();
-    });
-});
-function crearSelectUsr(id_div, arr_datos) {
-    var div = document.getElementById(id_div);
-    if (div === null) {
-        return;
-    }
-    while (div.firstChild) {
-        div.removeChild(div.firstChild);
-    }
-    var label = document.createElement('label');
-    label.textContent = 'Usuario';
-    var select = document.createElement('select');
-    select.id = "sel-usr";
-    select.name = "sel-usr";
-    select.className = "form-control";
-    var opcion = document.createElement('option');
-    opcion.value = '0';
-    opcion.text = 'Todos';
-    select.appendChild(opcion);
-    if (arr_datos !== null) {
-        arr_datos.forEach(function (obj) {
-            var opcion = document.createElement('option');
-            opcion.value = obj.id;
-            opcion.text = obj.nombre + ' ' + obj.apellido;
-            select.appendChild(opcion);
-        });
-    }
-    div.appendChild(label);
-    div.appendChild(select);
-}
-/// <reference path="./Ajax.ts" />
-var Operacion = /** @class */ (function () {
-    function Operacion() {
-    }
-    Operacion.getForm = function () {
-        return {
-            id: $("#sel-usr").val(),
-            from: $("#in_desde").val(),
-            to: $("#in_hasta").val(),
-            "export": ''
-        };
-    };
-    return Operacion;
-}());
-function FechaSql(fecha) {
-    var aux = fecha.split('');
-    var fec = aux[0].split('-');
-    var hor = aux[1];
-    return fec[2] + '-' + fec[1] + '-' + fec[0] + ' ' + hor;
-}
-var Estadistica = /** @class */ (function () {
-    function Estadistica() {
-    }
-    Estadistica.getFormPeriodo = function () {
-        return ($("#in_periodo").val()).split('-')[1] + '-' + ($("#in_periodo").val()).split('-')[0];
-    };
-    Estadistica.getFormFechas = function () {
-        return {
-            from: $("#in_desde_est").val(),
-            to: $("#in_hasta_est").val()
-        };
-    };
-    return Estadistica;
-}());
-var tabla_est_fechas;
-var tabla_est_mensual;
-$(document).ready(function () {
-    tabla_est_fechas = new DataTable("tabla_est_fechas", false);
-    tabla_est_mensual = new DataTable("tabla_est_mensual", false);
-    tabla_est_fechas.iniciar();
-    tabla_est_mensual.iniciar();
-    $("#a-estadistica").click(function (e) {
-        $("#form-login").prop("hidden", true);
-        $("#usuarios").prop("hidden", true);
-        $("#estacionamiento").prop("hidden", true);
-        $("#operaciones").prop("hidden", true);
-        $("#estadistica").prop("hidden", false);
-        e.preventDefault();
-    });
-    $("#btn-bus-mensual").click(function (e) {
-        var datos = Estadistica.getFormPeriodo();
-        tabla_est_mensual.ajax([
-            { data: 'idUser' },
-            { data: 'promedio' },
-        ], 'estadistica/promediousuariomensual?' + encodeURI('periodo=' + datos));
-        Ajax.get('estadistica/promediofacturacionmensual?' + encodeURI('periodo=' + datos)).done(function (res) {
-            if (res.msg == undefined) {
-                $("#lbl-factu-mensual").text(res);
-            }
-        });
-        Ajax.get('estadistica/promedioautosmensual?' + encodeURI('periodo=' + datos)).done(function (res) {
-            if (res.msg == undefined) {
-                $("#lbl-autos-mensual").text(res);
-            }
-        });
-        e.preventDefault();
-    });
-    $('#in_hasta_est').datetimepicker({
-        format: 'YYYY-MM-DD',
-        useCurrent: false //Important! See issue #1075
-    });
-    $('#in_desde_est').datetimepicker({
-        format: 'YYYY-MM-DD'
-    });
-    $('#in_periodo').datetimepicker({
-        format: 'MM-YYYY',
-        useCurrent: false //Important! See issue #1075
-    });
-    $("#in_desde_est").on("dp.change", function (e) {
-        $('#in_hasta_est').data("DateTimePicker").minDate(e.date);
-    });
-    $("#in_hasta_est").on("dp.change", function (e) {
-        $('#in_desde_est').data("DateTimePicker").maxDate(e.date);
-    });
-    $("#btn-bus-est").click(function (e) {
-        var datos = Estadistica.getFormFechas();
-        Ajax.get('estadistica/facturacion?' + encodeURI('&from=' + datos.from + '&to=' + datos.to)).done(function (res) {
-            if (res.msg == undefined) {
-                $("#lbl-factu-periodo").text(res[0].facturacion);
-                $("#lbl-autos-periodo").text(res[0].cantidad_autos);
-            }
-        });
-        Ajax.get('estadistica/vehiculos?' + encodeURI('&from=' + datos.from + '&to=' + datos.to)).done(function (res) {
-            if (res.msg == undefined) {
-                $("#lbl-factu-periodo").text(res[0].facturacion);
-                $("#lbl-autos-periodo").text(res[0].cantidad_autos);
-            }
-        });
-        /*  tabla_operaciones.ajax([
-              {data:'cochera'},
-              {data:'cantidad'},
-  
-          ],'operaciones/listar?'+encodeURI('from='+datos.from+'&to='+datos.to));
-          tabla_oper_usr.ajax([
-              {data:'idUser'},
-              {data:'cantidad'},
-  
-          ],'http://localhost/TPProgramcion-laboratorioIII2017/Api/operaciones/operacionesUsuarios?id='+datos.id+encodeURI('&from='+datos.from+'&to='+datos.to));
-           */
-        e.preventDefault();
-    });
-});

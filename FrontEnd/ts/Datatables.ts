@@ -1,7 +1,7 @@
 //        $('#os_pac_des').DataTable().columns.adjust().draw();
 
 class DataTable{
-    private dt:any;
+    public dt:any;
     private url:string='http://localhost/TPProgramcion-laboratorioIII2017/Api/';
     private id_tabla:string;
     private search:boolean;
@@ -15,10 +15,10 @@ class DataTable{
             searching:false,
             paging:false,
             info:false
-        });
+        }).columns.adjust().draw();
+        
     }
     public ajax(columns:any,path:string){
-        console.log(123)
         $('#' + this.id_tabla).DataTable().destroy();
         
         this.dt = $('#' + this.id_tabla).DataTable({
@@ -43,6 +43,7 @@ class DataTable{
             columns:columns,
             dom: '<"top"i>rt<"bottom"flp><"clear"><"toolbar">',
         });
+        
     }
     public reloadTable(){
         this.dt.ajax.reload();

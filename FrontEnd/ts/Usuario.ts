@@ -26,10 +26,10 @@ class Usuario{
         this.token=token;
     }
     public static crear(){
-         return Ajax.post('usuario/alta',Usuario.getForm());
+         return Ajax.postForm('usuario/alta',Usuario.getForm());
     }
     public static modificar(){
-        return Ajax.post('usuario/modificar',Usuario.getForm());
+        return Ajax.postForm('usuario/modificar',Usuario.getForm());
     }
     public static listar(id?:number){
         return Ajax.get('usuario/listar',{id:id});
@@ -40,27 +40,32 @@ class Usuario{
     }
     public static getUsuario(){
         let datos = localStorage.getItem('usuario');
-        let usuario = JSON.parse(datos !== null?datos:'');
-        if(usuario !== null){
-            return new Usuario(usuario.mail,usuario.nombre,usuario.apellido,usuario.password,usuario.estado,usuario.admin,usuario.turno,usuario.pathFoto,usuario.id)
+        if(datos != null){
+            let usuario = JSON.parse(datos);
+            return Usuario.jsonToUsuario(usuario);                   
         }
-       
+        return null;
     }
     public static jsonToUsuario(json:any){
         if(json !== null){
             return new Usuario(json.mail,json.nombre,json.apellido,json.password,json.estado,json.admin,json.turno,json.pathFoto,json.id)
         }
+        return null;
     }
-    private static getForm(){
-        return{
-        "nombre":$("#in_nombre").val(),
-        "apellido":$("#in_apellido").val(),
-        "password":$("#in_passwd1").val(),
-        "mail":$("#in_mail").val(),
-        "id":$("#in_id").val(),
-        "turno":$("#sel_turno :selected").val(),
-        "admin":$("#admin_usr").is(":checked")?'1':'0',
-        "estado":"1"};
+    private static getForm():FormData{
+        let form = new FormData();
+        form.append("nombre",$("#in_nombre").val());
+        form.append("apellido",$("#in_apellido").val());
+        form.append("password",$("#in_passwd1").val());
+        form.append("mail",$("#in_mail").val());
+        form.append("id",$("#in_id").val());
+        form.append("turno",$("#sel_turno :selected").val());
+        form.append("admin",$("#admin_usr").is(":checked")?'1':'0');
+        form.append("estado",'1');
+        let file = $("#file").prop("files")[0];
+        if(file != undefined)
+            form.append("file",file);   
+        return form;
     }
     public setForm(){
         $("#in_nombre").val(this.nombre);
@@ -77,10 +82,16 @@ class Usuario{
     }
     public static getTipo(){
         let usuario = Usuario.getUsuario();
-        return usuario != undefined && usuario.admin;
+        return usuario != null && (usuario.admin == '1');
     }
     public cambiarEstado(){
-        return Ajax.put('usuario/estado',{id:this.id});
-        
+        return Ajax.put('usuario/estado',{id:this.id}); 
+    }
+    public static getFechas(){
+        return {
+            id:0,
+            from:$("#in_des_usr").val(),
+            to:$("#in_has_usr").val(),
+        };
     }
 }

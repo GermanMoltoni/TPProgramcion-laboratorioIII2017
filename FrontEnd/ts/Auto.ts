@@ -9,7 +9,5 @@ class Auto{
         this.patente = patente;
         this.especial = especial;
     }
-    public toJson(){
-        return JSON.stringify(this);
-    }
+    
 }
