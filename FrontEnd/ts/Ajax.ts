@@ -83,7 +83,7 @@ class Ajax{
             headers:{'token':Ajax.getToken()}
         });
     }
-    private static getToken(){
+    public static getToken(){
         let token = localStorage.getItem('token');
         if(token !== null)
             return token;

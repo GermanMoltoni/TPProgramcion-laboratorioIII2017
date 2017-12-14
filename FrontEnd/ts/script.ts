@@ -313,6 +313,8 @@ $(document).ready(()=>{
         $("#usuarios").prop("hidden",true);
         $("#estacionamiento").prop("hidden",true);
         $("#operaciones").prop("hidden",true);
+        $("#logs-usuarios").prop("hidden",true);
+        
         tabla_est_fechas = new DataTable("tabla_est_fechas",false);
         tabla_est_mensual = new DataTable("tabla_est_mensual",false);
         tabla_est_fechas.iniciar();
@@ -369,22 +371,22 @@ $(document).ready(()=>{
         });
         Ajax.get('estadistica/vehiculos?'+encodeURI('&from='+datos.from+'&to='+datos.to)).done((res)=>{
             if(res.msg == undefined){
-                $("#lbl-factu-periodo").text(res[0].facturacion);
-                $("#lbl-autos-periodo").text(res[0].cantidad_autos);
+                $("#lbl-factu").text(res.distintos);
+                
+                tabla_est_fechas.data([                
+                    {render:function(data:any,type:any,row:any){
+                        
+                        return  row.patente;}},
+                    {render:function(data:any,type:any,row:any){
+                        return  row.cantidad;}},
+                    
+                ],res.repetidos);
+              
             }
         });
-      /*  tabla_operaciones.ajax([                
-            {data:'cochera'},
-            {data:'cantidad'},
-
-        ],'operaciones/listar?'+encodeURI('from='+datos.from+'&to='+datos.to));
-        tabla_oper_usr.ajax([                
-            {data:'idUser'},
-            {data:'cantidad'},
-
-        ],'http://localhost/TPProgramcion-laboratorioIII2017/Api/operaciones/operacionesUsuarios?id='+datos.id+encodeURI('&from='+datos.from+'&to='+datos.to));
-         */
-        e.preventDefault();
+ 
+     
+        stopEvent(e);
     });
 });
 

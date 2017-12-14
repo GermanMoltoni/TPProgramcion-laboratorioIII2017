@@ -18,13 +18,36 @@ class DataTable{
         }).columns.adjust().draw();
         
     }
+    public data(columns:any,data:any){
+        $('#' + this.id_tabla).DataTable().destroy();
+        
+        this.dt = $('#' + this.id_tabla).DataTable({
+            autoWidth: false,
+            destroy: true,
+            data:data,
+            info: false,
+            select: true,
+            searching: this.search,
+            scroller: {
+                loadingIndicator: true
+            },
+            paging: false,
+            scrollY: 250,
+            scrollX: true,
+            scrollCollapse: true,
+            columns:columns,
+            dom: '<"top"i>rt<"bottom"flp><"clear"><"toolbar">',
+        });
+        
+    }
     public ajax(columns:any,path:string){
         $('#' + this.id_tabla).DataTable().destroy();
         
         this.dt = $('#' + this.id_tabla).DataTable({
             autoWidth: false,
             destroy: true,
-            ajax:{ url:this.url+path,
+            ajax:{ headers:{'token':Ajax.getToken()},
+                url:this.url+path,
             dataSrc:(data:any)=>{
                 if(data =="{}" )
                     return {};
