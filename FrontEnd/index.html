@@ -130,8 +130,9 @@
                         </div>
                         <div class="row">&nbsp;</div>
                         <div class="row">
-                            <div class="col-md-12 col-sm-12">
-                                <table class="table table-condensed ">
+                            <div class="col-md-12 col-sm-12" >
+                                <div style="height:400px">
+                                <table class="table table-condensed display responsive nowrap compact">
                                     <thead class="bg-info">
                                         <tr>
                                             <th>Tiempo</th>
@@ -154,18 +155,24 @@
                                     </tbody>
                                 </table>
                             </div>
+                            </div>
                         </div>
                 </div>
             <div class="col-md-8 col-sm-8">
-                <table class="table">
+                    <div style="height:400px">
+                            
+                <table class="table" id="tabla-autos">
                             
                 </table>
+                    </div>
             </div>
             
         </div>
         <div class="row" id="usuarios" hidden>
             <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
-                <table class="table table-condensed table-striped" id="tabla_usuarios">
+                    <div style="height:400px">
+                            
+                <table class="table table-condensed table-striped" id="tabla_usuarios" >
                     <thead class="bg-info">
                         <tr>
                             <th>Nombre y Apellido</th>
@@ -177,6 +184,7 @@
                     </thead>
                     <tbody></tbody>
                 </table>
+                    </div>
             </div>
             <div class=" col-sm-2 col-md-2 col-lg-2">
                 <div>&nbsp;</div>
@@ -236,14 +244,17 @@
                                             <p class="text-center">Operaciones Por Usuario</p>
                                         </div>
                                         <div class="row">
-                                            <table class="table table-bordered table-condensed" width="100%"id="tabla_est_mensual">
+                                                <div style="height:400px">
+                                                        
+                                            <table class="table table-bordered table-condensed display responsive nowrap compact" width="100%"id="tabla_est_mensual" >
                                                 <thead class="bg-info">
                                                     <tr>
-                                                        <th>id Usuario</th>
+                                                        <th>Legajo Usuario</th>
                                                         <th>Promedio/mes de Operaciones</th>
                                                     </tr>
                                                 </thead>
                                             </table>
+                                                </div>
                                         </div>
                                     </div>
                                 </div>
@@ -286,7 +297,9 @@
                                             <p class="text-center">Vechículos repetidos</p>
                                         </div>
                                         <div class="row">
-                                            <table class="table table-bordered table-condensed" id="tabla_est_fechas">
+                                                <div style="height:400px">
+                                                        
+                                            <table class="table table-bordered table-condensed display responsive nowrap compact" id="tabla_est_fechas" >
                                                 <thead class="bg-info">
                                                     <tr>
                                                         <th>Patente</th>
@@ -294,6 +307,7 @@
                                                     </tr>
                                                 </thead>
                                             </table>
+                                                </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-sm-6">
@@ -301,7 +315,9 @@
                                                 <p class="text-center">Uso de Cocheras</p>
                                             </div>
                                             <div class="row">
-                                                <table class="table table-bordered table-condensed" id="tabla_est_cochera">
+                                                    <div style="height:400px">
+                                                            
+                                                <table class="table table-bordered table-condensed display responsive nowrap compact" id="tabla_est_cochera" >
                                                     <thead class="bg-info">
                                                         <tr>
                                                             <th>Cochera</th>
@@ -309,6 +325,7 @@
                                                         </tr>
                                                     </thead>
                                                 </table>
+                                                    </div>
                                             </div>
                                         </div>
                                 </div>
@@ -348,7 +365,9 @@
                         </div>
                         <div class="row" >
                             <div class="col-md-12">
-                                <table class="table table-condensed table-bordered" id="tabla_operaciones" >
+                                    <div style="height:400px">
+                                            
+                                <table class="table table-condensed table-bordered display responsive nowrap compact" id="tabla_operaciones" >
                                     <thead class="bg-info">
                                         <tr>
                                             <th>Cochera</th>
@@ -362,6 +381,7 @@
                                     </thead>
                                     <tbody></tbody>                                        
                                 </table>
+                                    </div>
                             </div>
                         </div>
                     </div>
@@ -370,16 +390,19 @@
             <div class="col-md-4 col-sm-4">
                     <div class="panel panel-default" >
                         <div class="panel-heading">Operaciones Por Usuarios</div>
-                        <div class="panel-body" style="height:400px">
-                            <table class="table table-bordered table-condensed" id="tabla_oper_usr">
+                        <div class="panel-body">
+                                <div style="height:400px">
+                                        
+                            <table class="table table-bordered table-condensed display responsive nowrap compact" id="tabla_oper_usr" >
                                 <thead class="bg-info">
                                     <tr>
-                                        <th>Id Usuario</th>
+                                        <th>Legajo Usuario</th>
                                         <th>Cant. Operaciones</th>
                                         
                                     </tr>
                                 </thead>
                             </table>
+                                </div>
                         </div>
                     </div>
             </div>   
@@ -402,9 +425,11 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-sm-2 col-md-2"></div>
-                        <div class="col-sm-8 col-md-8">
-                            <table class="table table-condensed table-bordered" id="tabla_log_usr">
+                        <div class="col-sm-1 col-md-1"></div>
+                        <div class="col-sm-10 col-md-10">
+                                <div style="height:400px">
+                                        
+                            <table class="table table-condensed table-bordered display responsive nowrap compact" id="tabla_log_usr" >
                                <thead class="bg-info">
                                 <tr>
                                     <th>Nombre y Apellido</th>
@@ -413,6 +438,7 @@
                                     <th>Turno</th>
                                 </tr></thead>
                             </table>
+                                </div>
                         </div>
                     </div>
                 </div>
@@ -518,11 +544,11 @@
                                             
                                 <div class="form-group  col-md-4 col-sm-4">
                                         <label class="text-center">Dominio</label>
-                                        <input class="form-control input-sm" type="text" id="in_dominio">
+                                        <input class="form-control input-sm" type="text" id="in_dominio" name="in_dominio">
                                 </div>
                                 <div class="form-group  col-md-4 col-sm-4">
                                         <label class="text-center">Color</label>
-                                        <input class="form-control input-sm" type="text" id="in_color">
+                                        <input class="form-control input-sm" type="text" id="in_color" name="in_color">
                                 </div>
                             </div>
                             <div class="row">
@@ -530,7 +556,7 @@
                                     
                                     <div class="form-group  col-md-4 col-sm-4">
                                             <label class="text-center">Marca</label>
-                                            <input class="form-control input-sm" type="text" id="in_marca">
+                                            <input class="form-control input-sm" type="text" id="in_marca" name="in_marca">
                                     </div>
                                     <div class="form-group col-md-3">
                                             <label for="vehi_esp">Especial</label><br>
