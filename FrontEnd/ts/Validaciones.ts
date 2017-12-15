@@ -1,4 +1,7 @@
-
+function stopEvent(event:JQueryEventObject){
+    event.preventDefault();
+    event.stopImmediatePropagation();
+}
 function crearSelectUsr(id_div:any,arr_datos:any){
     let div = document.getElementById(id_div);
     if(div === null){
@@ -225,26 +228,50 @@ var validator_ingreso_vehiculo = {
             },
             in_color:{
                 validators:{
-                    callback:{
-                        message:'Ingrese Color',
-                        callback:(value:any)=>{
-                            value = value.toUpperCase();
-                             return value.match(/^[a-zA-ZÀ-ÿ\u00f1\u00d1]+(\s*[a-zA-ZÀ-ÿ\u00f1\u00d1]*)*[a-zA-ZÀ-ÿ\u00f1\u00d1]+$/i);
-                        }
-                    }
+                    notEmpty:{message:'Ingrese Mail'},
+                    
                 }
             },
             in_marca:{
                 validators:{
-                    callback:{
-                        message:'Ingrese Marca',
-                        callback:(value:any)=>{
-                            value = value.toUpperCase();
-                             return value.match(/^[a-zA-ZÀ-ÿ\u00f1\u00d1]+(\s*[a-zA-ZÀ-ÿ\u00f1\u00d1]*)*[a-zA-ZÀ-ÿ\u00f1\u00d1]+$/i);
-                        }
-                    }
+                    notEmpty:{message:'Ingrese Mail'},
+                    
                 }
             },
         }
     }
 };
+
+
+
+function tablaCocheras(array:any){
+    var table='<table id="tablaCocheras" class="table table-condensed"><tbody>';
+    var flag:boolean;
+    var e:any;
+    (array.pisos).forEach(function(piso:any){
+        table+='<tr>';
+        for(var i=piso.idPiso*100;i<(piso.idPiso*100+(piso.cantidadCocheras+piso.cantidadReservados));i++)
+        {  
+            try{
+                (array.ocupados).forEach(function(auto:any)
+                {
+                    if(auto.idCochera == i)
+                    {
+                            table+='<td id='+i+'  style="border:1px solid; background-color:grey;border-color:white; height:30px; height:60px;"><a style="margin:80px 60px;" data-toggle="popover" title="Nº'+auto.idCochera+ '\nPatente:'+auto.patente+'\nColor: '+auto.color+'\nMarca:'+auto.marca+'"><i class="material-icons" style="color:red;">directions_car</i></a> </td>';
+                            flag = false;
+                            throw e;
+                            
+                    }
+                    else
+                        flag = true;
+                });
+            }
+            catch(e){}
+            if(flag)
+                table+='<td id='+i+' style="border:1px solid; border-color:white; height:30px; height:60px;"><a style="margin:80px 60px;"> <i class="material-icons" style="color:green;">directions_car</i></a> </td>';
+        }
+        table+='</tr>';
+    });
+    table+='</tr></tbody></table>';
+    return table;
+}

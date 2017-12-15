@@ -167,7 +167,6 @@ $(document).ready(()=>{
         $("#operaciones").prop("hidden",true);
         Usuario.vaciarFormFec();
         tabla_log_usr = new DataTable("tabla_log_usr",true);
-        tabla_log_usr.iniciar();
         stopEvent(e);
     });
 
@@ -224,7 +223,7 @@ $(document).ready(()=>{
         $("#logs-usuarios").prop("hidden",true);
         Ajax.get('estacionamiento/listaCocheras').done((e)=>{
             localStorage.setItem('lugares',JSON.stringify(e));
-            
+            $("#id-autos").html(tablaCocheras(e));
         });
     });
     $("#btn-ingreso-auto").click((e)=>{
@@ -250,12 +249,7 @@ $(document).ready(()=>{
         Operacion.vaciarForm();
         tabla_operaciones = new DataTable("tabla_operaciones");
         tabla_oper_usr = new DataTable("tabla_oper_usr",false);
-        tabla_oper_usr.iniciar();
-        tabla_operaciones.iniciar();
-        $( window ).resize(function() {
-           // tabla_operaciones.dt.columns.adjust().draw();
-            //tabla_oper_usr.dt.columns.adjust().draw();
-        });
+
         Usuario.listar().done((datos)=>{
             crearSelectUsr('lista_usuarios',datos);
         });
@@ -323,14 +317,6 @@ $(document).ready(()=>{
         tabla_est_fechas = new DataTable("tabla_est_fechas",false);
         tabla_est_mensual = new DataTable("tabla_est_mensual",true);
         tabla_est_cochera = new DataTable("tabla_est_cochera",false);
-        tabla_est_fechas.iniciar();
-        tabla_est_mensual.iniciar();
-        tabla_est_cochera.iniciar();
-        
-        $( window ).resize(function() {
-          //  tabla_est_fechas.dt.columns.adjust().draw();
-            //tabla_est_mensual.dt.columns.adjust().draw();
-         });
         $("#estadistica").prop("hidden",false);
         stopEvent(e);
     });
@@ -354,14 +340,14 @@ $(document).ready(()=>{
     });
     $('#in_hasta_est').datetimepicker({
         format: 'YYYY-MM-DD',
-        useCurrent: false //Important! See issue #1075
+        useCurrent: false
     });
     $('#in_desde_est').datetimepicker({
         format: 'YYYY-MM-DD'
     });
     $('#in_periodo').datetimepicker({
         format: 'MM-YYYY',
-        useCurrent: false //Important! See issue #1075
+        useCurrent: false
     });
     $("#in_desde_est").on("dp.change", function (e:any) {
         $('#in_hasta_est').data("DateTimePicker").minDate(e.date);
@@ -419,7 +405,3 @@ $(document).ready(()=>{
     });
 });
 
-function stopEvent(event:JQueryEventObject){
-    event.preventDefault();
-    event.stopImmediatePropagation();
-}

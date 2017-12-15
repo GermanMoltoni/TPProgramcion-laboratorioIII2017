@@ -16,16 +16,17 @@ var lenguage = {
 };
 class DataTable{
     public dt:any;
-    private url:string='http://localhost:8080/prueba/TPProgramcion-laboratorioIII2017/Api/';
+    //private url:string='http://localhost:8080/prueba/TPProgramcion-laboratorioIII2017/Api/';
     
-    //private url:string='http://localhost/TPProgramcion-laboratorioIII2017/Api/';
+    private url:string='http://localhost/TPProgramcion-laboratorioIII2017/Api/';
     private id_tabla:string;
     private search:boolean;
      constructor(id_tabla:string,search?:boolean){
         this.id_tabla = id_tabla;
         this.search = search != undefined?search:true;
+        this.iniciar();
     }
-    public iniciar(){
+    private iniciar(){
         $('#' + this.id_tabla).DataTable().destroy();        
         $("#"+this.id_tabla).DataTable({
             searching:false,
@@ -66,7 +67,7 @@ class DataTable{
             ajax:{ headers:{'token':Ajax.getToken()},
                 url:this.url+path,
             dataSrc:(data:any)=>{
-                if(data =="{}" )
+                if(data =="{}" || data.error != undefined || data.msg != undefined)
                     return {};
                 return data;
             }},
