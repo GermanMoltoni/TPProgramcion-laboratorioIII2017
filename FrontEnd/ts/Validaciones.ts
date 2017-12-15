@@ -257,7 +257,7 @@ function tablaCocheras(array:any){
                 {
                     if(auto.idCochera == i)
                     {
-                            table+='<td id='+i+'  style="border:1px solid; background-color:grey;border-color:white; height:30px; height:60px;"><a style="margin:80px 60px;" data-toggle="popover" title="Nº'+auto.idCochera+ '\nPatente:'+auto.patente+'\nColor: '+auto.color+'\nMarca:'+auto.marca+'"><i class="material-icons" style="color:red;">directions_car</i></a> </td>';
+                            table+='<td id='+i+'  style="   width:60px; height:60px;"><div class="row"><a  data-toggle="popover" title="Nº'+auto.idCochera+ '\nPatente:'+auto.patente+'\nColor: '+auto.color+'\nMarca:'+auto.marca+'"><i style="margin:0px 0px 0px 60px;color:red;" class="material-icons "  >directions_car</i></a></div><div class="row"><p class="text-center"style="color:white;">'+auto.idCochera+'</p></div> </td>';
                             flag = false;
                             throw e;
                             
@@ -268,7 +268,7 @@ function tablaCocheras(array:any){
             }
             catch(e){}
             if(flag)
-                table+='<td id='+i+' style="border:1px solid; border-color:white; height:30px; height:60px;"><a style="margin:80px 60px;"> <i class="material-icons" style="color:green;">directions_car</i></a> </td>';
+                table+='<td id='+i+' style="width:60px; height:60px;"><div class="row"><i class="material-icons" style="margin:0px 0px 0px 60px;color:green;"  >directions_car</i></div><div class="row"><p class="text-center"style="color:white;">'+i+'</p></div></td>';
         }
         table+='</tr>';
     });

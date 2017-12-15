@@ -1,7 +1,7 @@
 /// <reference path="./types/jquery.d.ts" />
 class Ajax{
-    private static url:string = 'http://localhost/TPProgramcion-laboratorioIII2017/Api/';
-   //private static url:string = 'http://localhost:8080/prueba/TPProgramcion-laboratorioIII2017/Api/';
+   // private static url:string = 'http://localhost/TPProgramcion-laboratorioIII2017/Api/';
+   private static url:string = 'http://localhost:8080/prueba/TPProgramcion-laboratorioIII2017/Api/';
    
    public static get(path:string, data?:any) {
         return $.ajax({
