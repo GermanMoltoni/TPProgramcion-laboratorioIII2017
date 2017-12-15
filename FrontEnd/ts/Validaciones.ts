@@ -245,6 +245,42 @@ var validator_ingreso_vehiculo = {
 
 
 function tablaCocheras(array:any){
+    var table='<div class="col-md-12">';
+    var flag:boolean;
+    var e:any;
+    (array.pisos).forEach(function(piso:any){
+        
+        for(var i=piso.idPiso*100;i<(piso.idPiso*100+(piso.cantidadCocheras+piso.cantidadReservados));i++)
+        {  
+            for(var cell = 1; cell <=12;cell++){
+                table+='<div class="row">'
+                try{
+                    (array.ocupados).forEach(function(auto:any)
+                    {
+                        if(auto.idCochera == i){
+                            table+='<div class="col-md-1 col-sm-1"><div class="row"><a  data-toggle="popover" title="Nº'+auto.idCochera+ '\nPatente:'+auto.patente+'\nColor: '+auto.color+'\nMarca:'+auto.marca+'"><i style="margin:0px 0px 0px 60px;color:red;" class="material-icons "  >directions_car</i></a></div><div class="row"><p class="text-center"style="color:white;">'+auto.idCochera+'</p></div></div>';
+                            flag = false;
+                            throw e;
+                        }
+                        else
+                            flag = true;
+                    });
+                }
+                catch(e){}
+                if(flag)
+                    table+='<div class="col-md-1 col-sm-1"><i class="material-icons" style="margin:0px 0px 0px 60px;color:green;"  >directions_car</i></div><div class="row"><p class="text-center"style="color:white;">'+i+'</p></div>'
+                table+='</div>'  
+            }
+         
+             
+         }
+       
+    });
+ 
+    return table;
+}
+/*
+function tablaCocheras(array:any){
     var table='<table id="tablaCocheras" class="table table-condensed"><tbody>';
     var flag:boolean;
     var e:any;
@@ -275,3 +311,4 @@ function tablaCocheras(array:any){
     table+='</tr></tbody></table>';
     return table;
 }
+*/ 
