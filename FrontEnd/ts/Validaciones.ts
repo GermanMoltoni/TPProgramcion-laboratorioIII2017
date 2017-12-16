@@ -199,8 +199,14 @@ var validator_ingreso_vehiculo = {
         if(Estacionamiento.verificarLugares()){
             Estacionamiento.ingresar(auto).done((e)=>{
                 $("#btn-eliminar-usr").addClass("hide_me"); 
-                if(e.cochera != undefined)               
+                if(e.cochera != undefined)   {
                     $("#msg-info").text( 'Cochera Asignada:'+e.cochera);
+                    Ajax.get('estacionamiento/listaCocheras').done((e)=>{
+                        localStorage.setItem('lugares',JSON.stringify(e));
+                        $("#id-autos").html(tablaCocheras(e));
+                    });
+                }            
+                    
                 else
                     $("#msg-info").text(e.error);
                 $("#modal-info").modal("show");
@@ -249,16 +255,23 @@ function tablaCocheras(array:any){
     var flag:boolean;
     var e:any;
     (array.pisos).forEach(function(piso:any){
-        
-        for(var i=piso.idPiso*100;i<(piso.idPiso*100+(piso.cantidadCocheras+piso.cantidadReservados));i++)
-        {  
-            for(var cell = 1; cell <=12;cell++){
-                table+='<div class="row">'
+        var i=piso.idPiso*100
+        while(i<(piso.idPiso*100+(piso.cantidadCocheras+piso.cantidadReservados)))
+        {  table+='<div class="row">'
+            var cell = 1;
+            while(cell <=12){
+                cell++
                 try{
+                    
+
+                    if(i>(piso.idPiso*100+(piso.cantidadCocheras+piso.cantidadReservados))){
+                        flag=false;
+                         throw e;
+                    }
                     (array.ocupados).forEach(function(auto:any)
                     {
                         if(auto.idCochera == i){
-                            table+='<div class="col-md-1 col-sm-1"><div class="row"><a  data-toggle="popover" title="Nº'+auto.idCochera+ '\nPatente:'+auto.patente+'\nColor: '+auto.color+'\nMarca:'+auto.marca+'"><i style="margin:0px 0px 0px 60px;color:red;" class="material-icons "  >directions_car</i></a></div><div class="row"><p class="text-center"style="color:white;">'+auto.idCochera+'</p></div></div>';
+                            table+='<div class="col-md-1 col-sm-1 col-xs-12"><div class="row"><a  data-toggle="popover" title="Nº'+auto.idCochera+ '\nPatente:'+auto.patente+'\nColor: '+auto.color+'\nMarca:'+auto.marca+'"><i style="margin:0px 0px 0px  25px;color:red;" class="material-icons "  >directions_car</i></a></div><div class="row"><p class="text-center"style="color:white;">'+auto.idCochera+'</p></div></div>';
                             flag = false;
                             throw e;
                         }
@@ -266,12 +279,14 @@ function tablaCocheras(array:any){
                             flag = true;
                     });
                 }
-                catch(e){}
+                catch(e){ }
                 if(flag)
-                    table+='<div class="col-md-1 col-sm-1"><i class="material-icons" style="margin:0px 0px 0px 60px;color:green;"  >directions_car</i></div><div class="row"><p class="text-center"style="color:white;">'+i+'</p></div>'
-                table+='</div>'  
+                    table+='<div class="col-md-1 col-sm-1 col-xs-12"><div class="row"><i class="material-icons" style="margin:0px 0px 0px  25px;color:green;"  >directions_car</i></div><div class="row"><p class="text-center"style="color:white;">'+i+'</p></div></div>'
+               
+                i++;
             }
-         
+            console.log(i,(piso.idPiso*100+(piso.cantidadCocheras+piso.cantidadReservados)))
+            table+='</div>'  
              
          }
        
@@ -279,36 +294,3 @@ function tablaCocheras(array:any){
  
     return table;
 }
-/*
-function tablaCocheras(array:any){
-    var table='<table id="tablaCocheras" class="table table-condensed"><tbody>';
-    var flag:boolean;
-    var e:any;
-    (array.pisos).forEach(function(piso:any){
-        table+='<tr>';
-        for(var i=piso.idPiso*100;i<(piso.idPiso*100+(piso.cantidadCocheras+piso.cantidadReservados));i++)
-        {  
-            try{
-                (array.ocupados).forEach(function(auto:any)
-                {
-                    if(auto.idCochera == i)
-                    {
-                            table+='<td id='+i+'  style="   width:60px; height:60px;"><div class="row"><a  data-toggle="popover" title="Nº'+auto.idCochera+ '\nPatente:'+auto.patente+'\nColor: '+auto.color+'\nMarca:'+auto.marca+'"><i style="margin:0px 0px 0px 60px;color:red;" class="material-icons "  >directions_car</i></a></div><div class="row"><p class="text-center"style="color:white;">'+auto.idCochera+'</p></div> </td>';
-                            flag = false;
-                            throw e;
-                            
-                    }
-                    else
-                        flag = true;
-                });
-            }
-            catch(e){}
-            if(flag)
-                table+='<td id='+i+' style="width:60px; height:60px;"><div class="row"><i class="material-icons" style="margin:0px 0px 0px 60px;color:green;"  >directions_car</i></div><div class="row"><p class="text-center"style="color:white;">'+i+'</p></div></td>';
-        }
-        table+='</tr>';
-    });
-    table+='</tr></tbody></table>';
-    return table;
-}
-*/ 

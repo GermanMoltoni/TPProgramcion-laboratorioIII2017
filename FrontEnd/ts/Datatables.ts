@@ -16,9 +16,9 @@ var lenguage = {
 };
 class DataTable{
     public dt:any;
-    private url:string='http://localhost:8080/prueba/TPProgramcion-laboratorioIII2017/Api/';
+  //  private url:string='http://localhost:8080/prueba/TPProgramcion-laboratorioIII2017/Api/';
     
-    //private url:string='http://localhost/TPProgramcion-laboratorioIII2017/Api/';
+    private url:string='http://localhost/TPProgramcion-laboratorioIII2017/Api/';
     private id_tabla:string;
     private search:boolean;
      constructor(id_tabla:string,search?:boolean){

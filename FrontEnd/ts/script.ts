@@ -19,6 +19,7 @@ $(document).ready(()=>{
         $("#estadistica").prop("hidden",true);
         $("#operaciones").prop("hidden",true);
         $("#logs-usuarios").prop("hidden",true);
+        $("#lugares").prop("hidden",true);
         
         stopEvent(e);
     });
@@ -65,6 +66,8 @@ $(document).ready(()=>{
         $("#estacionamiento").prop("hidden",true);
         $("#estadistica").prop("hidden",true);
         $("#operaciones").prop("hidden",true);
+        $("#lugares").prop("hidden",true);
+        
         $("#logs-usuarios").prop("hidden",true);
         
         tabla_usuarios = new DataTable("tabla_usuarios");
@@ -98,9 +101,7 @@ $(document).ready(()=>{
             }
         ],'usuario/listar');
         tabla_usuarios.selectFila();
-        $( window ).resize(function() {
-         //   tabla_usuarios.dt.columns.adjust().draw();
-        });
+    
         stopEvent(e);
     });
     $("#btn-nuevo-usuario").click((e)=>{
@@ -164,6 +165,8 @@ $(document).ready(()=>{
         $("#logs-usuarios").prop("hidden",false);
         $("#estacionamiento").prop("hidden",true);
         $("#estadistica").prop("hidden",true);
+        $("#lugares").prop("hidden",true);
+        
         $("#operaciones").prop("hidden",true);
         Usuario.vaciarFormFec();
         tabla_log_usr = new DataTable("tabla_log_usr",true);
@@ -217,6 +220,8 @@ $(document).ready(()=>{
     $("#a-estacionamiento").click((e)=>{
         $("#form-login").prop("hidden",true);
         $("#usuarios").prop("hidden",true);
+        $("#lugares").prop("hidden",true);
+        
         $("#operaciones").prop("hidden",true);
         $("#estadistica").prop("hidden",true);
         $("#estacionamiento").prop("hidden",false);
@@ -403,5 +408,34 @@ $(document).ready(()=>{
      
         stopEvent(e);
     });
+
+    /* Lugares utilizados */
+    $("#a-lugares").click(()=>{
+        $("#form-login").prop("hidden",true);
+        $("#usuarios").prop("hidden",true);
+        $("#lugares").prop("hidden",false);
+        $("#operaciones").prop("hidden",true);
+        $("#estadistica").prop("hidden",true);
+        $("#estacionamiento").prop("hidden",true);
+        $("#logs-usuarios").prop("hidden",true);
+        var tabla_mas = new DataTable('tabla_mas_u',false);
+        var tabla_menos = new DataTable('tabla_menos_u',false);
+        var tabla_nunca = new DataTable('tabla_nunca_u',false);
+        tabla_mas.ajax([                
+            {data:'cochera'},
+            {data:'veces'},
+        ],'estacionamiento/lugares/masUtilizado');
+        tabla_menos.ajax([                
+            {data:'cochera'},
+            {data:'veces'},
+        ],'estacionamiento/lugares/menosUtilizado');
+        tabla_nunca.ajax([                
+            {render:function(data:any,type:any,row:any){
+                 
+                return row;}
+            }
+        ],'estacionamiento/lugares/nuncaUtilizado');
+    });
+    
 });
 

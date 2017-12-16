@@ -10,7 +10,7 @@ class AccesoDatos
  
             //$this->_objetoPDO = new PDO('mysql:host=mysql.hostinger.com.ar;dbname=u785570042_fin3;port=3306;charset=utf8', 'u785570042_fin3', '3214789', array(PDO::ATTR_EMULATE_PREPARES => false,PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
            // $this->_objetoPDO = new PDO('mysql:host=localhost;dbname=estacionamiento;charset=utf8', 'root', '', array(PDO::ATTR_EMULATE_PREPARES => false,PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
-           $this->_objetoPDO = new PDO('mysql:host=localhost;dbname=estacionamiento;charset=utf8;port=3308', 'root', '', array(PDO::ATTR_EMULATE_PREPARES => false,PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
+           $this->_objetoPDO = new PDO('mysql:host=localhost;dbname=estacionamiento;charset=utf8;port=3306', 'root', '', array(PDO::ATTR_EMULATE_PREPARES => false,PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
            
             $this->_objetoPDO->exec("SET CHARACTER SET utf8");
  
