@@ -2,7 +2,6 @@
 var Ajax = /** @class */ (function () {
     function Ajax() {
     }
-    // private static url:string = 'http://localhost:8080/prueba/TPProgramcion-laboratorioIII2017/Api/';
     Ajax.get = function (path, data) {
         return $.ajax({
             url: Ajax.url + path,
@@ -94,7 +93,9 @@ var Ajax = /** @class */ (function () {
     Ajax.setToken = function (data) {
         localStorage.setItem('token', data);
     };
-    Ajax.url = 'http://localhost/TPProgramcion-laboratorioIII2017/Api/';
+    //private static url:string = 'http://localhost/TPProgramcion-laboratorioIII2017/Api/';
+    // private static url:string = 'http://localhost:8080/prueba/TPProgramcion-laboratorioIII2017/Api/';
+    Ajax.url = 'http://germanmoltoni.esy.es/final/Api/';
     return Ajax;
 }());
 /// <reference path="./types/jquery.d.ts" />
@@ -244,8 +245,6 @@ var lenguage = {
 };
 var DataTable = /** @class */ (function () {
     function DataTable(id_tabla, search) {
-        //  private url:string='http://localhost:8080/prueba/TPProgramcion-laboratorioIII2017/Api/';
-        this.url = 'http://localhost/TPProgramcion-laboratorioIII2017/Api/';
         this.id_tabla = id_tabla;
         this.search = search != undefined ? search : true;
         this.iniciar();
@@ -330,6 +329,8 @@ var DataTable = /** @class */ (function () {
             }
         });
     };
+    //  private url:string='http://localhost:8080/prueba/TPProgramcion-laboratorioIII2017/Api/';
+    DataTable.url = 'http://germanmoltoni.esy.es/final/Api/';
     return DataTable;
 }());
 var Estacionamiento = /** @class */ (function () {
@@ -721,6 +722,7 @@ $(document).ready(function () {
     $("#a-estadistica").click(function (e) {
         $("#form-login").prop("hidden", true);
         $("#usuarios").prop("hidden", true);
+        $("#lugares").prop("hidden", true);
         $("#estacionamiento").prop("hidden", true);
         $("#operaciones").prop("hidden", true);
         $("#logs-usuarios").prop("hidden", true);

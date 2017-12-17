@@ -315,6 +315,8 @@ $(document).ready(()=>{
     $("#a-estadistica").click((e)=>{
         $("#form-login").prop("hidden",true);
         $("#usuarios").prop("hidden",true);
+        $("#lugares").prop("hidden",true);
+        
         $("#estacionamiento").prop("hidden",true);
         $("#operaciones").prop("hidden",true);
         $("#logs-usuarios").prop("hidden",true);

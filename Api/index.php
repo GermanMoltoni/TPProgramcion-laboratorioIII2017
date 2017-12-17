@@ -61,7 +61,7 @@ $app->group('/estacionamiento', function () {
             $this->get('/nuncaUtilizado',\ParkingApi::class.':LugarNuncaUtilizadoApi');
             $this->get('/masUtilizado',\ParkingApi::class.':LugarMasUtilizadoApi');
         })->add(\AuthUser::class.':verificarFormTiempo');
-});//->add(\AuthUser::class.':users');
+})->add(\AuthUser::class.':users');
 
 $app->group('/operaciones', function () {
     $this->get('/listar',\OperationApi::class . ':ListOperationApi')->add(\AuthUser::class.':verificarFormTiempo');//listo
