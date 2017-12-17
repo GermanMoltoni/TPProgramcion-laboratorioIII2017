@@ -6,7 +6,7 @@ var tabla_oper_usr:DataTable;
 var tabla_log_usr:DataTable;
 var tabla_est_cochera:DataTable;
 $(document).ready(()=>{
-
+    $('[data-toggle="tooltip"]').tooltip(); 
     let usr = Usuario.getUsuario();
     if(usr != null){
         Auth.pagina(Usuario.getTipo());

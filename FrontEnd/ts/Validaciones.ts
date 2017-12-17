@@ -252,7 +252,7 @@ var validator_ingreso_vehiculo = {
 
 function tablaCocheras(array:any){
     var table='<div class="col-md-12">';
-    var flag:boolean;
+    var flag:boolean=true;
     var e:any;
     (array.pisos).forEach(function(piso:any){
         var i=piso.idPiso*100
@@ -262,8 +262,6 @@ function tablaCocheras(array:any){
             while(cell <=12){
                 cell++
                 try{
-                    
-
                     if(i>(piso.idPiso*100+(piso.cantidadCocheras+piso.cantidadReservados))){
                         flag=false;
                          throw e;
@@ -271,7 +269,7 @@ function tablaCocheras(array:any){
                     (array.ocupados).forEach(function(auto:any)
                     {
                         if(auto.idCochera == i){
-                            table+='<div class="col-md-1 col-sm-1 col-xs-12"><div class="row"><a  data-toggle="popover" title="Nº'+auto.idCochera+ '\nPatente:'+auto.patente+'\nColor: '+auto.color+'\nMarca:'+auto.marca+'"><i style="margin:0px 0px 0px  25px;color:red;" class="material-icons "  >directions_car</i></a></div><div class="row"><p class="text-center"style="color:white;">'+auto.idCochera+'</p></div></div>';
+                            table+='<div class="col-md-1 col-sm-1 col-xs-12"><div class="row"><a  data-toggle="tooltip" title="Nº'+auto.idCochera+ '\nPatente:'+auto.patente+'\nColor: '+auto.color+'\nMarca:'+auto.marca+'"><i style="margin:0px 0px 0px  25px;color:red;" class="material-icons "  >directions_car</i></a></div><div class="row"><p class="text-center"style="color:white;">'+auto.idCochera+'</p></div></div>';
                             flag = false;
                             throw e;
                         }

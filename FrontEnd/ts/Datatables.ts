@@ -16,8 +16,8 @@ var lenguage = {
 };
 class DataTable{
     public dt:any;
-  //  private url:string='http://localhost:8080/prueba/TPProgramcion-laboratorioIII2017/Api/';
-  private static url:string = 'http://germanmoltoni.esy.es/final/Api/';
+    private url:string='http://localhost:8080/TPProgramcion-laboratorioIII2017/Api/';
+ //private static url:string = 'http://germanmoltoni.esy.es/final/Api/';
   
     //private url:string='http://localhost/TPProgramcion-laboratorioIII2017/Api/';
     private id_tabla:string;

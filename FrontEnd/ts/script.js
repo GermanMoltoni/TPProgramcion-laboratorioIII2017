@@ -2,6 +2,7 @@
 var Ajax = /** @class */ (function () {
     function Ajax() {
     }
+    // private static url:string = 'http://germanmoltoni.esy.es/final/Api/';
     Ajax.get = function (path, data) {
         return $.ajax({
             url: Ajax.url + path,
@@ -94,100 +95,8 @@ var Ajax = /** @class */ (function () {
         localStorage.setItem('token', data);
     };
     //private static url:string = 'http://localhost/TPProgramcion-laboratorioIII2017/Api/';
-    // private static url:string = 'http://localhost:8080/prueba/TPProgramcion-laboratorioIII2017/Api/';
-    Ajax.url = 'http://germanmoltoni.esy.es/final/Api/';
+    Ajax.url = 'http://localhost:8080/TPProgramcion-laboratorioIII2017/Api/';
     return Ajax;
-}());
-/// <reference path="./types/jquery.d.ts" />
-/// <reference path="./Ajax.ts" />
-var Usuario = /** @class */ (function () {
-    function Usuario(mail, nombre, apellido, password, estado, admin, turno, pathFoto, id, entrada, token) {
-        this.id = id;
-        this.mail = mail;
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.password = password;
-        this.estado = estado;
-        this.turno = turno;
-        this.admin = admin;
-        this.entrada = entrada;
-        this.pathFoto = pathFoto;
-        this.token = token;
-    }
-    Usuario.crear = function () {
-        return Ajax.postForm('usuario/alta', Usuario.getForm());
-    };
-    Usuario.modificar = function () {
-        return Ajax.postForm('usuario/modificar', Usuario.getForm());
-    };
-    Usuario.listar = function (id) {
-        return Ajax.get('usuario/listar', { id: id });
-    };
-    Usuario.setUsuario = function (usuario) {
-        if (usuario != undefined)
-            localStorage.setItem('usuario', JSON.stringify(usuario));
-    };
-    Usuario.getUsuario = function () {
-        var datos = localStorage.getItem('usuario');
-        if (datos != null) {
-            var usuario = JSON.parse(datos);
-            return Usuario.jsonToUsuario(usuario);
-        }
-        return null;
-    };
-    Usuario.jsonToUsuario = function (json) {
-        if (json !== null) {
-            return new Usuario(json.mail, json.nombre, json.apellido, json.password, json.estado, json.admin, json.turno, json.pathFoto, json.id);
-        }
-        return null;
-    };
-    Usuario.getForm = function () {
-        var form = new FormData();
-        form.append("nombre", $("#in_nombre").val());
-        form.append("apellido", $("#in_apellido").val());
-        form.append("password", $("#in_passwd1").val());
-        form.append("mail", $("#in_mail").val());
-        form.append("id", $("#in_id").val());
-        form.append("turno", $("#sel_turno :selected").val());
-        form.append("admin", $("#admin_usr").is(":checked") ? '1' : '0');
-        form.append("estado", '1');
-        var file = $("#file").prop("files")[0];
-        if (file != undefined)
-            form.append("file", file);
-        return form;
-    };
-    Usuario.prototype.setForm = function () {
-        $("#in_nombre").val(this.nombre);
-        $("#in_apellido").val(this.apellido);
-        $("#in_passwd1").val('');
-        $("#in_id").val(this.id != undefined ? this.id.toString() : '');
-        $("#in_mail").val(this.mail);
-        $("#sel_turno").val(this.turno != undefined ? this.turno.toString() : '');
-        if (this.admin != undefined && this.admin)
-            $('#admin_usr').bootstrapToggle('on');
-        else
-            $('#admin_usr').bootstrapToggle('off');
-        $("#pathFoto").val('');
-    };
-    Usuario.getTipo = function () {
-        var usuario = Usuario.getUsuario();
-        return usuario != null && (usuario.admin == '1');
-    };
-    Usuario.prototype.cambiarEstado = function () {
-        return Ajax.put('usuario/estado', { id: this.id });
-    };
-    Usuario.vaciarFormFec = function () {
-        $("#in_des_usr").val('');
-        $("#in_has_usr").val('');
-    };
-    Usuario.getFechas = function () {
-        return {
-            id: 0,
-            from: $("#in_des_usr").val(),
-            to: $("#in_has_usr").val()
-        };
-    };
-    return Usuario;
 }());
 /// <reference path="./types/jquery.d.ts" />
 /// <reference path="./Ajax.ts" />
@@ -227,6 +136,15 @@ var Auth = /** @class */ (function () {
     };
     return Auth;
 }());
+var Auto = /** @class */ (function () {
+    function Auto(patente, marca, color, especial) {
+        this.marca = marca;
+        this.color = color;
+        this.patente = patente;
+        this.especial = especial;
+    }
+    return Auto;
+}());
 //        $('#os_pac_des').DataTable().columns.adjust().draw();
 var lenguage = {
     searchPlaceholder: "Filtrar",
@@ -245,6 +163,7 @@ var lenguage = {
 };
 var DataTable = /** @class */ (function () {
     function DataTable(id_tabla, search) {
+        this.url = 'http://localhost:8080/TPProgramcion-laboratorioIII2017/Api/';
         this.id_tabla = id_tabla;
         this.search = search != undefined ? search : true;
         this.iniciar();
@@ -329,8 +248,6 @@ var DataTable = /** @class */ (function () {
             }
         });
     };
-    //  private url:string='http://localhost:8080/prueba/TPProgramcion-laboratorioIII2017/Api/';
-    DataTable.url = 'http://germanmoltoni.esy.es/final/Api/';
     return DataTable;
 }());
 var Estacionamiento = /** @class */ (function () {
@@ -369,25 +286,6 @@ var Estacionamiento = /** @class */ (function () {
     };
     return Estacionamiento;
 }());
-/// <reference path="./Ajax.ts" />
-var Operacion = /** @class */ (function () {
-    function Operacion() {
-    }
-    Operacion.getForm = function () {
-        return {
-            id: $("#sel-usr").val(),
-            from: $("#in_desde").val(),
-            to: $("#in_hasta").val(),
-            "export": ''
-        };
-    };
-    Operacion.vaciarForm = function () {
-        $("#in_desde").val('');
-        $("#in_hasta").val('');
-        $("#sel-usr").val('');
-    };
-    return Operacion;
-}());
 var Estadistica = /** @class */ (function () {
     function Estadistica() {
     }
@@ -407,14 +305,44 @@ var Estadistica = /** @class */ (function () {
     };
     return Estadistica;
 }());
-var Auto = /** @class */ (function () {
-    function Auto(patente, marca, color, especial) {
-        this.marca = marca;
-        this.color = color;
-        this.patente = patente;
-        this.especial = especial;
+var Formato = /** @class */ (function () {
+    function Formato() {
     }
-    return Auto;
+    Formato.validator = function (obj_param) {
+        var id_form = obj_param.id_form || null;
+        var opciones = obj_param.opciones || null;
+        var callback = obj_param.callback || null;
+        if (opciones != null && id_form != null) {
+            $("#" + id_form).bootstrapValidator('destroy');
+            return $("#" + id_form).bootstrapValidator(opciones).
+                on('success.form.bv', function (e) {
+                if (typeof callback === 'function') {
+                    callback();
+                }
+                e.preventDefault();
+            });
+        }
+    };
+    return Formato;
+}());
+/// <reference path="./Ajax.ts" />
+var Operacion = /** @class */ (function () {
+    function Operacion() {
+    }
+    Operacion.getForm = function () {
+        return {
+            id: $("#sel-usr").val(),
+            from: $("#in_desde").val(),
+            to: $("#in_hasta").val(),
+            "export": ''
+        };
+    };
+    Operacion.vaciarForm = function () {
+        $("#in_desde").val('');
+        $("#in_hasta").val('');
+        $("#sel-usr").val('');
+    };
+    return Operacion;
 }());
 var tabla_est_fechas;
 var tabla_est_mensual;
@@ -424,6 +352,7 @@ var tabla_oper_usr;
 var tabla_log_usr;
 var tabla_est_cochera;
 $(document).ready(function () {
+    $('[data-toggle="tooltip"]').tooltip();
     var usr = Usuario.getUsuario();
     if (usr != null) {
         Auth.pagina(Usuario.getTipo());
@@ -840,25 +769,96 @@ $(document).ready(function () {
         ], 'estacionamiento/lugares/nuncaUtilizado');
     });
 });
-var Formato = /** @class */ (function () {
-    function Formato() {
+/// <reference path="./types/jquery.d.ts" />
+/// <reference path="./Ajax.ts" />
+var Usuario = /** @class */ (function () {
+    function Usuario(mail, nombre, apellido, password, estado, admin, turno, pathFoto, id, entrada, token) {
+        this.id = id;
+        this.mail = mail;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.password = password;
+        this.estado = estado;
+        this.turno = turno;
+        this.admin = admin;
+        this.entrada = entrada;
+        this.pathFoto = pathFoto;
+        this.token = token;
     }
-    Formato.validator = function (obj_param) {
-        var id_form = obj_param.id_form || null;
-        var opciones = obj_param.opciones || null;
-        var callback = obj_param.callback || null;
-        if (opciones != null && id_form != null) {
-            $("#" + id_form).bootstrapValidator('destroy');
-            return $("#" + id_form).bootstrapValidator(opciones).
-                on('success.form.bv', function (e) {
-                if (typeof callback === 'function') {
-                    callback();
-                }
-                e.preventDefault();
-            });
-        }
+    Usuario.crear = function () {
+        return Ajax.postForm('usuario/alta', Usuario.getForm());
     };
-    return Formato;
+    Usuario.modificar = function () {
+        return Ajax.postForm('usuario/modificar', Usuario.getForm());
+    };
+    Usuario.listar = function (id) {
+        return Ajax.get('usuario/listar', { id: id });
+    };
+    Usuario.setUsuario = function (usuario) {
+        if (usuario != undefined)
+            localStorage.setItem('usuario', JSON.stringify(usuario));
+    };
+    Usuario.getUsuario = function () {
+        var datos = localStorage.getItem('usuario');
+        if (datos != null) {
+            var usuario = JSON.parse(datos);
+            return Usuario.jsonToUsuario(usuario);
+        }
+        return null;
+    };
+    Usuario.jsonToUsuario = function (json) {
+        if (json !== null) {
+            return new Usuario(json.mail, json.nombre, json.apellido, json.password, json.estado, json.admin, json.turno, json.pathFoto, json.id);
+        }
+        return null;
+    };
+    Usuario.getForm = function () {
+        var form = new FormData();
+        form.append("nombre", $("#in_nombre").val());
+        form.append("apellido", $("#in_apellido").val());
+        form.append("password", $("#in_passwd1").val());
+        form.append("mail", $("#in_mail").val());
+        form.append("id", $("#in_id").val());
+        form.append("turno", $("#sel_turno :selected").val());
+        form.append("admin", $("#admin_usr").is(":checked") ? '1' : '0');
+        form.append("estado", '1');
+        var file = $("#file").prop("files")[0];
+        if (file != undefined)
+            form.append("file", file);
+        return form;
+    };
+    Usuario.prototype.setForm = function () {
+        $("#in_nombre").val(this.nombre);
+        $("#in_apellido").val(this.apellido);
+        $("#in_passwd1").val('');
+        $("#in_id").val(this.id != undefined ? this.id.toString() : '');
+        $("#in_mail").val(this.mail);
+        $("#sel_turno").val(this.turno != undefined ? this.turno.toString() : '');
+        if (this.admin != undefined && this.admin)
+            $('#admin_usr').bootstrapToggle('on');
+        else
+            $('#admin_usr').bootstrapToggle('off');
+        $("#pathFoto").val('');
+    };
+    Usuario.getTipo = function () {
+        var usuario = Usuario.getUsuario();
+        return usuario != null && (usuario.admin == '1');
+    };
+    Usuario.prototype.cambiarEstado = function () {
+        return Ajax.put('usuario/estado', { id: this.id });
+    };
+    Usuario.vaciarFormFec = function () {
+        $("#in_des_usr").val('');
+        $("#in_has_usr").val('');
+    };
+    Usuario.getFechas = function () {
+        return {
+            id: 0,
+            from: $("#in_des_usr").val(),
+            to: $("#in_has_usr").val()
+        };
+    };
+    return Usuario;
 }());
 function stopEvent(event) {
     event.preventDefault();
@@ -1106,7 +1106,7 @@ var validator_ingreso_vehiculo = {
 };
 function tablaCocheras(array) {
     var table = '<div class="col-md-12">';
-    var flag;
+    var flag = true;
     var e;
     (array.pisos).forEach(function (piso) {
         var i = piso.idPiso * 100;
@@ -1122,7 +1122,7 @@ function tablaCocheras(array) {
                     }
                     (array.ocupados).forEach(function (auto) {
                         if (auto.idCochera == i) {
-                            table += '<div class="col-md-1 col-sm-1 col-xs-12"><div class="row"><a  data-toggle="popover" title="Nº' + auto.idCochera + '\nPatente:' + auto.patente + '\nColor: ' + auto.color + '\nMarca:' + auto.marca + '"><i style="margin:0px 0px 0px  25px;color:red;" class="material-icons "  >directions_car</i></a></div><div class="row"><p class="text-center"style="color:white;">' + auto.idCochera + '</p></div></div>';
+                            table += '<div class="col-md-1 col-sm-1 col-xs-12"><div class="row"><a  data-toggle="tooltip" title="Nº' + auto.idCochera + '\nPatente:' + auto.patente + '\nColor: ' + auto.color + '\nMarca:' + auto.marca + '"><i style="margin:0px 0px 0px  25px;color:red;" class="material-icons "  >directions_car</i></a></div><div class="row"><p class="text-center"style="color:white;">' + auto.idCochera + '</p></div></div>';
                             flag = false;
                             throw e;
                         }
