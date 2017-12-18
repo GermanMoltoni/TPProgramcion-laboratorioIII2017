@@ -329,20 +329,27 @@ $(document).ready(()=>{
     });
     $("#btn-bus-mensual").click((e)=>{
         let datos = Estadistica.getFormPeriodo();
-        tabla_est_mensual.ajax([                
-            {data:'idUser'},
-            {data:'promedio'},
-        ],'estadistica/promediousuariomensual?'+encodeURI('periodo='+datos));
-        Ajax.get('estadistica/promediofacturacionmensual?'+encodeURI('periodo='+datos)).done((res)=>{
-            if(res.msg == undefined){
-                $("#lbl-factu-mensual").text(res);
-            }
-        });
-        Ajax.get('estadistica/promedioautosmensual?'+encodeURI('periodo='+datos)).done((res)=>{
-            if(res.msg == undefined){
-                $("#lbl-autos-mensual").text(res);
-            }
-        });
+        if(datos !== null){
+            tabla_est_mensual.ajax([                
+                {data:'idUser'},
+                {data:'promedio'},
+            ],'estadistica/promediousuariomensual?'+encodeURI('periodo='+datos));
+            Ajax.get('estadistica/promediofacturacionmensual?'+encodeURI('periodo='+datos)).done((res)=>{
+                if(res.msg == undefined){
+                    $("#lbl-factu-mensual").text(res);
+                }
+            });
+            Ajax.get('estadistica/promedioautosmensual?'+encodeURI('periodo='+datos)).done((res)=>{
+                if(res.msg == undefined){
+                    $("#lbl-autos-mensual").text(res);
+                }
+            });
+        }
+        else{
+            $("#msg-info").text('Completar Periodo');
+                $("#modal-info").modal("show");
+        }
+        
         stopEvent(e);
     });
     $('#in_hasta_est').datetimepicker({

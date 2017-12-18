@@ -1,7 +1,8 @@
 class Estadistica{
     public static getFormPeriodo(){
-        return  ($("#in_periodo").val()).split('-')[1]+'-'+($("#in_periodo").val()).split('-')[0];
-
+        if($("#in_periodo").val() !== '')
+            return  ($("#in_periodo").val()).split('-')[1]+'-'+($("#in_periodo").val()).split('-')[0];
+        return null;
     }
     public static vaciarForm(){
         $("#in_desde_est").val('');

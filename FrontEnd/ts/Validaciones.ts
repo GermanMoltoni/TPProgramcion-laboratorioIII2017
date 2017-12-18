@@ -259,8 +259,8 @@ function tablaCocheras(array:any){
         while(i<(piso.idPiso*100+(piso.cantidadCocheras+piso.cantidadReservados)))
         {  table+='<div class="row">'
             var cell = 1;
+            flag=true;
             while(cell <=12){
-                cell++
                 try{
                     if(i>(piso.idPiso*100+(piso.cantidadCocheras+piso.cantidadReservados))){
                         flag=false;
@@ -279,12 +279,12 @@ function tablaCocheras(array:any){
                 }
                 catch(e){ }
                 if(flag)
-                    table+='<div class="col-md-1 col-sm-1 col-xs-12"><div class="row"><i class="material-icons" style="margin:0px 0px 0px  25px;color:green;"  >directions_car</i></div><div class="row"><p class="text-center"style="color:white;">'+i+'</p></div></div>'
+                    table+='<div class="col-md-1 col-sm-1 col-xs-12"><div class="row"><i class="material-icons" style="margin:0px 0px 0px  25px;color:green;"  >directions_car</i></div><div class="row"><p class="text-center"style="color:white;">'+i+'</p></div></div>';
                
                 i++;
+                cell++;
             }
-            console.log(i,(piso.idPiso*100+(piso.cantidadCocheras+piso.cantidadReservados)))
-            table+='</div>'  
+             table+='</div>'  
              
          }
        

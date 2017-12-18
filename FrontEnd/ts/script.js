@@ -1,3 +1,48 @@
+var Auto = /** @class */ (function () {
+    function Auto(patente, marca, color, especial) {
+        this.marca = marca;
+        this.color = color;
+        this.patente = patente;
+        this.especial = especial;
+    }
+    return Auto;
+}());
+var Estacionamiento = /** @class */ (function () {
+    function Estacionamiento() {
+    }
+    Estacionamiento.ingresar = function (auto) {
+        return Ajax.post('estacionamiento/ingreso', auto);
+    };
+    Estacionamiento.retirar = function () {
+        return Ajax["delete"]('estacionamiento/egreso/' + encodeURI(Estacionamiento.getFormEgreso()));
+    };
+    Estacionamiento.setTicket = function (datos) {
+        $("#lbl-dom-salida").text(datos.patente);
+        $("#lbl-cochera-salida").text(datos.idCochera);
+        $("#lbl-entrada-salida").text(datos.entrada);
+        $("#lbl-salida-salida").text(datos.salida);
+        $("#lbl-pago-salida").text(datos.pago);
+        $("#lbl-tiempo-salida").text(datos.tiempo);
+    };
+    Estacionamiento.getFormEgreso = function () {
+        return $("#in_dominio_egre").val();
+    };
+    Estacionamiento.verificarLugares = function () {
+        var datos = localStorage.getItem('lugares');
+        var lugares;
+        var pisos;
+        if (datos !== null) {
+            lugares = JSON.parse(datos).ocupados;
+            pisos = JSON.parse(datos).pisos;
+            var cap_1 = 0;
+            pisos.forEach(function (piso) {
+                cap_1 += piso.cantidadCocheras + piso.cantidadReservados;
+            });
+            return lugares.length < cap_1;
+        }
+    };
+    return Estacionamiento;
+}());
 /// <reference path="./types/jquery.d.ts" />
 var Ajax = /** @class */ (function () {
     function Ajax() {
@@ -97,53 +142,6 @@ var Ajax = /** @class */ (function () {
     //private static url:string = 'http://localhost/TPProgramcion-laboratorioIII2017/Api/';
     Ajax.url = 'http://localhost:8080/TPProgramcion-laboratorioIII2017/Api/';
     return Ajax;
-}());
-/// <reference path="./types/jquery.d.ts" />
-/// <reference path="./Ajax.ts" />
-var Auth = /** @class */ (function () {
-    function Auth(mail, password) {
-        this.mail = mail;
-        this.password = password;
-    }
-    Auth.setForm = function () {
-        document.getElementById('mail').value = 'admin@admin';
-        document.getElementById('password').value = '123';
-    };
-    Auth.clearForm = function () {
-        document.getElementById('mail').value = '';
-        document.getElementById('password').value = '';
-    };
-    Auth.prototype.login = function () {
-        return Ajax.post('login', { mail: this.mail, password: this.password });
-    };
-    Auth.logout = function () {
-        localStorage.clear();
-        sessionStorage.clear();
-        Auth.clearForm();
-    };
-    Auth.pagina = function (tipo) {
-        if (tipo) {
-            $("#form-login").prop("hidden", true);
-            $("#ul-admin").removeClass("hide_me");
-        }
-        else {
-            $("#form-login").prop("hidden", true);
-            $("#ul-user").removeClass("hide_me");
-            $("#estacionamiento").prop("hidden", false);
-        }
-        $("#ul-login").prop("hidden", true);
-        $("#ul-logout").prop("hidden", false);
-    };
-    return Auth;
-}());
-var Auto = /** @class */ (function () {
-    function Auto(patente, marca, color, especial) {
-        this.marca = marca;
-        this.color = color;
-        this.patente = patente;
-        this.especial = especial;
-    }
-    return Auto;
 }());
 //        $('#os_pac_des').DataTable().columns.adjust().draw();
 var lenguage = {
@@ -250,47 +248,13 @@ var DataTable = /** @class */ (function () {
     };
     return DataTable;
 }());
-var Estacionamiento = /** @class */ (function () {
-    function Estacionamiento() {
-    }
-    Estacionamiento.ingresar = function (auto) {
-        return Ajax.post('estacionamiento/ingreso', auto);
-    };
-    Estacionamiento.retirar = function () {
-        return Ajax["delete"]('estacionamiento/egreso/' + encodeURI(Estacionamiento.getFormEgreso()));
-    };
-    Estacionamiento.setTicket = function (datos) {
-        $("#lbl-dom-salida").text(datos.patente);
-        $("#lbl-cochera-salida").text(datos.idCochera);
-        $("#lbl-entrada-salida").text(datos.entrada);
-        $("#lbl-salida-salida").text(datos.salida);
-        $("#lbl-pago-salida").text(datos.pago);
-        $("#lbl-tiempo-salida").text(datos.tiempo);
-    };
-    Estacionamiento.getFormEgreso = function () {
-        return $("#in_dominio_egre").val();
-    };
-    Estacionamiento.verificarLugares = function () {
-        var datos = localStorage.getItem('lugares');
-        var lugares;
-        var pisos;
-        if (datos !== null) {
-            lugares = JSON.parse(datos).ocupados;
-            pisos = JSON.parse(datos).pisos;
-            var cap_1 = 0;
-            pisos.forEach(function (piso) {
-                cap_1 += piso.cantidadCocheras + piso.cantidadReservados;
-            });
-            return lugares.length < cap_1;
-        }
-    };
-    return Estacionamiento;
-}());
 var Estadistica = /** @class */ (function () {
     function Estadistica() {
     }
     Estadistica.getFormPeriodo = function () {
-        return ($("#in_periodo").val()).split('-')[1] + '-' + ($("#in_periodo").val()).split('-')[0];
+        if ($("#in_periodo").val() !== '')
+            return ($("#in_periodo").val()).split('-')[1] + '-' + ($("#in_periodo").val()).split('-')[0];
+        return null;
     };
     Estadistica.vaciarForm = function () {
         $("#in_desde_est").val('');
@@ -343,6 +307,416 @@ var Operacion = /** @class */ (function () {
         $("#sel-usr").val('');
     };
     return Operacion;
+}());
+/// <reference path="./types/jquery.d.ts" />
+/// <reference path="./Ajax.ts" />
+var Auth = /** @class */ (function () {
+    function Auth(mail, password) {
+        this.mail = mail;
+        this.password = password;
+    }
+    Auth.setForm = function () {
+        document.getElementById('mail').value = 'admin@admin';
+        document.getElementById('password').value = '123';
+    };
+    Auth.clearForm = function () {
+        document.getElementById('mail').value = '';
+        document.getElementById('password').value = '';
+    };
+    Auth.prototype.login = function () {
+        return Ajax.post('login', { mail: this.mail, password: this.password });
+    };
+    Auth.logout = function () {
+        localStorage.clear();
+        sessionStorage.clear();
+        Auth.clearForm();
+    };
+    Auth.pagina = function (tipo) {
+        if (tipo) {
+            $("#form-login").prop("hidden", true);
+            $("#ul-admin").removeClass("hide_me");
+        }
+        else {
+            $("#form-login").prop("hidden", true);
+            $("#ul-user").removeClass("hide_me");
+            $("#estacionamiento").prop("hidden", false);
+        }
+        $("#ul-login").prop("hidden", true);
+        $("#ul-logout").prop("hidden", false);
+    };
+    return Auth;
+}());
+function stopEvent(event) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+}
+function crearSelectUsr(id_div, arr_datos) {
+    var div = document.getElementById(id_div);
+    if (div === null) {
+        return;
+    }
+    while (div.firstChild) {
+        div.removeChild(div.firstChild);
+    }
+    var label = document.createElement('label');
+    label.textContent = 'Usuario';
+    var select = document.createElement('select');
+    select.id = "sel-usr";
+    select.name = "sel-usr";
+    select.className = "form-control";
+    var opcion = document.createElement('option');
+    opcion.value = '0';
+    opcion.text = 'Todos';
+    select.appendChild(opcion);
+    if (arr_datos !== null) {
+        arr_datos.forEach(function (obj) {
+            var opcion = document.createElement('option');
+            opcion.value = obj.id;
+            opcion.text = obj.nombre + ' ' + obj.apellido;
+            select.appendChild(opcion);
+        });
+    }
+    div.appendChild(label);
+    div.appendChild(select);
+}
+var validator_nuevo_usuario = {
+    id_form: "form_usuario",
+    callback: function () {
+        Usuario.crear().done(function (e) {
+            setTimeout(function () {
+                tabla_usuarios.reloadTable();
+            }, 500);
+        });
+        $("#modal-nuevo-usuario").modal("hide");
+    },
+    opciones: {
+        message: 'Este valor no es valido',
+        fields: {
+            in_nombre: {
+                validators: {
+                    notEmpty: { message: 'Ingrese Nombre' }
+                }
+            },
+            in_apellido: {
+                validators: {
+                    notEmpty: { message: 'Ingrese Apellido' }
+                }
+            },
+            sel_turno: {
+                validators: {
+                    callback: {
+                        message: 'Ingresar Documento',
+                        callback: function (value) {
+                            if (!$("#admin_usr").is(":checked"))
+                                return true;
+                            else
+                                return value > 0;
+                        }
+                    }
+                }
+            },
+            in_mail: {
+                validators: {
+                    notEmpty: { message: 'Ingrese Mail' },
+                    emailAddress: {
+                        message: 'No es un mail válido'
+                    }
+                }
+            },
+            in_passwd1: {
+                validators: {
+                    notEmpty: { message: 'Ingrese Password' },
+                    identical: {
+                        field: 'in_passwd2',
+                        message: 'No coincide el password'
+                    }
+                }
+            },
+            in_passwd2: {
+                validators: {
+                    notEmpty: { message: 'Verificar Password' },
+                    identical: {
+                        field: 'in_passwd1',
+                        message: 'no coincide el password'
+                    }
+                }
+            }
+        }
+    }
+};
+var validator_modificar_usuario = {
+    id_form: "form_usuario",
+    callback: function () {
+        Usuario.modificar().done(function (e) {
+            setTimeout(function () {
+                tabla_usuarios.reloadTable();
+            }, 500);
+        }, function () { });
+        $("#modal-nuevo-usuario").modal("hide");
+    },
+    opciones: {
+        message: 'Este valor no es valido',
+        fields: {
+            in_nombre: {
+                validators: {
+                    notEmpty: { message: 'Ingrese Nombre' }
+                }
+            },
+            in_apellido: {
+                validators: {
+                    notEmpty: { message: 'Ingrese Apellido' }
+                }
+            },
+            sel_turno: {
+                validators: {
+                    callback: {
+                        message: 'Ingresar Documento',
+                        callback: function (value) {
+                            if (!$("#admin_usr").is(":checked"))
+                                return true;
+                            else
+                                return value > 0;
+                        }
+                    }
+                }
+            },
+            in_mail: {
+                validators: {
+                    notEmpty: { message: 'Ingrese Mail' },
+                    emailAddress: {
+                        message: 'No es un mail válido'
+                    }
+                }
+            },
+            in_passwd1: {
+                validators: {
+                    identical: {
+                        field: 'in_passwd2',
+                        message: 'No coincide el password'
+                    }
+                }
+            },
+            in_passwd2: {
+                validators: {
+                    identical: {
+                        field: 'in_passwd1',
+                        message: 'no coincide el password'
+                    }
+                }
+            }
+        }
+    }
+};
+var validator_egreso_vehiculo = {
+    id_form: "form_egreso_vehiculo",
+    callback: function () {
+        $("#modal-egreso-vehiculo").modal("hide");
+        Estacionamiento.retirar().done(function (e) {
+            $("#btn-eliminar-usr").addClass("hide_me");
+            if (e.error != undefined) {
+                $("#msg-info").text(e.error);
+                $("#modal-info").modal("show");
+            }
+            else {
+                Estacionamiento.setTicket(e);
+                $("#modal-tk-vehiculo").modal("show");
+            }
+        });
+    },
+    opciones: {
+        message: 'Este valor no es valido',
+        fields: {
+            in_dominio_egre: {
+                validators: {
+                    callback: {
+                        message: 'Ingrese Dominio',
+                        callback: function (value) {
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+var validator_ingreso_vehiculo = {
+    id_form: "form_ingreso_vehiculo",
+    callback: function () {
+        $("#modal-ingreso-vehiculo").modal("hide");
+        var auto = new Auto($("#in_dominio").val(), $("#in_marca").val(), $("#in_color").val(), $("#vehi_esp").is(":checked"));
+        if (Estacionamiento.verificarLugares()) {
+            Estacionamiento.ingresar(auto).done(function (e) {
+                $("#btn-eliminar-usr").addClass("hide_me");
+                if (e.cochera != undefined) {
+                    $("#msg-info").text('Cochera Asignada:' + e.cochera);
+                    Ajax.get('estacionamiento/listaCocheras').done(function (e) {
+                        localStorage.setItem('lugares', JSON.stringify(e));
+                        $("#id-autos").html(tablaCocheras(e));
+                    });
+                }
+                else
+                    $("#msg-info").text(e.error);
+                $("#modal-info").modal("show");
+            });
+        }
+        else {
+            $("#msg-info").text('Capacidad Alcanzada');
+            $("#modal-info").modal("show");
+        }
+    },
+    opciones: {
+        message: 'Este valor no es valido',
+        fields: {
+            in_dominio: {
+                validators: {
+                    callback: {
+                        message: 'Ingrese Dominio',
+                        callback: function (value) {
+                            value = value.toUpperCase();
+                            return (value.match(/^[A-Z]{3}[0-9]{3}/) != null || value.match(/^[A-Z]{2}[0-9]{3}[A-Z]{2}/) != null);
+                        }
+                    }
+                }
+            },
+            in_color: {
+                validators: {
+                    notEmpty: { message: 'Ingrese Mail' }
+                }
+            },
+            in_marca: {
+                validators: {
+                    notEmpty: { message: 'Ingrese Mail' }
+                }
+            }
+        }
+    }
+};
+function tablaCocheras(array) {
+    var table = '<div class="col-md-12">';
+    var flag = true;
+    var e;
+    (array.pisos).forEach(function (piso) {
+        var i = piso.idPiso * 100;
+        while (i < (piso.idPiso * 100 + (piso.cantidadCocheras + piso.cantidadReservados))) {
+            table += '<div class="row">';
+            var cell = 1;
+            flag = true;
+            while (cell <= 12) {
+                try {
+                    if (i > (piso.idPiso * 100 + (piso.cantidadCocheras + piso.cantidadReservados))) {
+                        flag = false;
+                        throw e;
+                    }
+                    (array.ocupados).forEach(function (auto) {
+                        if (auto.idCochera == i) {
+                            table += '<div class="col-md-1 col-sm-1 col-xs-12"><div class="row"><a  data-toggle="tooltip" title="Nº' + auto.idCochera + '\nPatente:' + auto.patente + '\nColor: ' + auto.color + '\nMarca:' + auto.marca + '"><i style="margin:0px 0px 0px  25px;color:red;" class="material-icons "  >directions_car</i></a></div><div class="row"><p class="text-center"style="color:white;">' + auto.idCochera + '</p></div></div>';
+                            flag = false;
+                            throw e;
+                        }
+                        else
+                            flag = true;
+                    });
+                }
+                catch (e) { }
+                if (flag)
+                    table += '<div class="col-md-1 col-sm-1 col-xs-12"><div class="row"><i class="material-icons" style="margin:0px 0px 0px  25px;color:green;"  >directions_car</i></div><div class="row"><p class="text-center"style="color:white;">' + i + '</p></div></div>';
+                i++;
+                cell++;
+            }
+            table += '</div>';
+        }
+    });
+    return table;
+}
+/// <reference path="./types/jquery.d.ts" />
+/// <reference path="./Ajax.ts" />
+var Usuario = /** @class */ (function () {
+    function Usuario(mail, nombre, apellido, password, estado, admin, turno, pathFoto, id, entrada, token) {
+        this.id = id;
+        this.mail = mail;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.password = password;
+        this.estado = estado;
+        this.turno = turno;
+        this.admin = admin;
+        this.entrada = entrada;
+        this.pathFoto = pathFoto;
+        this.token = token;
+    }
+    Usuario.crear = function () {
+        return Ajax.postForm('usuario/alta', Usuario.getForm());
+    };
+    Usuario.modificar = function () {
+        return Ajax.postForm('usuario/modificar', Usuario.getForm());
+    };
+    Usuario.listar = function (id) {
+        return Ajax.get('usuario/listar', { id: id });
+    };
+    Usuario.setUsuario = function (usuario) {
+        if (usuario != undefined)
+            localStorage.setItem('usuario', JSON.stringify(usuario));
+    };
+    Usuario.getUsuario = function () {
+        var datos = localStorage.getItem('usuario');
+        if (datos != null) {
+            var usuario = JSON.parse(datos);
+            return Usuario.jsonToUsuario(usuario);
+        }
+        return null;
+    };
+    Usuario.jsonToUsuario = function (json) {
+        if (json !== null) {
+            return new Usuario(json.mail, json.nombre, json.apellido, json.password, json.estado, json.admin, json.turno, json.pathFoto, json.id);
+        }
+        return null;
+    };
+    Usuario.getForm = function () {
+        var form = new FormData();
+        form.append("nombre", $("#in_nombre").val());
+        form.append("apellido", $("#in_apellido").val());
+        form.append("password", $("#in_passwd1").val());
+        form.append("mail", $("#in_mail").val());
+        form.append("id", $("#in_id").val());
+        form.append("turno", $("#sel_turno :selected").val());
+        form.append("admin", $("#admin_usr").is(":checked") ? '1' : '0');
+        form.append("estado", '1');
+        var file = $("#file").prop("files")[0];
+        if (file != undefined)
+            form.append("file", file);
+        return form;
+    };
+    Usuario.prototype.setForm = function () {
+        $("#in_nombre").val(this.nombre);
+        $("#in_apellido").val(this.apellido);
+        $("#in_passwd1").val('');
+        $("#in_id").val(this.id != undefined ? this.id.toString() : '');
+        $("#in_mail").val(this.mail);
+        $("#sel_turno").val(this.turno != undefined ? this.turno.toString() : '');
+        if (this.admin != undefined && this.admin)
+            $('#admin_usr').bootstrapToggle('on');
+        else
+            $('#admin_usr').bootstrapToggle('off');
+        $("#pathFoto").val('');
+    };
+    Usuario.getTipo = function () {
+        var usuario = Usuario.getUsuario();
+        return usuario != null && (usuario.admin == '1');
+    };
+    Usuario.prototype.cambiarEstado = function () {
+        return Ajax.put('usuario/estado', { id: this.id });
+    };
+    Usuario.vaciarFormFec = function () {
+        $("#in_des_usr").val('');
+        $("#in_has_usr").val('');
+    };
+    Usuario.getFechas = function () {
+        return {
+            id: 0,
+            from: $("#in_des_usr").val(),
+            to: $("#in_has_usr").val()
+        };
+    };
+    return Usuario;
 }());
 var tabla_est_fechas;
 var tabla_est_mensual;
@@ -664,20 +1038,26 @@ $(document).ready(function () {
     });
     $("#btn-bus-mensual").click(function (e) {
         var datos = Estadistica.getFormPeriodo();
-        tabla_est_mensual.ajax([
-            { data: 'idUser' },
-            { data: 'promedio' },
-        ], 'estadistica/promediousuariomensual?' + encodeURI('periodo=' + datos));
-        Ajax.get('estadistica/promediofacturacionmensual?' + encodeURI('periodo=' + datos)).done(function (res) {
-            if (res.msg == undefined) {
-                $("#lbl-factu-mensual").text(res);
-            }
-        });
-        Ajax.get('estadistica/promedioautosmensual?' + encodeURI('periodo=' + datos)).done(function (res) {
-            if (res.msg == undefined) {
-                $("#lbl-autos-mensual").text(res);
-            }
-        });
+        if (datos !== null) {
+            tabla_est_mensual.ajax([
+                { data: 'idUser' },
+                { data: 'promedio' },
+            ], 'estadistica/promediousuariomensual?' + encodeURI('periodo=' + datos));
+            Ajax.get('estadistica/promediofacturacionmensual?' + encodeURI('periodo=' + datos)).done(function (res) {
+                if (res.msg == undefined) {
+                    $("#lbl-factu-mensual").text(res);
+                }
+            });
+            Ajax.get('estadistica/promedioautosmensual?' + encodeURI('periodo=' + datos)).done(function (res) {
+                if (res.msg == undefined) {
+                    $("#lbl-autos-mensual").text(res);
+                }
+            });
+        }
+        else {
+            $("#msg-info").text('Completar Periodo');
+            $("#modal-info").modal("show");
+        }
         stopEvent(e);
     });
     $('#in_hasta_est').datetimepicker({
@@ -769,375 +1149,3 @@ $(document).ready(function () {
         ], 'estacionamiento/lugares/nuncaUtilizado');
     });
 });
-/// <reference path="./types/jquery.d.ts" />
-/// <reference path="./Ajax.ts" />
-var Usuario = /** @class */ (function () {
-    function Usuario(mail, nombre, apellido, password, estado, admin, turno, pathFoto, id, entrada, token) {
-        this.id = id;
-        this.mail = mail;
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.password = password;
-        this.estado = estado;
-        this.turno = turno;
-        this.admin = admin;
-        this.entrada = entrada;
-        this.pathFoto = pathFoto;
-        this.token = token;
-    }
-    Usuario.crear = function () {
-        return Ajax.postForm('usuario/alta', Usuario.getForm());
-    };
-    Usuario.modificar = function () {
-        return Ajax.postForm('usuario/modificar', Usuario.getForm());
-    };
-    Usuario.listar = function (id) {
-        return Ajax.get('usuario/listar', { id: id });
-    };
-    Usuario.setUsuario = function (usuario) {
-        if (usuario != undefined)
-            localStorage.setItem('usuario', JSON.stringify(usuario));
-    };
-    Usuario.getUsuario = function () {
-        var datos = localStorage.getItem('usuario');
-        if (datos != null) {
-            var usuario = JSON.parse(datos);
-            return Usuario.jsonToUsuario(usuario);
-        }
-        return null;
-    };
-    Usuario.jsonToUsuario = function (json) {
-        if (json !== null) {
-            return new Usuario(json.mail, json.nombre, json.apellido, json.password, json.estado, json.admin, json.turno, json.pathFoto, json.id);
-        }
-        return null;
-    };
-    Usuario.getForm = function () {
-        var form = new FormData();
-        form.append("nombre", $("#in_nombre").val());
-        form.append("apellido", $("#in_apellido").val());
-        form.append("password", $("#in_passwd1").val());
-        form.append("mail", $("#in_mail").val());
-        form.append("id", $("#in_id").val());
-        form.append("turno", $("#sel_turno :selected").val());
-        form.append("admin", $("#admin_usr").is(":checked") ? '1' : '0');
-        form.append("estado", '1');
-        var file = $("#file").prop("files")[0];
-        if (file != undefined)
-            form.append("file", file);
-        return form;
-    };
-    Usuario.prototype.setForm = function () {
-        $("#in_nombre").val(this.nombre);
-        $("#in_apellido").val(this.apellido);
-        $("#in_passwd1").val('');
-        $("#in_id").val(this.id != undefined ? this.id.toString() : '');
-        $("#in_mail").val(this.mail);
-        $("#sel_turno").val(this.turno != undefined ? this.turno.toString() : '');
-        if (this.admin != undefined && this.admin)
-            $('#admin_usr').bootstrapToggle('on');
-        else
-            $('#admin_usr').bootstrapToggle('off');
-        $("#pathFoto").val('');
-    };
-    Usuario.getTipo = function () {
-        var usuario = Usuario.getUsuario();
-        return usuario != null && (usuario.admin == '1');
-    };
-    Usuario.prototype.cambiarEstado = function () {
-        return Ajax.put('usuario/estado', { id: this.id });
-    };
-    Usuario.vaciarFormFec = function () {
-        $("#in_des_usr").val('');
-        $("#in_has_usr").val('');
-    };
-    Usuario.getFechas = function () {
-        return {
-            id: 0,
-            from: $("#in_des_usr").val(),
-            to: $("#in_has_usr").val()
-        };
-    };
-    return Usuario;
-}());
-function stopEvent(event) {
-    event.preventDefault();
-    event.stopImmediatePropagation();
-}
-function crearSelectUsr(id_div, arr_datos) {
-    var div = document.getElementById(id_div);
-    if (div === null) {
-        return;
-    }
-    while (div.firstChild) {
-        div.removeChild(div.firstChild);
-    }
-    var label = document.createElement('label');
-    label.textContent = 'Usuario';
-    var select = document.createElement('select');
-    select.id = "sel-usr";
-    select.name = "sel-usr";
-    select.className = "form-control";
-    var opcion = document.createElement('option');
-    opcion.value = '0';
-    opcion.text = 'Todos';
-    select.appendChild(opcion);
-    if (arr_datos !== null) {
-        arr_datos.forEach(function (obj) {
-            var opcion = document.createElement('option');
-            opcion.value = obj.id;
-            opcion.text = obj.nombre + ' ' + obj.apellido;
-            select.appendChild(opcion);
-        });
-    }
-    div.appendChild(label);
-    div.appendChild(select);
-}
-var validator_nuevo_usuario = {
-    id_form: "form_usuario",
-    callback: function () {
-        Usuario.crear().done(function (e) {
-            setTimeout(function () {
-                tabla_usuarios.reloadTable();
-            }, 500);
-        });
-        $("#modal-nuevo-usuario").modal("hide");
-    },
-    opciones: {
-        message: 'Este valor no es valido',
-        fields: {
-            in_nombre: {
-                validators: {
-                    notEmpty: { message: 'Ingrese Nombre' }
-                }
-            },
-            in_apellido: {
-                validators: {
-                    notEmpty: { message: 'Ingrese Apellido' }
-                }
-            },
-            sel_turno: {
-                validators: {
-                    callback: {
-                        message: 'Ingresar Documento',
-                        callback: function (value) {
-                            if (!$("#admin_usr").is(":checked"))
-                                return true;
-                            else
-                                return value > 0;
-                        }
-                    }
-                }
-            },
-            in_mail: {
-                validators: {
-                    notEmpty: { message: 'Ingrese Mail' },
-                    emailAddress: {
-                        message: 'No es un mail válido'
-                    }
-                }
-            },
-            in_passwd1: {
-                validators: {
-                    notEmpty: { message: 'Ingrese Password' },
-                    identical: {
-                        field: 'in_passwd2',
-                        message: 'No coincide el password'
-                    }
-                }
-            },
-            in_passwd2: {
-                validators: {
-                    notEmpty: { message: 'Verificar Password' },
-                    identical: {
-                        field: 'in_passwd1',
-                        message: 'no coincide el password'
-                    }
-                }
-            }
-        }
-    }
-};
-var validator_modificar_usuario = {
-    id_form: "form_usuario",
-    callback: function () {
-        Usuario.modificar().done(function (e) {
-            setTimeout(function () {
-                tabla_usuarios.reloadTable();
-            }, 500);
-        }, function () { });
-        $("#modal-nuevo-usuario").modal("hide");
-    },
-    opciones: {
-        message: 'Este valor no es valido',
-        fields: {
-            in_nombre: {
-                validators: {
-                    notEmpty: { message: 'Ingrese Nombre' }
-                }
-            },
-            in_apellido: {
-                validators: {
-                    notEmpty: { message: 'Ingrese Apellido' }
-                }
-            },
-            sel_turno: {
-                validators: {
-                    callback: {
-                        message: 'Ingresar Documento',
-                        callback: function (value) {
-                            if (!$("#admin_usr").is(":checked"))
-                                return true;
-                            else
-                                return value > 0;
-                        }
-                    }
-                }
-            },
-            in_mail: {
-                validators: {
-                    notEmpty: { message: 'Ingrese Mail' },
-                    emailAddress: {
-                        message: 'No es un mail válido'
-                    }
-                }
-            },
-            in_passwd1: {
-                validators: {
-                    identical: {
-                        field: 'in_passwd2',
-                        message: 'No coincide el password'
-                    }
-                }
-            },
-            in_passwd2: {
-                validators: {
-                    identical: {
-                        field: 'in_passwd1',
-                        message: 'no coincide el password'
-                    }
-                }
-            }
-        }
-    }
-};
-var validator_egreso_vehiculo = {
-    id_form: "form_egreso_vehiculo",
-    callback: function () {
-        $("#modal-egreso-vehiculo").modal("hide");
-        Estacionamiento.retirar().done(function (e) {
-            $("#btn-eliminar-usr").addClass("hide_me");
-            if (e.error != undefined) {
-                $("#msg-info").text(e.error);
-                $("#modal-info").modal("show");
-            }
-            else {
-                Estacionamiento.setTicket(e);
-                $("#modal-tk-vehiculo").modal("show");
-            }
-        });
-    },
-    opciones: {
-        message: 'Este valor no es valido',
-        fields: {
-            in_dominio_egre: {
-                validators: {
-                    callback: {
-                        message: 'Ingrese Dominio',
-                        callback: function (value) {
-                        }
-                    }
-                }
-            }
-        }
-    }
-};
-var validator_ingreso_vehiculo = {
-    id_form: "form_ingreso_vehiculo",
-    callback: function () {
-        $("#modal-ingreso-vehiculo").modal("hide");
-        var auto = new Auto($("#in_dominio").val(), $("#in_marca").val(), $("#in_color").val(), $("#vehi_esp").is(":checked"));
-        if (Estacionamiento.verificarLugares()) {
-            Estacionamiento.ingresar(auto).done(function (e) {
-                $("#btn-eliminar-usr").addClass("hide_me");
-                if (e.cochera != undefined) {
-                    $("#msg-info").text('Cochera Asignada:' + e.cochera);
-                    Ajax.get('estacionamiento/listaCocheras').done(function (e) {
-                        localStorage.setItem('lugares', JSON.stringify(e));
-                        $("#id-autos").html(tablaCocheras(e));
-                    });
-                }
-                else
-                    $("#msg-info").text(e.error);
-                $("#modal-info").modal("show");
-            });
-        }
-        else {
-            $("#msg-info").text('Capacidad Alcanzada');
-            $("#modal-info").modal("show");
-        }
-    },
-    opciones: {
-        message: 'Este valor no es valido',
-        fields: {
-            in_dominio: {
-                validators: {
-                    callback: {
-                        message: 'Ingrese Dominio',
-                        callback: function (value) {
-                            value = value.toUpperCase();
-                            return (value.match(/^[A-Z]{3}[0-9]{3}/) != null || value.match(/^[A-Z]{2}[0-9]{3}[A-Z]{2}/) != null);
-                        }
-                    }
-                }
-            },
-            in_color: {
-                validators: {
-                    notEmpty: { message: 'Ingrese Mail' }
-                }
-            },
-            in_marca: {
-                validators: {
-                    notEmpty: { message: 'Ingrese Mail' }
-                }
-            }
-        }
-    }
-};
-function tablaCocheras(array) {
-    var table = '<div class="col-md-12">';
-    var flag = true;
-    var e;
-    (array.pisos).forEach(function (piso) {
-        var i = piso.idPiso * 100;
-        while (i < (piso.idPiso * 100 + (piso.cantidadCocheras + piso.cantidadReservados))) {
-            table += '<div class="row">';
-            var cell = 1;
-            while (cell <= 12) {
-                cell++;
-                try {
-                    if (i > (piso.idPiso * 100 + (piso.cantidadCocheras + piso.cantidadReservados))) {
-                        flag = false;
-                        throw e;
-                    }
-                    (array.ocupados).forEach(function (auto) {
-                        if (auto.idCochera == i) {
-                            table += '<div class="col-md-1 col-sm-1 col-xs-12"><div class="row"><a  data-toggle="tooltip" title="Nº' + auto.idCochera + '\nPatente:' + auto.patente + '\nColor: ' + auto.color + '\nMarca:' + auto.marca + '"><i style="margin:0px 0px 0px  25px;color:red;" class="material-icons "  >directions_car</i></a></div><div class="row"><p class="text-center"style="color:white;">' + auto.idCochera + '</p></div></div>';
-                            flag = false;
-                            throw e;
-                        }
-                        else
-                            flag = true;
-                    });
-                }
-                catch (e) { }
-                if (flag)
-                    table += '<div class="col-md-1 col-sm-1 col-xs-12"><div class="row"><i class="material-icons" style="margin:0px 0px 0px  25px;color:green;"  >directions_car</i></div><div class="row"><p class="text-center"style="color:white;">' + i + '</p></div></div>';
-                i++;
-            }
-            console.log(i, (piso.idPiso * 100 + (piso.cantidadCocheras + piso.cantidadReservados)));
-            table += '</div>';
-        }
-    });
-    return table;
-}
