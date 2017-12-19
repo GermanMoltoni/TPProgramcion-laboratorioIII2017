@@ -262,6 +262,11 @@ var Estadistica = /** @class */ (function () {
         $("#in_desde_est").val('');
         $("#in_hasta_est").val('');
         $("#in_periodo").val('');
+        $('#lbl-factu').text('');
+        $('#lbl-factu-periodo').text('');
+        $('#lbl-autos-periodo').text('');
+        $('#lbl-factu-mensual').text('');
+        $('#lbl-autos-mensual').text('');
     };
     Estadistica.getFormFechas = function () {
         return {
@@ -948,6 +953,7 @@ $(document).ready(function () {
         });
     });
     $("#btn-ingreso-auto").click(function (e) {
+        $('#vehi_esp').bootstrapToggle('off');
         $("#modal-ingreso-vehiculo").modal("show");
         $('#form_ingreso_vehiculo').bootstrapValidator('resetForm', true);
         Formato.validator(validator_ingreso_vehiculo);
@@ -1104,7 +1110,7 @@ $(document).ready(function () {
                 }
             });
             Ajax.get('estadistica/usococheras?' + encodeURI('&from=' + datos.from + '&to=' + datos.to)).done(function (res) {
-                if (res.msg == undefined || res.error == undefined) {
+                if (res.msg == undefined) {
                     var cocheras_1 = new Array();
                     res.especial.forEach(function (element) {
                         element.tipo = 'especial';

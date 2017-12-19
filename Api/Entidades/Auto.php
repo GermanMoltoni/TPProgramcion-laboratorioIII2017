@@ -29,7 +29,7 @@ class Auto{
         $consulta = $objDB->RetornarConsulta("INSERT INTO `autos`(`patente`,`color`, `marca`,`especial`) VALUES (:Patente, :Color, :Marca,:Especial)");
         $consulta->bindValue(':Patente',$this->patente, PDO::PARAM_STR);
         $consulta->bindValue(':Color',$this->color, PDO::PARAM_STR);
-        $consulta->bindValue(':Especial',$this->especial === 'true'?true:false, PDO::PARAM_STR);
+         $consulta->bindValue(':Especial',$this->especial, PDO::PARAM_STR);
         $consulta->bindValue(':Marca',$this->marca, PDO::PARAM_STR);
         return $consulta->execute();
         }

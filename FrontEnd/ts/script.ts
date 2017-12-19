@@ -20,7 +20,6 @@ $(document).ready(()=>{
         $("#operaciones").prop("hidden",true);
         $("#logs-usuarios").prop("hidden",true);
         $("#lugares").prop("hidden",true);
-        
         stopEvent(e);
     });
     $("#btn-login").click((e)=>{
@@ -67,9 +66,7 @@ $(document).ready(()=>{
         $("#estadistica").prop("hidden",true);
         $("#operaciones").prop("hidden",true);
         $("#lugares").prop("hidden",true);
-        
         $("#logs-usuarios").prop("hidden",true);
-        
         tabla_usuarios = new DataTable("tabla_usuarios");
         tabla_usuarios.ajax([                
             {render:function(data:any,type:any,row:any){return row.nombre+','+row.apellido;}},
@@ -100,8 +97,7 @@ $(document).ready(()=>{
                 return row.pathFoto == null?'Sin Foto':'<img height="50" src=../Api/foto?mail='+row.mail+'>';}
             }
         ],'usuario/listar');
-        tabla_usuarios.selectFila();
-    
+        tabla_usuarios.selectFila();   
         stopEvent(e);
     });
     $("#btn-nuevo-usuario").click((e)=>{
@@ -166,7 +162,6 @@ $(document).ready(()=>{
         $("#estacionamiento").prop("hidden",true);
         $("#estadistica").prop("hidden",true);
         $("#lugares").prop("hidden",true);
-        
         $("#operaciones").prop("hidden",true);
         Usuario.vaciarFormFec();
         tabla_log_usr = new DataTable("tabla_log_usr",true);
@@ -221,7 +216,6 @@ $(document).ready(()=>{
         $("#form-login").prop("hidden",true);
         $("#usuarios").prop("hidden",true);
         $("#lugares").prop("hidden",true);
-        
         $("#operaciones").prop("hidden",true);
         $("#estadistica").prop("hidden",true);
         $("#estacionamiento").prop("hidden",false);
@@ -232,6 +226,8 @@ $(document).ready(()=>{
         });
     });
     $("#btn-ingreso-auto").click((e)=>{
+        $('#vehi_esp').bootstrapToggle('off');
+
         $("#modal-ingreso-vehiculo").modal("show");
         $('#form_ingreso_vehiculo').bootstrapValidator('resetForm', true);
         Formato.validator(validator_ingreso_vehiculo);
@@ -254,7 +250,6 @@ $(document).ready(()=>{
         Operacion.vaciarForm();
         tabla_operaciones = new DataTable("tabla_operaciones");
         tabla_oper_usr = new DataTable("tabla_oper_usr",false);
-
         Usuario.listar().done((datos)=>{
             crearSelectUsr('lista_usuarios',datos);
         });
@@ -316,7 +311,6 @@ $(document).ready(()=>{
         $("#form-login").prop("hidden",true);
         $("#usuarios").prop("hidden",true);
         $("#lugares").prop("hidden",true);
-        
         $("#estacionamiento").prop("hidden",true);
         $("#operaciones").prop("hidden",true);
         $("#logs-usuarios").prop("hidden",true);
@@ -394,7 +388,7 @@ $(document).ready(()=>{
                 }
             });
             Ajax.get('estadistica/usococheras?'+encodeURI('&from='+datos.from+'&to='+datos.to)).done((res)=>{
-                if(res.msg == undefined || res.error == undefined){
+                if(res.msg == undefined){
                     let cocheras:any[] =new Array<any>();
                     res.especial.forEach((element:any) => {
                         element.tipo = 'especial';

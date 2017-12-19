@@ -44,6 +44,7 @@
                 {
                      
                     $cochera = rand(($piso->idPiso*100)+$piso->cantidadReservados,($piso->idPiso*100)+$piso->cantidadReservados+$piso->cantidadCocheras-1);
+                   
                     if(!in_array($cochera,$lugaresOcupados))
                         return $cochera;
                     

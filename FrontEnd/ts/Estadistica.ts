@@ -8,6 +8,11 @@ class Estadistica{
         $("#in_desde_est").val('');
         $("#in_hasta_est").val('');
         $("#in_periodo").val('');
+        $('#lbl-factu').text('');
+        $('#lbl-factu-periodo').text('');
+        $('#lbl-autos-periodo').text('');
+        $('#lbl-factu-mensual').text('');
+        $('#lbl-autos-mensual').text('');
     }
     public static getFormFechas(){
         return {
