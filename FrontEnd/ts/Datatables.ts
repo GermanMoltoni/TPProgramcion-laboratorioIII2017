@@ -5,8 +5,6 @@ var lenguage = {
     emptyTable: "Sin Datos",
     infoEmpty: "Sin Datos",
     zeroRecords: "No hay datos coincidentes",
-    //loading: "<span ><img src='./info_vista/images/icon/spinner.gif'></span>",
-    //processing: "<span ><img src='./info_vista/images/icon/spinner.gif'></span>",
     paginate: {
         previous: '<p style="color: black;">Anterior</p>',
         next: '<p style="color: black;">Siguiente</p>'
@@ -16,7 +14,7 @@ var lenguage = {
 };
 class DataTable{
     public dt:any;
-    private url:string='http://localhost:8080/TPProgramcion-laboratorioIII2017/Api/';
+    private url:string='http://localhost:8080/prueba/TPProgramcion-laboratorioIII2017/Api/';
  //private static url:string = 'http://germanmoltoni.esy.es/final/Api/';
   
     //private url:string='http://localhost/TPProgramcion-laboratorioIII2017/Api/';

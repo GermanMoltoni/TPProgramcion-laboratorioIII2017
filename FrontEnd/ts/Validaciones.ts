@@ -171,6 +171,10 @@ var validator_egreso_vehiculo = {
             else{
                 Estacionamiento.setTicket(e);
                 $("#modal-tk-vehiculo").modal("show");
+                Ajax.get('estacionamiento/listaCocheras').done((e)=>{
+                    localStorage.setItem('lugares',JSON.stringify(e));
+                    $("#id-autos").html(tablaCocheras(e));
+                });
                 
             }
         });
