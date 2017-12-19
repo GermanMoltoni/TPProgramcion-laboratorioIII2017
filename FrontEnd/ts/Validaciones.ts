@@ -183,11 +183,12 @@ var validator_egreso_vehiculo = {
                     callback:{
                         message:'Ingrese Dominio',
                         callback:(value:any)=>{
-                   
+                            value = value.toUpperCase();
+                            return (value.match(/^[A-Z]{3}[0-9]{3}/) != null || value.match(/^[A-Z]{2}[0-9]{3}[A-Z]{2}/) != null);
                         }
                     }
                 }
-            },
+            }
         }
     }
 };
@@ -234,13 +235,13 @@ var validator_ingreso_vehiculo = {
             },
             in_color:{
                 validators:{
-                    notEmpty:{message:'Ingrese Mail'},
+                    notEmpty:{message:'Ingrese Color'},
                     
                 }
             },
             in_marca:{
                 validators:{
-                    notEmpty:{message:'Ingrese Mail'},
+                    notEmpty:{message:'Ingrese Marca'},
                     
                 }
             },

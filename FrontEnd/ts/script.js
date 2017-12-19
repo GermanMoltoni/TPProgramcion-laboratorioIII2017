@@ -3,7 +3,7 @@ var Auto = /** @class */ (function () {
         this.marca = marca;
         this.color = color;
         this.patente = patente;
-        this.especial = especial;
+        this.especial = especial ? '1' : '0';
     }
     return Auto;
 }());
@@ -204,9 +204,11 @@ var DataTable = /** @class */ (function () {
             ajax: { headers: { 'token': Ajax.getToken() },
                 url: this.url + path,
                 dataSrc: function (data) {
-                    if (data == "{}" || data.error != undefined || data.msg != undefined)
+                    if (data.error !== undefined || data.msg !== undefined) {
                         return {};
-                    return data;
+                    }
+                    else
+                        return data;
                 } },
             info: false,
             select: true,
@@ -531,6 +533,8 @@ var validator_egreso_vehiculo = {
                     callback: {
                         message: 'Ingrese Dominio',
                         callback: function (value) {
+                            value = value.toUpperCase();
+                            return (value.match(/^[A-Z]{3}[0-9]{3}/) != null || value.match(/^[A-Z]{2}[0-9]{3}[A-Z]{2}/) != null);
                         }
                     }
                 }
@@ -579,12 +583,12 @@ var validator_ingreso_vehiculo = {
             },
             in_color: {
                 validators: {
-                    notEmpty: { message: 'Ingrese Mail' }
+                    notEmpty: { message: 'Ingrese Color' }
                 }
             },
             in_marca: {
                 validators: {
-                    notEmpty: { message: 'Ingrese Mail' }
+                    notEmpty: { message: 'Ingrese Marca' }
                 }
             }
         }
@@ -1079,46 +1083,52 @@ $(document).ready(function () {
     });
     $("#btn-bus-est").click(function (e) {
         var datos = Estadistica.getFormFechas();
-        Ajax.get('estadistica/facturacion?' + encodeURI('&from=' + datos.from + '&to=' + datos.to)).done(function (res) {
-            if (res.msg == undefined) {
-                $("#lbl-factu-periodo").text(res[0].facturacion);
-                $("#lbl-autos-periodo").text(res[0].cantidad_autos);
-            }
-        });
-        Ajax.get('estadistica/vehiculos?' + encodeURI('&from=' + datos.from + '&to=' + datos.to)).done(function (res) {
-            if (res.msg == undefined) {
-                $("#lbl-factu").text(res.distintos);
-                tabla_est_fechas.data([
-                    { render: function (data, type, row) {
-                            return row.patente;
-                        } },
-                    { render: function (data, type, row) {
-                            return row.cantidad;
-                        } },
-                ], res.repetidos);
-            }
-        });
-        Ajax.get('estadistica/usococheras?' + encodeURI('&from=' + datos.from + '&to=' + datos.to)).done(function (res) {
-            if (res.msg == undefined) {
-                var cocheras_1 = new Array();
-                res.especial.forEach(function (element) {
-                    element.tipo = 'especial';
-                    cocheras_1.push(element);
-                });
-                res.comun.forEach(function (element) {
-                    element.tipo = 'otro';
-                    cocheras_1.push(element);
-                });
-                tabla_est_cochera.data([
-                    { render: function (data, type, row) {
-                            return row.cochera;
-                        } },
-                    { render: function (data, type, row) {
-                            return row.cantidad;
-                        } },
-                ], cocheras_1);
-            }
-        });
+        if (datos.from != '' && datos.to != '') {
+            Ajax.get('estadistica/facturacion?' + encodeURI('&from=' + datos.from + '&to=' + datos.to)).done(function (res) {
+                if (res.msg == undefined) {
+                    $("#lbl-factu-periodo").text(res[0].facturacion);
+                    $("#lbl-autos-periodo").text(res[0].cantidad_autos);
+                }
+            });
+            Ajax.get('estadistica/vehiculos?' + encodeURI('&from=' + datos.from + '&to=' + datos.to)).done(function (res) {
+                if (res.msg == undefined || res.error == undefined) {
+                    $("#lbl-factu").text(res.distintos);
+                    tabla_est_fechas.data([
+                        { render: function (data, type, row) {
+                                return row.patente;
+                            } },
+                        { render: function (data, type, row) {
+                                return row.cantidad;
+                            } },
+                    ], res.repetidos);
+                }
+            });
+            Ajax.get('estadistica/usococheras?' + encodeURI('&from=' + datos.from + '&to=' + datos.to)).done(function (res) {
+                if (res.msg == undefined || res.error == undefined) {
+                    var cocheras_1 = new Array();
+                    res.especial.forEach(function (element) {
+                        element.tipo = 'especial';
+                        cocheras_1.push(element);
+                    });
+                    res.comun.forEach(function (element) {
+                        element.tipo = 'otro';
+                        cocheras_1.push(element);
+                    });
+                    tabla_est_cochera.data([
+                        { render: function (data, type, row) {
+                                return row.cochera;
+                            } },
+                        { render: function (data, type, row) {
+                                return row.cantidad;
+                            } },
+                    ], cocheras_1);
+                }
+            });
+        }
+        else {
+            $("#msg-info").text('Completar Fechas');
+            $("#modal-info").modal("show");
+        }
         stopEvent(e);
     });
     /* Lugares utilizados */

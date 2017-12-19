@@ -12,7 +12,7 @@ class Estacionamiento{
     *           error: si no hay lugar o si ya se encuentra estacionado.
     */
     static function Estacionar($vehiculo,$userId){
-        if($vehiculo->especial == '0')
+        if($vehiculo->especial === 'false')
             $cochera = Piso::ObtenerLugar();
         else
             $cochera = Piso::ObtenerLugarEspecial();

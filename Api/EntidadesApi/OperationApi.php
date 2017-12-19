@@ -11,7 +11,7 @@ class OperationApi extends Operacion{
 
     $operaciones = parent::ListarOperaciones($datos['id'],$datos['from'],$datos['to']);
     if(count($operaciones) == 0)
-        return $response->withJson(array('error'=>'No hay operaciones Cargadas'));
+        return $response->withJson(array('msg'=>'No hay operaciones Cargadas'));
     if($export != null)
     {
         $file = new Export($operaciones,'Listado de Operaciones');

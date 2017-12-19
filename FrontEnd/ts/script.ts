@@ -370,51 +370,56 @@ $(document).ready(()=>{
         $('#in_desde_est').data("DateTimePicker").maxDate(e.date);
     });
     $("#btn-bus-est").click((e)=>{
-        let datos = Estadistica.getFormFechas()
-        Ajax.get('estadistica/facturacion?'+encodeURI('&from='+datos.from+'&to='+datos.to)).done((res)=>{
-            if(res.msg == undefined){
-                $("#lbl-factu-periodo").text(res[0].facturacion);
-                $("#lbl-autos-periodo").text(res[0].cantidad_autos);
-            }
-        });
-        Ajax.get('estadistica/vehiculos?'+encodeURI('&from='+datos.from+'&to='+datos.to)).done((res)=>{
-            if(res.msg == undefined){
-                $("#lbl-factu").text(res.distintos);
+        let datos = Estadistica.getFormFechas();
+        if(datos.from != '' && datos.to != ''){
+            Ajax.get('estadistica/facturacion?'+encodeURI('&from='+datos.from+'&to='+datos.to)).done((res)=>{
+                if(res.msg == undefined){
+                    $("#lbl-factu-periodo").text(res[0].facturacion);
+                    $("#lbl-autos-periodo").text(res[0].cantidad_autos);
+                }
+            });
+            Ajax.get('estadistica/vehiculos?'+encodeURI('&from='+datos.from+'&to='+datos.to)).done((res)=>{
+                if(res.msg == undefined || res.error == undefined){
+                    $("#lbl-factu").text(res.distintos);
+                    
+                    tabla_est_fechas.data([                
+                        {render:function(data:any,type:any,row:any){
+                            
+                            return  row.patente;}},
+                        {render:function(data:any,type:any,row:any){
+                            return  row.cantidad;}},
+                        
+                    ],res.repetidos);
                 
-                tabla_est_fechas.data([                
-                    {render:function(data:any,type:any,row:any){
+                }
+            });
+            Ajax.get('estadistica/usococheras?'+encodeURI('&from='+datos.from+'&to='+datos.to)).done((res)=>{
+                if(res.msg == undefined || res.error == undefined){
+                    let cocheras:any[] =new Array<any>();
+                    res.especial.forEach((element:any) => {
+                        element.tipo = 'especial';
+                        cocheras.push(element);
+                    });  
+                    res.comun.forEach((element:any) => {
+                        element.tipo = 'otro';
+                        cocheras.push(element);
+                    });      
+                    tabla_est_cochera.data([                
+                        {render:function(data:any,type:any,row:any){
+                            
+                            return  row.cochera;}},
+                        {render:function(data:any,type:any,row:any){
+                            return  row.cantidad;}},
                         
-                        return  row.patente;}},
-                    {render:function(data:any,type:any,row:any){
-                        return  row.cantidad;}},
-                    
-                ],res.repetidos);
-              
-            }
-        });
-        Ajax.get('estadistica/usococheras?'+encodeURI('&from='+datos.from+'&to='+datos.to)).done((res)=>{
-            if(res.msg == undefined){
-                let cocheras:any[] =new Array<any>();
-                res.especial.forEach((element:any) => {
-                    element.tipo = 'especial';
-                    cocheras.push(element);
-                });  
-                res.comun.forEach((element:any) => {
-                    element.tipo = 'otro';
-                    cocheras.push(element);
-                });      
-                 tabla_est_cochera.data([                
-                    {render:function(data:any,type:any,row:any){
-                        
-                        return  row.cochera;}},
-                    {render:function(data:any,type:any,row:any){
-                        return  row.cantidad;}},
-                    
-                ],cocheras);
-              
-            }
-        });
-     
+                    ],cocheras);
+                
+                }
+            });
+        }
+        else{
+            $("#msg-info").text('Completar Fechas');
+            $("#modal-info").modal("show");
+        }
         stopEvent(e);
     });
 

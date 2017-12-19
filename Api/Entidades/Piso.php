@@ -91,8 +91,7 @@
         *
         */
         function LugaresReservadosOcupados(){
-
-            $objDB = AccesoDatos::DameUnObjetoAcceso();
+             $objDB = AccesoDatos::DameUnObjetoAcceso();
             $idPiso = '%'.$this->idPiso.'_%_%';
             $consulta = $objDB->RetornarConsulta("SELECT `idCochera` FROM `operaciones`,`autos` WHERE salida is NULL AND idCochera LIKE '$idPiso' AND operaciones.patente = autos.patente AND autos.especial = true");
             $consulta->execute();

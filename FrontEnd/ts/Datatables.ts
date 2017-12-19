@@ -38,7 +38,6 @@ class DataTable{
     }
     public data(columns:any,data:any){
         $('#' + this.id_tabla).DataTable().destroy();
-        
         this.dt = $('#' + this.id_tabla).DataTable({
             autoWidth: false,
             destroy: true,
@@ -61,16 +60,17 @@ class DataTable{
     }
     public ajax(columns:any,path:string){
         $('#' + this.id_tabla).DataTable().destroy();
-        
         this.dt = $('#' + this.id_tabla).DataTable({
             autoWidth: false,
             destroy: true,
             ajax:{ headers:{'token':Ajax.getToken()},
                 url:this.url+path,
             dataSrc:(data:any)=>{
-                if(data =="{}" || data.error != undefined || data.msg != undefined)
+                if(data.error !== undefined || data.msg !== undefined){
                     return {};
-                return data;
+                }
+                else
+                    return data;
             }},
             info: false,
             select: true,
