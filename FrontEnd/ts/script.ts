@@ -6,6 +6,7 @@ var tabla_oper_usr:DataTable;
 var tabla_log_usr:DataTable;
 var tabla_est_cochera:DataTable;
 $(document).ready(()=>{
+    
     $('[data-toggle="tooltip"]').tooltip(); 
     let usr = Usuario.getUsuario();
     if(usr != null){
@@ -57,7 +58,22 @@ $(document).ready(()=>{
         Auth.setForm();
         stopEvent(e);
     });
+    $("#file").change((e)=>{
+        let file = (<HTMLInputElement>document.getElementById('file')).files;
+        if (file && file[0]) {
+            var reader = new FileReader();
+            
+            reader.onload = function(e:Event) {
+                $('#imagen').removeClass('hide_me');
+              $('#imagen').attr('src', reader.result);
+            }
+        
+            reader.readAsDataURL(file[0]);
+          }
+          else
+            $('#imagen').addClass('hide_me');
 
+    });
     /*Usuarios*/
     $("#a-usuarios-lis").click((e)=>{
         $("#form-login").prop("hidden",true);
@@ -90,14 +106,15 @@ $(document).ready(()=>{
                 }
             },
             {render:function(data:any,type:any,row:any){
-                return row.estado == 1?'<span class="badge" style="background-color:green;">Habilitado</span>':'<span class="badge" style="background-color:red;">Suspendido</span>';}},   
+                return row.estado == 0?'<span class="badge" style="background-color:green;">Habilitado</span>':'<span class="badge" style="background-color:red;">Suspendido</span>';}},   
             {render:function(data:any,type:any,row:any){
                 return row.admin == 1?'Administrador':'Empleado';}},
             {render:function(data:any,type:any,row:any){
                 return row.pathFoto == null?'Sin Foto':'<img height="50" src=../Api/foto?mail='+row.mail+'>';}
             }
         ],'usuario/listar');
-        tabla_usuarios.selectFila();   
+        tabla_usuarios.selectFila(); 
+      
         stopEvent(e);
     });
     $("#btn-nuevo-usuario").click((e)=>{
@@ -247,6 +264,8 @@ $(document).ready(()=>{
         $("#estacionamiento").prop("hidden",true);
         $("#operaciones").prop("hidden",false);
         $("#estadistica").prop("hidden",true);
+        $("#lugares").prop("hidden",true);
+
         Operacion.vaciarForm();
         tabla_operaciones = new DataTable("tabla_operaciones");
         tabla_oper_usr = new DataTable("tabla_oper_usr",false);

@@ -249,7 +249,7 @@
                                         <div class="row">
                                                 <div style="height:400px">
                                                         
-                                            <table class="table table-bordered table-condensed display responsive nowrap compact"  id="tabla_est_mensual" >
+                                            <table class="table table-condensed table-striped"  id="tabla_est_mensual" >
                                                 <thead class="bg-info">
                                                     <tr>
                                                         <th>Legajo Usuario</th>
@@ -302,7 +302,7 @@
                                         <div class="row">
                                                 <div style="height:400px">
                                                         
-                                            <table class="table table-bordered table-condensed display responsive nowrap compact" id="tabla_est_fechas" >
+                                            <table class="table table-condensed table-striped" id="tabla_est_fechas" >
                                                 <thead class="bg-info">
                                                     <tr>
                                                         <th>Patente</th>
@@ -320,7 +320,7 @@
                                             <div class="row">
                                                     <div style="height:400px">
                                                             
-                                                <table class="table table-bordered table-condensed display responsive nowrap compact" id="tabla_est_cochera" >
+                                                <table class="table table-condensed table-striped" id="tabla_est_cochera" >
                                                     <thead class="bg-info">
                                                         <tr>
                                                             <th>Cochera</th>
@@ -367,10 +367,10 @@
                             </div>
                         </div>
                         <div class="row" >
-                            <div class="col-md-12">
-                                    <div style="height:400px">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                    <div  class="table-responsive">
                                             
-                                <table class="table table-condensed table-bordered display responsive nowrap compact" id="tabla_operaciones" >
+                                <table class="table table-condensed table-striped" id="tabla_operaciones" >
                                     <thead class="bg-info">
                                         <tr>
                                             <th>Cochera</th>
@@ -391,12 +391,12 @@
                 </div>
             </div> 
             <div class="col-md-4 col-sm-4">
-                    <div class="panel panel-default" >
+                    <div class="panel panel-default" style="height:400px">
                         <div class="panel-heading">Operaciones Por Usuarios</div>
                         <div class="panel-body">
-                                <div style="height:400px">
+                                <div  class="table-responsive">
                                         
-                            <table class="table table-bordered table-condensed display responsive nowrap compact" id="tabla_oper_usr" >
+                            <table class="table table-condensed table-striped" id="tabla_oper_usr" >
                                 <thead class="bg-info">
                                     <tr>
                                         <th>Legajo Usuario</th>
@@ -415,11 +415,11 @@
                 <div class="panel ">
                     <div class="row" >
                         <div class="col-md-3 col-sm-3" ></div>                                    
-                        <div class="col-md-3 col-sm-3 form-group" >
+                        <div class="col-md-3 col-sm-3 col-xs-3 form-group" >
                             <label for="in_desde">Desde</label>
                             <input type="text" class="form-control input-sm" id="in_des_usr">
                         </div>
-                        <div class="col-md-3 col-sm-3 form-group" >
+                        <div class="col-md-3 col-sm-3 col-xs-3 form-group" >
                             <label for="in_hasta">Hasta</label>
                             <input type="text" class="form-control input-sm" id="in_has_usr">
                         </div>
@@ -430,9 +430,9 @@
                     <div class="row">
                         <div class="col-sm-1 col-md-1"></div>
                         <div class="col-sm-10 col-md-10">
-                                <div style="height:400px">
+                                <div style="height:400px" class="table-responsive">
                                         
-                            <table class="table table-condensed table-bordered display responsive nowrap compact" id="tabla_log_usr" >
+                            <table class="table table-condensed table-striped" id="tabla_log_usr" >
                                <thead class="bg-info">
                                 <tr>
                                     <th>Nombre y Apellido</th>
@@ -458,7 +458,7 @@
             <div class="col-md-4">
                 <div class="row"><h4 class="text-center">Lugares Más Utilizados</h4></div>
                 <div class="row">
-                <table id="tabla_menos_u">
+                <table id="tabla_menos_u" class="table table-condensed table-striped">
                         <thead>
                             <tr>
                                     <th>Cochera</th>
@@ -471,7 +471,7 @@
             <div class="col-md-4">
                     <div class="row"><h4 class="text-center">Lugares Menos Utilizados</h4></div>
                     <div class="row">
-                    <table id="tabla_mas_u">
+                    <table id="tabla_mas_u" class="table table-condensed table-striped">
                         <thead>
                                 <tr>
                                         <th>Cochera</th>
@@ -485,7 +485,7 @@
                 <div class="col-md-4">
                         <div class="row"><h4 class="text-center">Lugares Nunca Utilizados</h4></div>
                         <div class="row">
-                        <table id="tabla_nunca_u">
+                        <table id="tabla_nunca_u" class="table table-condensed table-striped">
                                 <thead>
                                         <tr>
                                                 <th>Cochera</th>
@@ -572,7 +572,12 @@
                                 <div class="form-group col-md-3">
                                     <label>Foto de Perfil</label>
                                     <input type="file" id="file">
+                                    <div class="row">&nbsp;</div>
+                                <div class="row">
+                                    <img id='imagen' class='hide_me'height="80px" width="80px">
                                 </div>
+                                </div>
+                                
                             </div>
                         </div>
                         <div class="modal-footer">

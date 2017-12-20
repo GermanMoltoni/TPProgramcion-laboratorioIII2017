@@ -14,7 +14,7 @@ var lenguage = {
 };
 class DataTable{
     public dt:any;
-    private url:string='http://localhost:8080/prueba/TPProgramcion-laboratorioIII2017/Api/';
+    private url:string='http://localhost:8080/TPProgramcion-laboratorioIII2017/Api/';
  //private static url:string = 'http://germanmoltoni.esy.es/final/Api/';
   
     //private url:string='http://localhost/TPProgramcion-laboratorioIII2017/Api/';
@@ -26,6 +26,7 @@ class DataTable{
         this.iniciar();
     }
     private iniciar(){
+        let tabla = this.id_tabla;
         $('#' + this.id_tabla).DataTable().destroy();        
         $("#"+this.id_tabla).DataTable({
             searching:false,
@@ -33,6 +34,9 @@ class DataTable{
             info:false,
             language:lenguage
         }).clear().draw();
+        $( window ).resize(function() {
+            $('#'+tabla).DataTable().columns.adjust().draw();
+             });  
     }
     public data(columns:any,data:any){
         $('#' + this.id_tabla).DataTable().destroy();
