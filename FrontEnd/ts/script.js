@@ -47,13 +47,13 @@ var Estacionamiento = /** @class */ (function () {
         var e;
         (array.pisos).forEach(function (piso) {
             var i = piso.idPiso * 100;
-            while (i < (piso.idPiso * 100 + (piso.cantidadCocheras + piso.cantidadReservados))) {
+            while (i < (piso.idPiso * 100 + (parseInt(piso.cantidadCocheras) + parseInt(piso.cantidadReservados))) - 1) {
                 table += '<div class="row">';
                 var cell = 1;
                 flag = true;
                 while (cell <= 12) {
                     try {
-                        if (i > (piso.idPiso * 100 + (piso.cantidadCocheras + piso.cantidadReservados))) {
+                        if (i > (piso.idPiso * 100 + (parseInt(piso.cantidadCocheras) + parseInt(piso.cantidadReservados))) - 1) {
                             flag = false;
                             throw e;
                         }
