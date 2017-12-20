@@ -106,7 +106,7 @@ $(document).ready(()=>{
                 }
             },
             {render:function(data:any,type:any,row:any){
-                return row.estado == 0?'<span class="badge" style="background-color:green;">Habilitado</span>':'<span class="badge" style="background-color:red;">Suspendido</span>';}},   
+                return row.estado == 1?'<span class="badge" style="background-color:green;">Habilitado</span>':'<span class="badge" style="background-color:red;">Suspendido</span>';}},   
             {render:function(data:any,type:any,row:any){
                 return row.admin == 1?'Administrador':'Empleado';}},
             {render:function(data:any,type:any,row:any){
