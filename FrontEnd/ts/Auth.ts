@@ -32,7 +32,11 @@ class Auth{
         else{
             $("#form-login").prop("hidden",true);
             $("#ul-user").removeClass("hide_me");
-            $("#estacionamiento").prop("hidden",false);            
+            $("#estacionamiento").prop("hidden",false);     
+            Ajax.get('estacionamiento/listaCocheras').done((e)=>{
+                localStorage.setItem('lugares',JSON.stringify(e));
+                $("#id-autos").html(Estacionamiento.tablaCocheras(e));
+            });      
         }
         $("#ul-login").prop("hidden",true);
         $("#ul-logout").prop("hidden",false);

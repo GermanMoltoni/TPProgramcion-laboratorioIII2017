@@ -2,36 +2,7 @@ function stopEvent(event:JQueryEventObject){
     event.preventDefault();
     event.stopImmediatePropagation();
 }
-function crearSelectUsr(id_div:any,arr_datos:any){
-    let div = document.getElementById(id_div);
-    if(div === null){
-        return;
-    }
-    while (div.firstChild){
-        div.removeChild(div.firstChild);
-    }
-    let label = document.createElement('label');
-    label.textContent = 'Usuario';
-    let select = document.createElement('select');
-    select.id="sel-usr";
-    select.name="sel-usr";
-    select.className = "form-control"
-    let opcion = document.createElement('option');
-    opcion.value = '0';
-    opcion.text = 'Todos';
-    select.appendChild(opcion);
-    if(arr_datos !== null){
-        arr_datos.forEach(function(obj:any){
-            let opcion = document.createElement('option');
-            opcion.value = obj.id;
-            opcion.text = obj.nombre+' '+obj.apellido;
-            select.appendChild(opcion);
-        });
-    }
-    div.appendChild(label);
-    
-    div.appendChild(select);
-}
+
 var validator_nuevo_usuario = {
     id_form:"form_usuario",
     callback:()=>{
@@ -173,7 +144,7 @@ var validator_egreso_vehiculo = {
                 $("#modal-tk-vehiculo").modal("show");
                 Ajax.get('estacionamiento/listaCocheras').done((e)=>{
                     localStorage.setItem('lugares',JSON.stringify(e));
-                    $("#id-autos").html(tablaCocheras(e));
+                    $("#id-autos").html(Estacionamiento.tablaCocheras(e));
                 });
                 
             }
@@ -208,7 +179,7 @@ var validator_ingreso_vehiculo = {
                     $("#msg-info").text( 'Cochera Asignada:'+e.cochera);
                     Ajax.get('estacionamiento/listaCocheras').done((e)=>{
                         localStorage.setItem('lugares',JSON.stringify(e));
-                        $("#id-autos").html(tablaCocheras(e));
+                        $("#id-autos").html(Estacionamiento.tablaCocheras(e));
                     });
                 }            
                     
@@ -255,45 +226,4 @@ var validator_ingreso_vehiculo = {
 
 
 
-function tablaCocheras(array:any){
-    var table='<div class="col-md-12">';
-    var flag:boolean=true;
-    var e:any;
-    (array.pisos).forEach(function(piso:any){
-        var i=piso.idPiso*100
-        while(i<(piso.idPiso*100+(piso.cantidadCocheras+piso.cantidadReservados)))
-        {  table+='<div class="row">'
-            var cell = 1;
-            flag=true;
-            while(cell <=12){
-                try{
-                    if(i>(piso.idPiso*100+(piso.cantidadCocheras+piso.cantidadReservados))){
-                        flag=false;
-                         throw e;
-                    }
-                    (array.ocupados).forEach(function(auto:any)
-                    {
-                        if(auto.idCochera == i){
-                            table+='<div class="col-md-1 col-sm-1 col-xs-12"><div class="row"><a  data-toggle="tooltip" title="Nº'+auto.idCochera+ '\nPatente:'+auto.patente+'\nColor: '+auto.color+'\nMarca:'+auto.marca+'"><i style="margin:0px 0px 0px  25px;color:red;" class="material-icons "  >directions_car</i></a></div><div class="row"><p class="text-center"style="color:white;">'+auto.idCochera+'</p></div></div>';
-                            flag = false;
-                            throw e;
-                        }
-                        else
-                            flag = true;
-                    });
-                }
-                catch(e){ }
-                if(flag)
-                    table+='<div class="col-md-1 col-sm-1 col-xs-12"><div class="row"><i class="material-icons" style="margin:0px 0px 0px  25px;color:green;"  >directions_car</i></div><div class="row"><p class="text-center"style="color:white;">'+i+'</p></div></div>';
-               
-                i++;
-                cell++;
-            }
-             table+='</div>'  
-             
-         }
-       
-    });
- 
-    return table;
-}
+

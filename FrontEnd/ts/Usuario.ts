@@ -98,4 +98,34 @@ class Usuario{
             to:$("#in_has_usr").val(),
         };
     }
+    public static  crearSelectUsr(id_div:any,arr_datos:any){
+        let div = document.getElementById(id_div);
+        if(div === null){
+            return;
+        }
+        while (div.firstChild){
+            div.removeChild(div.firstChild);
+        }
+        let label = document.createElement('label');
+        label.textContent = 'Usuario';
+        let select = document.createElement('select');
+        select.id="sel-usr";
+        select.name="sel-usr";
+        select.className = "form-control"
+        let opcion = document.createElement('option');
+        opcion.value = '0';
+        opcion.text = 'Todos';
+        select.appendChild(opcion);
+        if(arr_datos !== null){
+            arr_datos.forEach(function(obj:any){
+                let opcion = document.createElement('option');
+                opcion.value = obj.id;
+                opcion.text = obj.nombre+' '+obj.apellido;
+                select.appendChild(opcion);
+            });
+        }
+        div.appendChild(label);
+        
+        div.appendChild(select);
+    }
 }

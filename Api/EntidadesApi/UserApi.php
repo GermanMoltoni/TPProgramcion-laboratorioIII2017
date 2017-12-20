@@ -10,7 +10,7 @@ class UserApi extends Usuario{
         $user_data = $request->getAttribute('user');
         $user = parent::LoginUsuario($user_data['mail'],$user_data['password']);
         if($user == false)
-            return $response->withJson(array('error'=>'Datos incorrectos'),201);
+            return $response->withJson(array('error'=>'Usuario bloqueado o Datos incorrectos'),201);
         return $response->withJson($user);
     }
 

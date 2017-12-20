@@ -41,6 +41,43 @@ var Estacionamiento = /** @class */ (function () {
             return lugares.length < cap_1;
         }
     };
+    Estacionamiento.tablaCocheras = function (array) {
+        var table = '<div class="col-md-12">';
+        var flag = true;
+        var e;
+        (array.pisos).forEach(function (piso) {
+            var i = piso.idPiso * 100;
+            while (i < (piso.idPiso * 100 + (piso.cantidadCocheras + piso.cantidadReservados))) {
+                table += '<div class="row">';
+                var cell = 1;
+                flag = true;
+                while (cell <= 12) {
+                    try {
+                        if (i > (piso.idPiso * 100 + (piso.cantidadCocheras + piso.cantidadReservados))) {
+                            flag = false;
+                            throw e;
+                        }
+                        (array.ocupados).forEach(function (auto) {
+                            if (auto.idCochera == i) {
+                                table += '<div class="col-md-1 col-sm-1 col-xs-12"><div class="row"><a  data-toggle="tooltip" title="Nº' + auto.idCochera + '\nPatente:' + auto.patente + '\nColor: ' + auto.color + '\nMarca:' + auto.marca + '"><i style="margin:0px 0px 0px  25px;color:red;" class="material-icons "  >directions_car</i></a></div><div class="row"><p class="text-center"style="color:white;">' + auto.idCochera + '</p></div></div>';
+                                flag = false;
+                                throw e;
+                            }
+                            else
+                                flag = true;
+                        });
+                    }
+                    catch (e) { }
+                    if (flag)
+                        table += '<div class="col-md-1 col-sm-1 col-xs-12"><div class="row"><i class="material-icons" style="margin:0px 0px 0px  25px;color:green;"  >directions_car</i></div><div class="row"><p class="text-center"style="color:white;">' + i + '</p></div></div>';
+                    i++;
+                    cell++;
+                }
+                table += '</div>';
+            }
+        });
+        return table;
+    };
     return Estacionamiento;
 }());
 /// <reference path="./types/jquery.d.ts" />
@@ -349,6 +386,10 @@ var Auth = /** @class */ (function () {
             $("#form-login").prop("hidden", true);
             $("#ul-user").removeClass("hide_me");
             $("#estacionamiento").prop("hidden", false);
+            Ajax.get('estacionamiento/listaCocheras').done(function (e) {
+                localStorage.setItem('lugares', JSON.stringify(e));
+                $("#id-autos").html(Estacionamiento.tablaCocheras(e));
+            });
         }
         $("#ul-login").prop("hidden", true);
         $("#ul-logout").prop("hidden", false);
@@ -358,35 +399,6 @@ var Auth = /** @class */ (function () {
 function stopEvent(event) {
     event.preventDefault();
     event.stopImmediatePropagation();
-}
-function crearSelectUsr(id_div, arr_datos) {
-    var div = document.getElementById(id_div);
-    if (div === null) {
-        return;
-    }
-    while (div.firstChild) {
-        div.removeChild(div.firstChild);
-    }
-    var label = document.createElement('label');
-    label.textContent = 'Usuario';
-    var select = document.createElement('select');
-    select.id = "sel-usr";
-    select.name = "sel-usr";
-    select.className = "form-control";
-    var opcion = document.createElement('option');
-    opcion.value = '0';
-    opcion.text = 'Todos';
-    select.appendChild(opcion);
-    if (arr_datos !== null) {
-        arr_datos.forEach(function (obj) {
-            var opcion = document.createElement('option');
-            opcion.value = obj.id;
-            opcion.text = obj.nombre + ' ' + obj.apellido;
-            select.appendChild(opcion);
-        });
-    }
-    div.appendChild(label);
-    div.appendChild(select);
 }
 var validator_nuevo_usuario = {
     id_form: "form_usuario",
@@ -531,7 +543,7 @@ var validator_egreso_vehiculo = {
                 $("#modal-tk-vehiculo").modal("show");
                 Ajax.get('estacionamiento/listaCocheras').done(function (e) {
                     localStorage.setItem('lugares', JSON.stringify(e));
-                    $("#id-autos").html(tablaCocheras(e));
+                    $("#id-autos").html(Estacionamiento.tablaCocheras(e));
                 });
             }
         });
@@ -565,7 +577,7 @@ var validator_ingreso_vehiculo = {
                     $("#msg-info").text('Cochera Asignada:' + e.cochera);
                     Ajax.get('estacionamiento/listaCocheras').done(function (e) {
                         localStorage.setItem('lugares', JSON.stringify(e));
-                        $("#id-autos").html(tablaCocheras(e));
+                        $("#id-autos").html(Estacionamiento.tablaCocheras(e));
                     });
                 }
                 else
@@ -605,43 +617,6 @@ var validator_ingreso_vehiculo = {
         }
     }
 };
-function tablaCocheras(array) {
-    var table = '<div class="col-md-12">';
-    var flag = true;
-    var e;
-    (array.pisos).forEach(function (piso) {
-        var i = piso.idPiso * 100;
-        while (i < (piso.idPiso * 100 + (piso.cantidadCocheras + piso.cantidadReservados))) {
-            table += '<div class="row">';
-            var cell = 1;
-            flag = true;
-            while (cell <= 12) {
-                try {
-                    if (i > (piso.idPiso * 100 + (piso.cantidadCocheras + piso.cantidadReservados))) {
-                        flag = false;
-                        throw e;
-                    }
-                    (array.ocupados).forEach(function (auto) {
-                        if (auto.idCochera == i) {
-                            table += '<div class="col-md-1 col-sm-1 col-xs-12"><div class="row"><a  data-toggle="tooltip" title="Nº' + auto.idCochera + '\nPatente:' + auto.patente + '\nColor: ' + auto.color + '\nMarca:' + auto.marca + '"><i style="margin:0px 0px 0px  25px;color:red;" class="material-icons "  >directions_car</i></a></div><div class="row"><p class="text-center"style="color:white;">' + auto.idCochera + '</p></div></div>';
-                            flag = false;
-                            throw e;
-                        }
-                        else
-                            flag = true;
-                    });
-                }
-                catch (e) { }
-                if (flag)
-                    table += '<div class="col-md-1 col-sm-1 col-xs-12"><div class="row"><i class="material-icons" style="margin:0px 0px 0px  25px;color:green;"  >directions_car</i></div><div class="row"><p class="text-center"style="color:white;">' + i + '</p></div></div>';
-                i++;
-                cell++;
-            }
-            table += '</div>';
-        }
-    });
-    return table;
-}
 /// <reference path="./types/jquery.d.ts" />
 /// <reference path="./Ajax.ts" />
 var Usuario = /** @class */ (function () {
@@ -731,6 +706,35 @@ var Usuario = /** @class */ (function () {
             to: $("#in_has_usr").val()
         };
     };
+    Usuario.crearSelectUsr = function (id_div, arr_datos) {
+        var div = document.getElementById(id_div);
+        if (div === null) {
+            return;
+        }
+        while (div.firstChild) {
+            div.removeChild(div.firstChild);
+        }
+        var label = document.createElement('label');
+        label.textContent = 'Usuario';
+        var select = document.createElement('select');
+        select.id = "sel-usr";
+        select.name = "sel-usr";
+        select.className = "form-control";
+        var opcion = document.createElement('option');
+        opcion.value = '0';
+        opcion.text = 'Todos';
+        select.appendChild(opcion);
+        if (arr_datos !== null) {
+            arr_datos.forEach(function (obj) {
+                var opcion = document.createElement('option');
+                opcion.value = obj.id;
+                opcion.text = obj.nombre + ' ' + obj.apellido;
+                select.appendChild(opcion);
+            });
+        }
+        div.appendChild(label);
+        div.appendChild(select);
+    };
     return Usuario;
 }());
 var tabla_est_fechas;
@@ -784,6 +788,7 @@ $(document).ready(function () {
         $("#estadistica").prop("hidden", true);
         $("#operaciones").prop("hidden", true);
         $("#logs-usuarios").prop("hidden", true);
+        $("#lugares").prop("hidden", true);
         stopEvent(e);
     });
     $("#btn-carga-login").click(function (e) {
@@ -968,7 +973,7 @@ $(document).ready(function () {
         $("#logs-usuarios").prop("hidden", true);
         Ajax.get('estacionamiento/listaCocheras').done(function (e) {
             localStorage.setItem('lugares', JSON.stringify(e));
-            $("#id-autos").html(tablaCocheras(e));
+            $("#id-autos").html(Estacionamiento.tablaCocheras(e));
         });
     });
     $("#btn-ingreso-auto").click(function (e) {
@@ -997,7 +1002,7 @@ $(document).ready(function () {
         tabla_operaciones = new DataTable("tabla_operaciones");
         tabla_oper_usr = new DataTable("tabla_oper_usr", false);
         Usuario.listar().done(function (datos) {
-            crearSelectUsr('lista_usuarios', datos);
+            Usuario.crearSelectUsr('lista_usuarios', datos);
         });
         $("#operaciones").prop("hidden", false);
     });
@@ -1077,10 +1082,15 @@ $(document).ready(function () {
                 if (res.msg == undefined) {
                     $("#lbl-factu-mensual").text(res);
                 }
+                else
+                    $("#lbl-factu-mensual").text('');
             });
             Ajax.get('estadistica/promedioautosmensual?' + encodeURI('periodo=' + datos)).done(function (res) {
                 if (res.msg == undefined) {
                     $("#lbl-autos-mensual").text(res);
+                }
+                else {
+                    $("#lbl-autos-mensual").text('');
                 }
             });
         }
@@ -1115,10 +1125,17 @@ $(document).ready(function () {
                     $("#lbl-factu-periodo").text(res[0].facturacion);
                     $("#lbl-autos-periodo").text(res[0].cantidad_autos);
                 }
+                else {
+                    $("#lbl-factu-periodo").text('');
+                    $("#lbl-autos-periodo").text('');
+                }
             });
             Ajax.get('estadistica/vehiculos?' + encodeURI('&from=' + datos.from + '&to=' + datos.to)).done(function (res) {
                 if (res.msg == undefined || res.error == undefined) {
-                    $("#lbl-factu").text(res.distintos);
+                    if (res.distintos === undefined)
+                        $("#lbl-factu").text('');
+                    else
+                        $("#lbl-factu").text(res.distintos);
                     tabla_est_fechas.data([
                         { render: function (data, type, row) {
                                 return row.patente;
@@ -1148,6 +1165,9 @@ $(document).ready(function () {
                                 return row.cantidad;
                             } },
                     ], cocheras_1);
+                }
+                else {
+                    tabla_est_fechas = new DataTable('tabla_est_cochera');
                 }
             });
         }

@@ -6,7 +6,7 @@ var tabla_oper_usr:DataTable;
 var tabla_log_usr:DataTable;
 var tabla_est_cochera:DataTable;
 $(document).ready(()=>{
-    
+ 
     $('[data-toggle="tooltip"]').tooltip(); 
     let usr = Usuario.getUsuario();
     if(usr != null){
@@ -51,7 +51,8 @@ $(document).ready(()=>{
         $("#estadistica").prop("hidden",true);
         $("#operaciones").prop("hidden",true);
         $("#logs-usuarios").prop("hidden",true);
-        
+        $("#lugares").prop("hidden",true);
+
         stopEvent(e);
     });
     $("#btn-carga-login").click((e)=>{
@@ -215,7 +216,7 @@ $(document).ready(()=>{
         stopEvent(e);
     });
     $('#in_des_usr').datetimepicker({
-        format: 'YYYY-MM-DD'
+        format: 'YYYY-MM-DD',
     });
     $('#in_has_usr').datetimepicker({
         format: 'YYYY-MM-DD',
@@ -239,7 +240,7 @@ $(document).ready(()=>{
         $("#logs-usuarios").prop("hidden",true);
         Ajax.get('estacionamiento/listaCocheras').done((e)=>{
             localStorage.setItem('lugares',JSON.stringify(e));
-            $("#id-autos").html(tablaCocheras(e));
+            $("#id-autos").html(Estacionamiento.tablaCocheras(e));
         });
     });
     $("#btn-ingreso-auto").click((e)=>{
@@ -270,7 +271,7 @@ $(document).ready(()=>{
         tabla_operaciones = new DataTable("tabla_operaciones");
         tabla_oper_usr = new DataTable("tabla_oper_usr",false);
         Usuario.listar().done((datos)=>{
-            crearSelectUsr('lista_usuarios',datos);
+            Usuario.crearSelectUsr('lista_usuarios',datos);
         });
         $("#operaciones").prop("hidden",false);
     });
@@ -351,10 +352,17 @@ $(document).ready(()=>{
                 if(res.msg == undefined){
                     $("#lbl-factu-mensual").text(res);
                 }
+                else
+                    $("#lbl-factu-mensual").text('');
+
             });
             Ajax.get('estadistica/promedioautosmensual?'+encodeURI('periodo='+datos)).done((res)=>{
                 if(res.msg == undefined){
                     $("#lbl-autos-mensual").text(res);
+                }
+                else{
+                    $("#lbl-autos-mensual").text('');
+
                 }
             });
         }
@@ -390,11 +398,18 @@ $(document).ready(()=>{
                     $("#lbl-factu-periodo").text(res[0].facturacion);
                     $("#lbl-autos-periodo").text(res[0].cantidad_autos);
                 }
+                else{
+                    $("#lbl-factu-periodo").text('');
+                    $("#lbl-autos-periodo").text('');
+                }
             });
             Ajax.get('estadistica/vehiculos?'+encodeURI('&from='+datos.from+'&to='+datos.to)).done((res)=>{
                 if(res.msg == undefined || res.error == undefined){
-                    $("#lbl-factu").text(res.distintos);
-                    
+                    if(res.distintos === undefined)
+                        $("#lbl-factu").text('');
+                    else
+                        $("#lbl-factu").text(res.distintos);
+
                     tabla_est_fechas.data([                
                         {render:function(data:any,type:any,row:any){
                             
@@ -426,6 +441,10 @@ $(document).ready(()=>{
                         
                     ],cocheras);
                 
+                }
+                else{
+                    tabla_est_fechas = new DataTable('tabla_est_cochera');
+
                 }
             });
         }

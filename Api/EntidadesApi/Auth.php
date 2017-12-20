@@ -116,7 +116,7 @@ public function users($request, $response, $next) {
         }
         catch(Exception $e)
         {
-             return $response->withJson(array('error'=>$e->getMessage()));   
+             return $response->withJson(array('tokmsg'=>$e->getMessage()));   
         }
         
         
