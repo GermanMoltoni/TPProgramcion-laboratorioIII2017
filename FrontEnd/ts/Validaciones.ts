@@ -72,8 +72,8 @@ var validator_modificar_usuario = {
     callback:()=>{
             Usuario.modificar().done((e:any)=>{
                 setTimeout(()=>{
-                    tabla_usuarios.reloadTable()},500);
-            },()=>{}); 
+                    tabla_usuarios.reloadTable()},600);
+            }); 
         $("#modal-nuevo-usuario").modal("hide");
     },
     opciones:{

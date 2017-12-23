@@ -121,6 +121,7 @@ $(document).ready(()=>{
     $("#btn-nuevo-usuario").click((e)=>{
         if(Usuario.getTipo()){
             $('#admin_usr').bootstrapToggle('off');
+            Usuario.vaciarFrm();
             Formato.validator(validator_nuevo_usuario);
             $("#modal-nuevo-usuario").modal("show");
         }
@@ -128,11 +129,13 @@ $(document).ready(()=>{
     });
     $("#btn-modificar-usuario").click((e)=>{
         let datos = sessionStorage.getItem('tr-tabla_usuarios');
-        let usuario = JSON.parse(datos !== null?datos:'');
-        usuario = Usuario.jsonToUsuario(usuario);
-        usuario.setForm();
-        Formato.validator(validator_modificar_usuario);
-        $("#modal-nuevo-usuario").modal("show");
+        if(datos !== null){
+            let usuario = JSON.parse(datos !== null?datos:'');
+            usuario = Usuario.jsonToUsuario(usuario);
+             usuario.setForm();
+            Formato.validator(validator_modificar_usuario);
+            $("#modal-nuevo-usuario").modal("show");
+        }
         stopEvent(e);
     }); 
     $('#admin_usr').bootstrapToggle({

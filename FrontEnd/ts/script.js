@@ -471,8 +471,8 @@ var validator_modificar_usuario = {
         Usuario.modificar().done(function (e) {
             setTimeout(function () {
                 tabla_usuarios.reloadTable();
-            }, 500);
-        }, function () { });
+            }, 600);
+        });
         $("#modal-nuevo-usuario").modal("hide");
     },
     opciones: {
@@ -735,6 +735,14 @@ var Usuario = /** @class */ (function () {
         div.appendChild(label);
         div.appendChild(select);
     };
+    Usuario.vaciarFrm = function () {
+        $("#in_nombre").val('');
+        $("#in_apellido").val('');
+        $("#in_passwd1").val('');
+        $("#in_mail").val('');
+        $("#in_id").val('');
+        $("#sel_turno").val('');
+    };
     return Usuario;
 }());
 var tabla_est_fechas;
@@ -856,6 +864,7 @@ $(document).ready(function () {
     $("#btn-nuevo-usuario").click(function (e) {
         if (Usuario.getTipo()) {
             $('#admin_usr').bootstrapToggle('off');
+            Usuario.vaciarFrm();
             Formato.validator(validator_nuevo_usuario);
             $("#modal-nuevo-usuario").modal("show");
         }
@@ -863,11 +872,13 @@ $(document).ready(function () {
     });
     $("#btn-modificar-usuario").click(function (e) {
         var datos = sessionStorage.getItem('tr-tabla_usuarios');
-        var usuario = JSON.parse(datos !== null ? datos : '');
-        usuario = Usuario.jsonToUsuario(usuario);
-        usuario.setForm();
-        Formato.validator(validator_modificar_usuario);
-        $("#modal-nuevo-usuario").modal("show");
+        if (datos !== null) {
+            var usuario = JSON.parse(datos !== null ? datos : '');
+            usuario = Usuario.jsonToUsuario(usuario);
+            usuario.setForm();
+            Formato.validator(validator_modificar_usuario);
+            $("#modal-nuevo-usuario").modal("show");
+        }
         stopEvent(e);
     });
     $('#admin_usr').bootstrapToggle({

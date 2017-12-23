@@ -128,4 +128,12 @@ class Usuario{
         
         div.appendChild(select);
     }
+    static vaciarFrm(){
+        $("#in_nombre").val('')
+        $("#in_apellido").val('')
+        $("#in_passwd1").val('')
+        $("#in_mail").val('')
+        $("#in_id").val('')
+        $("#sel_turno").val('')
+    }
 }
